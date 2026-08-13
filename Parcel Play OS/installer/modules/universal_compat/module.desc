@@ -1,0 +1,5 @@
+---
+type:       "job"
+name:       "universal_compat"
+interface:  "python"
+script:     "main.py"

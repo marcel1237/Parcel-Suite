@@ -1,0 +1,6 @@
+{
+  "device": "/dev/dri/card0",
+  "hwcursor": true,
+  "pb_size": 2,
+  "format": "xrgb8888"
+}

@@ -1,0 +1,26 @@
+[Unit]
+Description=Thunder Dark Volt Early-Boot Login Screen
+DefaultDependencies=no
+After=local-fs.target systemd-udev-settle.service
+Before=display-manager.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/thunder/dark-volt-env
+# Em produção, este seria o binário da tela de login Qt/EGLFS
+ExecStart=/usr/bin/thunder-login-eglfs
+Restart=on-failure
+RestartSec=2
+StandardInput=tty
+StandardOutput=journal
+User=root
+Group=root
+NoNewPrivileges=false
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=false
+DeviceAllow=/dev/dri/ rw
+LimitRTPRIO=99
+
+[Install]
+WantedBy=sysinit.target

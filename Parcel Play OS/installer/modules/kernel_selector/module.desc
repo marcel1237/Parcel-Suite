@@ -1,0 +1,5 @@
+---
+type:       "viewqml"
+name:       "kernel_selector"
+interface:  "view"
+load:       "View.qml"

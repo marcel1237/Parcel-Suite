@@ -1,0 +1,5 @@
+---
+type:       "viewqml"
+name:       "session_selector"
+interface:  "view"
+load:       "View.qml"

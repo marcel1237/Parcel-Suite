@@ -1,0 +1,5 @@
+Light Weight and Edge of Technology Server OS
+
+Feita para ser super computer. (Also as Generic/Base Server)
+
+1. Colocar todas as tecnologias de software em canary e edge versions, com o XFce como interface visual.

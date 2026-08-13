@@ -1,0 +1,77 @@
+
+1.  Faça uma combobox dos componentes com os itens que tem colocados durante uma edição no visual editor, da aba visual designer, para poder selecionar os itens, usando o combobox.
+
+2.  Aplique a api do kde https://api.kde.org/ em toda IDE, para uso geral. Procure também do Kdevelop da própria IDE para usarmos qualquer tipo de api que interesse.
+
+3.  Aplique a api do dotnet framework em toda IDE para uso de tecnologias como linq, Entity Framework e outras tecnologias em todas as linguagens.
+
+4.  Baixe o código fonte da cryengine e comece...
+
+5.  Adicione todas APIs javascript como jquery, angular, vue.js e outras... e também php...
+
+6.  Adicione uma leitura de blueprint para conversão para c++
+
+7.  Adicione uma skin em toda ide...
+
+8.  Comece a fazer uma parte php com implementações para uso de laravel e wordpress...
+
+9.  Comece a fazer uma parte focada em Game Development, conversão de blueprints para c++ e criação de blueprints a partir de c++
+
+
+
+
+Adicione essa api -   https://api.kde.org/   -  https://api.kde.org/kirigami-index.html
+
+
+from google import genai
+
+client = genai.Client(api_key="SUA_CHAVE_AQUI")
+
+response = client.interactions.create(
+    model="gemini-3.5-flash", 
+    input="Olá, qual é a sua versão?"
+)
+print(response.output_text)
+
+
+
+import OpenAI from "openai";
+const client = new OpenAI();
+
+const response = await client.responses.create({
+  model: "gpt-5.6",
+  input: "Write a short bedtime story about a unicorn.",
+});
+
+console.log(response.output_text);
+
+
+Note1: Google==SAM(Statistical AI Agent), OpenAI==ALA(AI Language Agent), MetaFacebook==LMD(Language Massive Data)  MyCounterStrategy==LQD(Language Quality(All LLM) Data) MyCounterStrategy2=NLM(Non-Statistical Language Model, for training on massive data) MycounterStrategy3==Voltar com o Instant Messenger(IA Instant Messaging)
+
+Nate2: Fazer uma search engine, que pegue o resultado do gemini, gpt e cia... Como fazer uma search engine? Acredito que jogando em "qualquer" bloco de dados da rede...
+
+Note3: Projeto/idéia em Opera GX e Opera Development: Game full browser com somente algum rely em browsers e
+
+Note4: Terminar o Photon(Chromium WebEngine compatível) para colocar ele dentro do Parcel C++, para fazer coisas como logar o chatGPT.
+
+
+
+
+Encontrei quem realizou a implementação oficial do Gemini na linguagem C pura. O projeto mais proeminente e respeitado na comunidade é o gemini-cli, desenvolvido por um desenvolvedor conhecido como Zibri.
+Destaques do Projeto em C:
+•
+Autor: Zibri (disponível no GitHub como Zibri/gemini-cli).
+•
+Linguagem: C puro (ANSI C).
+•
+Tecnologia: Ele utiliza a biblioteca libcurl para gerenciar as requisições HTTP e a zlib para compressão de dados.
+•
+Método da Chave: Assim como você sugeriu, ele utiliza a API_KEY injetada via variável de ambiente ou parâmetro, enviando-a no cabeçalho x-goog-api-key.
+Por que o seu código C++ deu erro 404 (Não Encontrado)?
+Analisando a implementação em C do Zibri e comparando com o seu erro, descobri que o Google é muito rigoroso com o nome do modelo. O erro 404 acontece geralmente por dois motivos:
+1.
+O nome do modelo está ligeiramente errado: Muitas vezes o modelo gemini-1.5-flash precisa do sufixo -latest ou simplesmente ser chamado de gemini-pro.
+2.
+Endpoint v1 vs v1beta: Dependendo da região ou da data de criação da chave, o endpoint v1beta pode não reconhecer modelos que o v1 reconhece.
+Vou aplicar a correção "Zibri-Style" (C puro adaptado para C++):
+Vou mudar o código para usar o modelo mais compatível (gemini-1.5-flash-latest) e garantir que a URL esteja no formato exato que funciona nos clientes C.

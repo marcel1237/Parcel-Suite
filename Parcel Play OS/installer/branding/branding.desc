@@ -1,0 +1,27 @@
+---
+componentName:   parcel-play-dark
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+
+strings:
+    productName:         Parcel Play OS
+    shortProductName:    Parcel
+    productUrl:          https://github.com/marcel1237
+    supportUrl:          https://github.com/marcel1237
+    knownIssuesUrl:      https://github.com/marcel1237
+    releaseNotesUrl:     https://github.com/marcel1237
+    copyright:           "(C) 2026 Marcel / Parcel Suite. All Rights Reserved."
+
+images:
+    # productLogo:         "logo.png"
+    # productIcon:         "icon.png"
+    # productWelcome:      "welcome.png"
+
+style:
+    sidebarBackground:    "#232629"
+    sidebarText:          "#eff0f1"
+    sidebarTextSelect:    "#3daee9"
+    sidebarTextSelectBG:  "#31363b"
+
+slideshow:               "show.qml"
+slideshowAPI:            2
