@@ -1,0 +1,75 @@
+package com.projectwizard.view;
+
+import com.projectwizard.core.ApplicationContext;
+import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class MainWindow {
+
+    private final ApplicationContext context =
+            new ApplicationContext();
+
+    public void show(Stage stage) {
+
+        BorderPane root = new BorderPane();
+
+        MenuBar menuBar = new MenuBar();
+
+        Menu file = new Menu("File");
+        Menu help = new Menu("Help");
+
+        MenuItem exit = new MenuItem("Exit");
+        exit.setOnAction(e -> stage.close());
+
+        MenuItem about = new MenuItem("About");
+
+        about.setOnAction(e ->
+                context.getDialogService().showInformation(
+                        "About",
+                        context.getApplicationName()
+                                + "\nVersion "
+                                + context.getVersion()
+                )
+        );
+
+        file.getItems().add(exit);
+        help.getItems().add(about);
+
+        menuBar.getMenus().addAll(file, help);
+
+        VBox top = new VBox(
+                menuBar,
+                new MainToolBar()
+        );
+
+        root.setTop(top);
+
+        root.setLeft(new Sidebar());
+
+        root.setCenter(
+                WorkspacePane.getInstance()
+        );
+
+        root.setBottom(
+                new StatusBar()
+        );
+
+        Scene scene =
+                new Scene(root, 1400, 850);
+
+        stage.setScene(scene);
+        stage.setTitle(
+                context.getApplicationName()
+        );
+
+        stage.centerOnScreen();
+        stage.show();
+
+    }
+
+}

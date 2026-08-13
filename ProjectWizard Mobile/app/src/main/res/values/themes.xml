@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ProjectWizard" parent="android:Theme.Material.NoActionBar">
+        <!-- The actual interface design, colors, and layout are declared and rendered inside Jetpack Compose. -->
+    </style>
+</resources>

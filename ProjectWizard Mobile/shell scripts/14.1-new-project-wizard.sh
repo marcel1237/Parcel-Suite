@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+set -e
+
+echo "========================================="
+echo " Project Wizard - Etapa 14.1"
+echo " New Project Wizard"
+echo "========================================="
+
+FILE="src/main/java/com/projectwizard/view/newproject/NewProjectView.java"
+
+mkdir -p "$(dirname "$FILE")"
+
+cat > "$FILE" <<'EOF'
+package com.projectwizard.view.newproject;
+
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+
+public class NewProjectView extends GridPane {
+
+    public NewProjectView() {
+
+        setPadding(new Insets(20));
+        setHgap(10);
+        setVgap(12);
+
+        Label title = new Label("Create New Project");
+        title.setStyle("-fx-font-size:24px;-fx-font-weight:bold;");
+
+        add(title,0,0,2,1);
+
+        TextField projectName = new TextField();
+        projectName.setPromptText("MyApplication");
+
+        TextField groupId = new TextField("com.example");
+
+        TextField artifactId = new TextField();
+
+        ComboBox<String> language = new ComboBox<>();
+        language.getItems().addAll(
+                "Java",
+                "Kotlin",
+                "Groovy"
+        );
+        language.getSelectionModel().selectFirst();
+
+        ComboBox<String> buildTool = new ComboBox<>();
+        buildTool.getItems().addAll(
+                "Maven",
+                "Gradle"
+        );
+        buildTool.getSelectionModel().selectFirst();
+
+        add(new Label("Project Name"),0,1);
+        add(projectName,1,1);
+
+        add(new Label("Group"),0,2);
+        add(groupId,1,2);
+
+        add(new Label("Artifact"),0,3);
+        add(artifactId,1,3);
+
+        add(new Label("Language"),0,4);
+        add(language,1,4);
+
+        add(new Label("Build Tool"),0,5);
+        add(buildTool,1,5);
+
+        Button create = new Button("Create");
+
+        Button cancel = new Button("Cancel");
+
+        HBox buttons = new HBox(10,create,cancel);
+
+        add(buttons,1,6);
+
+    }
+
+}
+EOF
+
+echo
+echo "========================================="
+echo " New Project Wizard criado."
+echo "========================================="
+echo
+echo "Execute:"
+echo
+echo "mvn clean javafx:run"

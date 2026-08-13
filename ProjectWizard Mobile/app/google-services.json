@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "382746151327",
+    "project_id": "project-wizard-7503b",
+    "storage_bucket": "project-wizard-7503b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:382746151327:android:f328d4a0c797dd6a6955aa",
+        "android_client_info": {
+          "package_name": "com.aistudio.projectwizard.kdztwf"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT45teo7mtfg-P7Lzu5EtXQdIt2EE1fx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

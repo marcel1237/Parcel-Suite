@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://apache.org"
+         xmlns:xsi="http://w3.org"
+         xsi:schemaLocation="http://apache.org http://apache.org">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.exemplo.eclipse</groupId>
+    <artifactId>eclipse-total-toolkit</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Versão estável consolidada da Plataforma Eclipse no Maven Central -->
+        <eclipse.platform.version>4.31.0</eclipse.platform.version>
+        <jgit.version>6.9.0.202403050730-r</jgit.version>
+        <lsp4j.version>0.22.0</lsp4j.version>
+        <emf.version>2.36.0</emf.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- BOM Oficial do Eclipse: Alinha as versões de mais de 100 artefatos core e UI -->
+            <dependency>
+                <groupId>org.eclipse.platform</groupId>
+                <artifactId>bom</artifactId>
+                <version>${eclipse.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+
+        <!-- ================================================================= -->
+        <!-- 1. ECLIPSE JDT (Java Development Tools)                           -->
+        <!-- ================================================================= -->
+        
+        <!-- Compilador Java em lote do Eclipse (ECJ) -->
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>ecj</artifactId>
+            <version>3.37.0</version> <!-- ECJ possui versionamento próprio fora do BOM -->
+        </dependency>
+
+        <!-- Core do JDT: Árvore de Sintaxe Abstrata (AST), Parser e Formatação -->
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>org.eclipse.jdt.core</artifactId>
+        </dependency>
+
+        <!-- APIs para gerenciamento, inicialização e execução de JVMs -->
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>org.eclipse.jdt.launching</artifactId>
+        </dependency>
+
+        <!-- Infraestrutura para depuração de código Java (Debugging) -->
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>org.eclipse.jdt.debug</artifactId>
+        </dependency>
+
+        <!-- Anotações JDT para análise estática de código (ex: @NonNull) -->
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>org.eclipse.jdt.annotation</artifactId>
+        </dependency>
+
+
+        <!-- ================================================================= -->
+        <!-- 2. ECLIPSE PLATFORM (Módulos de Sistema e Runtime)               -->
+        <!-- ================================================================= -->
+
+        <!-- Kernel básico do Eclipse, registro de extensões e plugins -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.core.runtime</artifactId>
+        </dependency>
+
+        <!-- Gerenciador do Workspace, arquivos (IFile, IFolder) e projetos -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.core.resources</artifactId>
+        </dependency>
+
+        <!-- Framework para execução de tarefas assíncronas em segundo plano -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.core.jobs</artifactId>
+        </dependency>
+
+        <!-- Mecanismo de Documentos de Texto, Buffers e manipulação de strings -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.text</artifactId>
+        </dependency>
+
+
+        <!-- ================================================================= -->
+        <!-- 3. INTERFACE GRÁFICA (SWT, JFace & Workbench)                     -->
+        <!-- ================================================================= -->
+
+        <!-- SWT: Componentes visuais nativos (Janelas, Botões, Tabelas) -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.swt</artifactId>
+        </dependency>
+
+        <!-- JFace: Camada MVC abstrata construída sobre o SWT -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.jface</artifactId>
+        </dependency>
+
+        <!-- JFace Text: Infraestrutura para criar Editores de Código com Syntax Highlight -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.jface.text</artifactId>
+        </dependency>
+
+        <!-- UI Workbench: Estrutura completa de Views, Editors e Perspectives da IDE -->
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.ui.workbench</artifactId>
+        </dependency>
+
+
+        <!-- ================================================================= -->
+        <!-- 4. MODELAGEM (Eclipse EMF)                                        -->
+        <!-- ================================================================= -->
+
+        <!-- EMF Core: Framework de modelagem de dados e geração de código -->
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore</artifactId>
+            <version>${emf.version}</version>
+        </dependency>
+
+        <!-- Mecanismo de persistência XML/XMI para os modelos EMF -->
+        <dependency>
+            <groupId>org.eclipse.emf</groupId>
+            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+            <version>${emf.version}</version>
+        </dependency>
+
+
+        <!-- ================================================================= -->
+        <!-- 5. PROTOCOLOS E FERRAMENTAL INTEGRADO                             -->
+        <!-- ================================================================= -->
+
+        <!-- Eclipse JGit: Motor Git completo escrito puramente em Java -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>${jgit.version}</version>
+        </dependency>
+
+        <!-- Eclipse LSP4J: Implementação do Language Server Protocol (LSP) -->
+        <dependency>
+            <groupId>org.eclipse.lsp4j</groupId>
+            <artifactId>org.eclipse.lsp4j</artifactId>
+            <version>${lsp4j.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Plugin padrão para garantir o uso correto do Java 17+ no build -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

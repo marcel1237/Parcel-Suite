@@ -1,0 +1,10 @@
+com.projectwizard.app-pngs-0 /home/marcel1237/ProjectWizard Mobile/app/build/generated/res/pngs/debug
+com.projectwizard.app-res-1 /home/marcel1237/ProjectWizard Mobile/app/build/generated/res/processDebugGoogleServices
+com.projectwizard.app-resValues-2 /home/marcel1237/ProjectWizard Mobile/app/build/generated/res/resValues/debug
+com.projectwizard.app-updated_navigation_xml-3 /home/marcel1237/ProjectWizard Mobile/app/build/generated/updated_navigation_xml/debug
+com.projectwizard.app-packageDebugResources-4 /home/marcel1237/ProjectWizard Mobile/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.projectwizard.app-packageDebugResources-5 /home/marcel1237/ProjectWizard Mobile/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.projectwizard.app-debug-6 /home/marcel1237/ProjectWizard Mobile/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.projectwizard.app-debug-7 /home/marcel1237/ProjectWizard Mobile/app/src/debug/res
+com.projectwizard.app-main-8 /home/marcel1237/ProjectWizard Mobile/app/src/main/res
+gradleHome-0 /home/marcel1237/.gradle

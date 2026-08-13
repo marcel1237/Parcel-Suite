@@ -1,0 +1,14 @@
+/* Estilos para os tokens de código */
+.token-keyword { -fx-fill: #ff7b72; -fx-font-weight: bold; }
+.token-string { -fx-fill: #a5d6ff; }
+.token-comment { -fx-fill: #8b949e; -fx-font-style: italic; }
+.token-identifier { -fx-fill: #d2a8ff; }
+.token-default { -fx-fill: #adbac7; }
+
+/* Configuração do editor */
+.code-area {
+    -fx-background-color: #0d1117;
+    -fx-font-family: 'Consolas', 'Monospace';
+    -fx-font-size: 13px;
+    -fx-text-fill: #adbac7;
+}

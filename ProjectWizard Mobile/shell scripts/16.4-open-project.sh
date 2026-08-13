@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -e
+
+echo "========================================="
+echo " Project Wizard - Etapa 16.4"
+echo " Open Project View"
+echo "========================================="
+
+mkdir -p src/main/java/com/projectwizard/view/openproject
+
+cat > src/main/java/com/projectwizard/view/openproject/OpenProjectView.java <<'EOF'
+package com.projectwizard.view.openproject;
+
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+
+public class OpenProjectView extends BorderPane {
+
+    public OpenProjectView() {
+
+        setPadding(new Insets(20));
+
+        Label title = new Label("Open Project");
+        title.setStyle("-fx-font-size:26px;-fx-font-weight:bold;");
+
+        TextField projectPath = new TextField();
+        projectPath.setPromptText("Select a project folder...");
+
+        Button browse = new Button("Browse...");
+
+        HBox pathBox = new HBox(10, projectPath, browse);
+        HBox.setHgrow(projectPath, Priority.ALWAYS);
+
+        ListView<String> recentProjects = new ListView<>();
+        recentProjects.getItems().addAll(
+                "No recent projects"
+        );
+
+        TitledPane recentPane =
+                new TitledPane("Recent Projects", recentProjects);
+
+        ListView<String> favorites = new ListView<>();
+        favorites.getItems().add("No favorites");
+
+        TitledPane favoritePane =
+                new TitledPane("Favorites", favorites);
+
+        VBox left = new VBox(10,
+                recentPane,
+                favoritePane
+        );
+
+        left.setPrefWidth(260);
+
+        TextArea details = new TextArea();
+        details.setEditable(false);
+        details.setText(
+                "Project information will appear here."
+        );
+
+        Button open = new Button("Open");
+        Button cancel = new Button("Cancel");
+
+        HBox buttons = new HBox(10, open, cancel);
+
+        VBox center = new VBox(
+                15,
+                title,
+                pathBox,
+                details,
+                buttons
+        );
+
+        VBox.setVgrow(details, Priority.ALWAYS);
+
+        SplitPane split = new SplitPane(
+                left,
+                center
+        );
+
+        split.setDividerPositions(0.30);
+
+        setCenter(split);
+
+    }
+
+}
+EOF
+
+echo
+echo "========================================="
+echo "Etapa 16.4 instalada."
+echo "========================================="
+echo
+echo "Execute:"
+echo
+echo "mvn clean javafx:run"

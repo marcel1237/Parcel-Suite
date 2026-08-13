@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://apache.org"
+         xmlns:xsi="http://w3.org"
+         xsi:schemaLocation="http://apache.org http://apache.org">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.meuprojeto.intellij</groupId>
+    <artifactId>intellij-plugin-max-toolkit</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <!-- Versão estável de referência para a SDK do IntelliJ -->
+        <intellij.version>2024.1.6</intellij.version>
+        <!-- Versão das anotações de código da JetBrains -->
+        <jetbrains.annotations.version>24.1.0</jetbrains.annotations.version>
+    </properties>
+
+    <!-- ================================================================= -->
+    <!-- 1. REPOSITÓRIOS OFICIAIS DA JETBRAINS                             -->
+    <!-- ================================================================= -->
+    <repositories>
+        <!-- Repositório principal para baixar os monólitos da IDE (SDKs) -->
+        <repository>
+            <id>jetbrains-repository</id>
+            <url>https://jetbrains.com</url>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <!-- Repositório do Marketplace para dependências de outros plugins -->
+        <repository>
+            <id>jetbrains-plugins</id>
+            <url>https://jetbrains.com</url>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+
+        <!-- ================================================================= -->
+        <!-- 2. NÚCLEO DA PLATAFORMA INTELLIJ (O Monólito "Tudo em Um")        -->
+        <!-- ================================================================= -->
+        
+        <!-- 
+          Este artefato injeta TODA a estrutura base da IDE (ideaIC = Community Edition).
+          Inclui: Interface Gráfica, Sistema de Arquivos Virtuais (VFS), Indexadores,
+          e as ferramentas básicas de Refatoração.
+          Usa-se 'provided' porque a IDE já fornecerá isso em tempo de execução.
+        -->
+        <dependency>
+            <groupId>com.jetbrains.intellij.idea</groupId>
+            <artifactId>ideaIC</artifactId>
+            <version>${intellij.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!-- ================================================================= -->
+        <!-- 3. EXTENSÕES E PLUGINS COMPLEMENTARES DA JETBRAINS                -->
+        <!-- ================================================================= -->
+
+        <!-- Suporte completo à linguagem Java e análise de código PSI Java -->
+        <dependency>
+            <groupId>com.jetbrains.intellij.plugins</groupId>
+            <artifactId>java</artifactId>
+            <version>${intellij.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- APIs para integração e manipulação com sistemas Git / Controle de Versão (VCS) -->
+        <dependency>
+            <groupId>com.jetbrains.intellij.plugins</groupId>
+            <artifactId>git4idea</artifactId>
+            <version>${intellij.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Ferramentas e analisadores para a linguagem Kotlin dentro do IntelliJ -->
+        <dependency>
+            <groupId>com.jetbrains.intellij.plugins</groupId>
+            <artifactId>kotlin</artifactId>
+            <version>${intellij.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!-- ================================================================= -->
+        <!-- 4. UTILITÁRIOS DA ARQUITETURA JETBRAINS                           -->
+        <!-- ================================================================= -->
+
+        <!-- Anotações JetBrains (Ex: @NotNull, @Nullable, @NonNls) para contratos de código -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>${jetbrains.annotations.version}</version>
+            <scope>compile</scope> <!-- Compila junto com o seu código do plugin -->
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Plugin padrão do compilador Maven -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <!-- 
+              DICA DE CONSTRUÇÃO: O Maven irá compilar o código em um arquivo .jar. 
+              Para gerar a distribuição final de um plugin instalável no IntelliJ, 
+              o padrão da IDE exige uma estrutura de pastas zipada contendo um arquivo 
+              META-INF/plugin.xml. Você pode usar o maven-assembly-plugin para empacotar.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+

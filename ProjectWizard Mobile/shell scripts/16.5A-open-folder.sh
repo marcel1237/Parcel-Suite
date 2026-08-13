@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+set -e
+
+echo "========================================="
+echo " Project Wizard - Etapa 16.5A"
+echo " Open Folder"
+echo "========================================="
+
+FILE="src/main/java/com/projectwizard/view/openproject/OpenProjectView.java"
+
+if [ ! -f "$FILE" ]; then
+    echo "Arquivo não encontrado:"
+    echo "$FILE"
+    exit 1
+fi
+
+cp "$FILE" "$FILE.pre16_5A"
+
+cat > "$FILE" <<'EOF'
+package com.projectwizard.view.openproject;
+
+import java.io.File;
+
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Window;
+
+public class OpenProjectView extends BorderPane {
+
+    private final TextField pathField = new TextField();
+
+    private final Button browseButton = new Button("Browse...");
+
+    private final Button openButton = new Button("Open");
+
+    private final Button cancelButton = new Button("Cancel");
+
+    private File selectedDirectory;
+
+    public OpenProjectView() {
+
+        setPadding(new Insets(20));
+
+        ////////////////////////////////////////////////////////
+
+        Label title = new Label("Open Project");
+
+        title.setStyle(
+                "-fx-font-size:26px;" +
+                "-fx-font-weight:bold;"
+        );
+
+        ////////////////////////////////////////////////////////
+
+        pathField.setPromptText("Choose a project folder...");
+        pathField.setEditable(false);
+
+        HBox pathBox = new HBox(
+                10,
+                pathField,
+                browseButton
+        );
+
+        HBox.setHgrow(pathField, Priority.ALWAYS);
+
+        ////////////////////////////////////////////////////////
+
+        TextArea info = new TextArea();
+
+        info.setEditable(false);
+
+        info.setText(
+                "Choose a folder to continue."
+        );
+
+        VBox.setVgrow(info, Priority.ALWAYS);
+
+        ////////////////////////////////////////////////////////
+
+        openButton.setDisable(true);
+
+        browseButton.setOnAction(e -> {
+
+            Window window = getScene().getWindow();
+
+            DirectoryChooser chooser =
+                    new DirectoryChooser();
+
+            chooser.setTitle("Open Project Folder");
+
+            File dir = chooser.showDialog(window);
+
+            if (dir != null) {
+
+                selectedDirectory = dir;
+
+                pathField.setText(
+                        dir.getAbsolutePath()
+                );
+
+                info.setText(
+                        "Folder selected:\n\n"
+                        + dir.getAbsolutePath()
+                );
+
+                openButton.setDisable(false);
+
+            }
+
+        });
+
+        ////////////////////////////////////////////////////////
+
+        openButton.setOnAction(e -> {
+
+            System.out.println(
+                    "[PROJECT] "
+                    + selectedDirectory.getAbsolutePath()
+            );
+
+            Alert alert = new Alert(
+                    Alert.AlertType.INFORMATION
+            );
+
+            alert.setTitle("Project Wizard");
+
+            alert.setHeaderText("Folder Selected");
+
+            alert.setContentText(
+                    selectedDirectory.getAbsolutePath()
+            );
+
+            alert.showAndWait();
+
+        });
+
+        cancelButton.setOnAction(e -> {
+
+            pathField.clear();
+
+            selectedDirectory = null;
+
+            openButton.setDisable(true);
+
+            info.setText(
+                    "Choose a folder to continue."
+            );
+
+        });
+
+        ////////////////////////////////////////////////////////
+
+        HBox buttons = new HBox(
+                10,
+                openButton,
+                cancelButton
+        );
+
+        VBox center = new VBox(
+                20,
+                title,
+                pathBox,
+                info,
+                buttons
+        );
+
+        setCenter(center);
+
+    }
+
+}
+EOF
+
+echo
+echo "========================================="
+echo "Etapa 16.5A concluída!"
+echo "========================================="
+echo
+echo "Novidades:"
+echo
+echo "✔ Browse abre DirectoryChooser"
+echo "✔ Caminho aparece no TextField"
+echo "✔ Open habilita após escolher pasta"
+echo "✔ Cancel limpa seleção"
+echo "✔ Diretório armazenado para próxima etapa"
+echo
+echo "Execute:"
+echo
+echo "mvn clean javafx:run"

@@ -1,0 +1,1 @@
+find . -name "*.sh" -exec cat {} + > all_shell_code_report.txt

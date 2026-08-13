@@ -1,0 +1,1 @@
+find . -name "*.xml" -exec cat {} + > all_xml_code_report.txt

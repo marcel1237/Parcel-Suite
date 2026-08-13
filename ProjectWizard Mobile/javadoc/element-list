@@ -1,0 +1,17 @@
+com.projectwizard
+com.projectwizard.core
+com.projectwizard.core.navigation
+com.projectwizard.service
+com.projectwizard.theme
+com.projectwizard.view
+com.projectwizard.view.about
+com.projectwizard.view.dashboard
+com.projectwizard.view.explorer
+com.projectwizard.view.git
+com.projectwizard.view.github
+com.projectwizard.view.newproject
+com.projectwizard.view.openproject
+com.projectwizard.view.projecttype
+com.projectwizard.view.settings
+com.projectwizard.view.sidebar
+com.projectwizard.view.templates

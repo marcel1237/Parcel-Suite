@@ -1,0 +1,34 @@
+package com.projectwizard;
+
+import com.projectwizard.view.MainWindow;
+import io.github.mkpaz.atlantafx.theme.Dracula;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+public class App {
+
+    public void start(Stage stage) {
+
+        Application.setUserAgentStylesheet(
+                new Dracula().getUserAgentStylesheet()
+        );
+
+        MainWindow window = new MainWindow();
+        window.show(stage);
+
+        Scene scene = stage.getScene();
+
+        if (scene != null) {
+
+            scene.getStylesheets().add(
+                    getClass()
+                            .getResource("/themes/projectwizard.css")
+                            .toExternalForm()
+            );
+
+        }
+
+    }
+
+}

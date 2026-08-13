@@ -1,0 +1,1 @@
+find . -name "*.java" -exec cat {} + > all_java_code_report.txt

@@ -1,0 +1,775 @@
+# LICENSE
+
+## ⚖️ Licenciamento Conjunto Obrigatório (Triple Co-Licensing)
+
+Este projeto adota uma abordagem de licenciamento robusta e inovadora para garantir a máxima proteção do código-fonte, incentivar a colaboração industrial e impedir o fechamento do ecossistema em ambientes de nuvem.
+
+Para utilizar, modificar ou distribuir este software (no todo ou em parte), você **DEVE cumprir os termos e obrigações de três licenças simultaneamente**:
+
+1. **Eclipse Public License v2.0 (EPL-2.0)** - Garante a proteção dos arquivos centrais e facilita a criação de um ecossistema de plugins comerciais/proprietários em arquivos separados.
+2. **Mozilla Public License v2.0 (MPL-2.0)** - Protege os arquivos de código-fonte originais, exigindo que qualquer modificação neles permaneça pública.
+3. **GNU Affero General Public License v3.0 (AGPL-3.0-only)** - Atua como *Licença Secundária e Combinada*, garantindo o "copyleft de rede" (se a IDE for modificada e executada na nuvem como serviço/SaaS, o código modificado deve ser liberado).
+
+---
+
+### 📦 Especificidades do Ecossistema Java
+
+Como o **ProjectWizard** é desenvolvido em **Java**, as seguintes regras de conformidade se aplicam à estrutura do projeto:
+
+* **Arquivos de Código (`.java`):** Todo arquivo criado no projeto deve conter o cabeçalho SPDX padrão nas primeiras linhas para fins de auditoria automática.
+* **Pacotes (`package`):** A separação lógica por pacotes Java é utilizada para delimitar o que faz parte do núcleo do ProjectWizard (sujeito ao co-licenciamento estrito) e o que são extensões ou drivers externos através de APIs.
+* **Compilação e Artefatos (`.jar` / `.war`):** A distribuição do binário compilado não isenta o distribuidor de fornecer o código-fonte correspondente sob os termos da AGPL-3.0 e MPL-2.0 caso o software seja modificado.
+
+---
+
+### 🔍 Identificadores SPDX
+Nos termos da Seção 1.13 da EPL 2.0 e da Seção 3.3 da MPL 2.0, a conformidade é rastreada através da seguinte tag padrão de mercado:
+
+```text
+SPDX-License-Identifier: EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only
+```
+
+---
+
+## 📄 Termo Integral de Outorga Conjunta
+
+```text
+===============================================================================
+TERMO DE OUTORGA DE LICENÇA CONJUNTA E OBRIGATÓRIA (TRIPLE CO-LICENSING)
+===============================================================================
+
+Projeto: ProjectWizard
+Linguagem Principal: Java
+Detentor dos Direitos Autorais: Marcel Aparecido de Andrade
+
+Copyright (C) 2026 Marcel Aparecido de Andrade. Todos os direitos reservados.
+
+Este software e seu código-fonte são distribuídos de forma conjunta e obrigatória 
+sob os termos de três licenças de software livre distintas. Para qualquer tipo de 
+uso, cópia, modificação, fusão, publicação, distribuição ou sublicenciamento 
+deste software, o usuário DEVE cumprir cumulativamente e simultaneamente todas as 
+obrigações, restrições e termos contidos nas seguintes licenças:
+
+1. ECLIPSE PUBLIC LICENSE - v 2.0 (EPL-2.0)
+   Disponível em: https://eclipse.org
+
+2. MOZILLA PUBLIC LICENSE - v 2.0 (MPL-2.0)
+   Disponível em: https://mozilla.org
+
+3. GNU AFFERO GENERAL PUBLIC LICENSE - v 3.0 (AGPL-3.0-only)
+   Disponível em: https://gnu.org
+
+-------------------------------------------------------------------------------
+CLÁUSULA DE COMPATIBILIDADE E COMBINAÇÃO (ESTRUTURA JURÍDICA)
+-------------------------------------------------------------------------------
+
+Nos termos da Seção 1.13 ("Secondary License") da Eclipse Public License v 2.0 e 
+da Seção 3.3 ("Larger Works") da Mozilla Public License v 2.0, o outorgante original 
+deste software, Marcel Aparecido de Andrade, declara formalmente a GNU Affero General 
+Public License v 3.0 como "Licença Secundária" e aplicável. 
+
+Isso garante que:
+a) O código permanece sob a proteção de arquivos da EPL-2.0 e MPL-2.0.
+b) Qualquer trabalho maior, derivado ou disponibilizado via rede/nuvem herda de 
+   forma mandatória o copyleft de rede estabelecido pela AGPL-3.0-only.
+
+A falha em cumprir os termos de qualquer uma das três licenças listadas acima 
+resultará na revogação automática e imediata de todos os direitos concedidos por este 
+termo, constituindo violação de direitos autorais (copyright).
+
+===============================================================================
+```
+
+---
+
+### ☕ Cabeçalho Padrão para Arquivos de Código Java
+
+Copie e cole este bloco no topo de **todos** os novos arquivos `.java` criados no projeto **ProjectWizard**:
+
+```java
+/*
+ * Copyright (C) 2026 Marcel Aparecido de Andrade.
+ * ProjectWizard - Java IDE
+ *
+ * SPDX-License-Identifier: EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only
+ *
+ * Este código-fonte é sujeito aos termos conjuntos da Eclipse Public License v. 2.0, 
+ * da Mozilla Public License v. 2.0, e da GNU Affero General Public License v. 3.0.
+ * A conformidade com todas as três licenças é obrigatória para uso e distribuição.
+ */
+```
+
+# Contributing to ProjectWizard 🧙‍♂️
+
+Primeiramente, obrigado por demonstrar interesse em contribuir com o **ProjectWizard**! É a colaboração da comunidade que impulsiona esta IDE Java a se tornar uma ferramenta cada vez mais poderosa.
+
+Para manter a qualidade do código, a estabilidade da IDE e a segurança jurídica do projeto, estabelecemos algumas diretrizes que todos os colaboradores devem seguir.
+
+---
+
+## ⚖️ Conformidade Legal Importante (Developer Certificate of Origin)
+
+O ProjectWizard utiliza um regime de co-licenciamento triplo obrigatório (**EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only**). 
+
+Ao submeter qualquer código, documentação ou modificação para este projeto, você afirma categoricamente que:
+1. Você possui os direitos autorais do código enviado ou tem permissão legal do detentor dos direitos para submetê-lo sob estas três licenças.
+2. Você concorda em licenciar sua contribuição permanentemente sob os termos conjuntos da **EPL-2.0, MPL-2.0 e AGPL-3.0-only**.
+
+### ⚠️ Regra de Commits (DCO - Sign-off)
+Para garantir a procedência legal do código, exigimos que todos os commits enviados via Pull Request possuam a assinatura eletrônica do desenvolvedor (`Signed-off-by`).
+
+Para fazer isso automaticamente, adicione a flag `-s` ao realizar seus commits no Git:
+```bash
+git commit -s -m "Adiciona suporte ao autocomplete de classes Java"
+```
+*Isso adicionará a seguinte linha ao final da sua mensagem de commit:*
+`Signed-off-by: Seu Nome Completo <seu-email@provedor.com>`
+
+---
+
+## ☕ Padrões de Código Java
+
+Para manter o código limpo, legível e auditável, siga estritamente estas regras:
+
+1. **Cabeçalho de Licença Obrigatório:** Todo arquivo `.java` novo **deve** conter o cabeçalho SPDX padrão nas primeiras linhas. Pull Requests com arquivos sem cabeçalho serão rejeitados automaticamente.
+2. **Convenção de Nomes:** Siga os padrões oficiais da Oracle (Classes em `PascalCase`, métodos e variáveis em `camelCase`, constantes em `UPPER_SNAKE_CASE`).
+3. **Versão do Java:** O projeto utiliza o **Java [Insira a Versão, ex: 17 ou 21] LTS**. Não utilize recursos de pré-visualização (preview features) ou versões não suportadas.
+4. **Testes Unitários:** Novas funcionalidades devem vir acompanhadas de testes unitários utilizando **JUnit 5** e, se necessário, **Mockito**. Mantemos uma cobertura mínima recomendada de 80% do código modificado.
+
+---
+
+## 🚀 Processo de Pull Request (Passo a Passo)
+
+1. **Abra uma Issue:** Antes de começar a codificar, verifique se já existe uma discussão ou issue aberta sobre o assunto. Se não houver, abra uma nova issue descrevendo o bug ou a funcionalidade que deseja implementar.
+2. **Faça um Fork:** Faça o fork do repositório oficial do ProjectWizard para a sua conta pessoal.
+3. **Crie uma Branch Temática:** Crie uma branch a partir da `main` utilizando um nome descritivo:
+   ```bash
+   git checkout -b feature/gerenciador-de-plugins
+   # ou para correções de bugs
+   git checkout -b fix/leak-de-memoria-no-editor
+   ```
+4. **Adicione o Cabeçalho SPDX:** Certifique-se de que os novos arquivos possuam o bloco no topo:
+   ```java
+   /*
+    * Copyright (C) 2026 Marcel Aparecido de Andrade e Colaboradores do ProjectWizard.
+    * SPDX-License-Identifier: EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only
+    */
+   ```
+5. **Execute a Validação Local:** Certifique-se de que o projeto compila perfeitamente e que todos os testes existentes passam localmente antes de enviar:
+   ```bash
+   # Se usar Maven:
+   mvn clean test
+   # Se usar Gradle:
+   ./gradlew test
+   ```
+6. **Envie o Commit Assinado:** Faça o commit com a flag `-s` e envie para o seu fork.
+7. **Abra o Pull Request (PR):** Forneça uma descrição detalhada das alterações no formulário do PR, referenciando o número da Issue correspondente (ex: `Closes #42`).
+
+---
+
+## 🐛 Reportando Bugs ou Sugerindo Funcionalidades
+
+Se você encontrou um comportamento inesperado ou tem uma grande ideia para o ProjectWizard:
+* Certifique-se de que o bug não é causado por um plugin de terceiros.
+* Use a aba de **Issues** do repositório.
+* Utilize o modelo padrão de relatórios fornecendo:
+  * O comportamento esperado vs. o comportamento atual.
+  * Passos exatos para reproduzir o problema.
+  * Detalhes do seu ambiente (Versão do Sistema Operacional, Versão do JDK utilizado).
+
+---
+
+Agradecemos imensamente o seu tempo e dedicação para tornar o **ProjectWizard** a melhor IDE Java do mercado!
+
+Atenciosamente,  
+**Marcel Aparecido de Andrade**  
+*Criador e Mantenedor Principal do ProjectWizard*
+
+# [Nome da IDE] 🚀
+
+Uma IDE moderna, poderosa e extensível projetada para desenvolvedores que valorizam a liberdade de software e a robustez técnica.
+
+---
+
+## ⚖️ Licenciamento Conjunto Obrigatório (Triple Co-Licensing)
+
+Este projeto adota uma abordagem de licenciamento robusta e inovadora para garantir a máxima proteção do código-fonte, incentivar a colaboração industrial e impedir o fechamento do ecossistema em ambientes de nuvem.
+
+Para utilizar, modificar ou distribuir este software (no todo ou em parte), você **DEVE cumprir os termos e obrigações de três licenças simultaneamente**:
+
+1. **Eclipse Public License v2.0 (EPL-2.0)** - Garante a proteção dos arquivos centrais e facilita a criação de um ecossistema de plugins comerciais/proprietários em arquivos separados.
+2. **Mozilla Public License v2.0 (MPL-2.0)** - Protege os arquivos de código-fonte originais, exigindo que qualquer modificação neles permaneça pública.
+3. **GNU Affero General Public License v3.0 (AGPL-3.0-only)** - Atua como *Licença Secundária e Combinada*, garantindo o "copyleft de rede" (se a IDE for modificada e executada na nuvem como serviço/SaaS, o código modificado deve ser liberado).
+
+### Identificadores SPDX
+Nos termos da Seção 1.13 da EPL 2.0 e da Seção 3.3 da MPL 2.0, a conformidade é rastreada através das seguintes tags padrão de mercado:
+```text
+SPDX-License-Identifier: EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only
+```
+
+---
+
+## 🔍 O que isso significa na prática?
+
+* **Modificações no Núcleo:** Se você alterar qualquer arquivo original desta IDE, essas alterações **devem** ser disponibilizadas publicamente sob os mesmos termos.
+* **Uso na Nuvem / SaaS:** Se você hospedar esta IDE em um servidor para que terceiros a utilizem remotamente pelo navegador, você é legalmente obrigado a liberar o código-fonte completo dessa infraestrutura modificada.
+* **Plugins e Extensões:** Graças à estrutura da EPL 2.0, você pode desenvolver plugins proprietários ou comerciais para esta IDE, desde que eles residam em arquivos de código independentes e separados do núcleo.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+* **Núcleo:** [Ex: TypeScript / Java / Rust]
+* **Interface:** [Ex: Electron / Web Components]
+* **Mecanismo de Extensão:** [Ex: Baseado na arquitetura EPL]
+
+---
+
+## 🚀 Como Começar
+
+### Pré-requisitos
+Certifique-se de ter instalado em sua máquina:
+* [Requisito 1, ex: Node.js v20+]
+* [Requisito 2, ex: Git]
+
+### Instalação e Execução
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com[seu-usuario]/[nome-da-ide].git
+   ```
+2. Acesse a pasta do projeto:
+   ```bash
+   cd [nome-da-ide]
+   ```
+3. Instale as dependências:
+   ```bash
+   [Comando de instalação, ex: npm install]
+   ```
+4. Inicie a aplicação em modo de desenvolvimento:
+   ```bash
+   [Comando de execução, ex: npm run dev]
+   ```
+
+---
+
+## 🤝 Como Contribuir
+
+Contribuições são muito bem-vindas! Ao contribuir para este projeto, você concorda que seu código será submetido sob o mesmo regime de co-licenciamento triplo obrigatório (**EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only**).
+
+1. Faça um **Fork** do projeto.
+2. Crie uma **Branch** para sua modificação (`git checkout -b feature/NovaFeature`).
+3. Certifique-se de que todos os novos arquivos de código contenham o cabeçalho padrão de licença.
+4. Faça o **Commit** das alterações (`git commit -m 'Adiciona nova feature'`).
+5. Envie para o seu repositório remoto (`git push origin feature/NovaFeature`).
+6. Abra um **Pull Request**.
+
+### Cabeçalho padrão para novos arquivos de código:
+```text
+Copyright (C) 2026 [Seu Nome ou Organização].
+SPDX-License-Identifier: EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only
+
+Este código-fonte é sujeito aos termos conjuntos da Eclipse Public License v. 2.0, 
+da Mozilla Public License v. 2.0, e da GNU Affero General Public License v. 3.0.
+A conformidade com todas as três licenças é obrigatória para uso e distribuição.
+```
+
+---
+
+## 📞 Contato / Suporte
+
+* **Mantenedor:** [Seu Nome] - [@seu_usuario](https://twitter.com)
+* **E-mail:** [seu-email@dominio.com]
+* **Discussions:** [Link para aba de discussões do GitHub/Discord]
+
+---
+
+## 📄 TERMO INTEGRAL DE LICENÇA (LICENSE)
+
+```text
+===============================================================================
+TERMO DE OUTORGA DE LICENÇA CONJUNTA E OBRIGATÓRIA (TRIPLE CO-LICENSING)
+===============================================================================
+
+Copyright (C) 2026 [Seu Nome ou Organização]. Todos os direitos reservados.
+
+Este software e seu código-fonte são distribuídos de forma conjunta e obrigatória 
+sob os termos de três licenças de software livre distintas. Para qualquer tipo de 
+uso, cópia, modificação, fusão, publicação, distribuição ou sublicenciamento 
+deste software, o usuário DEVE cumprir cumulativamente e simultaneamente todas as 
+obrigações, restrições e termos contidos nas seguintes licenças:
+
+1. ECLIPSE PUBLIC LICENSE - v 2.0 (EPL-2.0)
+   Disponível em: https://eclipse.org
+
+2. MOZILLA PUBLIC LICENSE - v 2.0 (MPL-2.0)
+   Disponível em: https://mozilla.org
+
+3. GNU AFFERO GENERAL PUBLIC LICENSE - v 3.0 (AGPL-3.0-only)
+   Disponível em: https://gnu.org
+
+-------------------------------------------------------------------------------
+CLÁUSULA DE COMPATIBILIDADE E COMBINAÇÃO (ESTRUTURA JURÍDICA)
+-------------------------------------------------------------------------------
+
+Nos termos da Seção 1.13 ("Secondary License") da Eclipse Public License v 2.0 e 
+da Seção 3.3 ("Larger Works") da Mozilla Public License v 2.0, os outorgantes originais 
+deste software declaram formalmente a GNU Affero General Public License v 3.0 como 
+"Licença Secundária" e aplicável. 
+
+Isso garante que:
+a) O código permanece sob a proteção de arquivos da EPL-2.0 e MPL-2.0.
+b) Qualquer trabalho maior, derivado ou disponibilizado via rede/nuvem herda de 
+   forma mandatória o copyleft de rede estabelecido pela AGPL-3.0-only.
+
+A falha em cumprir os termos de qualquer uma das três licenças listadas acima 
+resultará na revogação automática e imediata de todos os direitos concedidos por este 
+termo, constituindo violação de direitos autorais (copyright).
+
+-------------------------------------------------------------------------------
+IDENTIFICADOR INTERNACIONAL SPDX
+-------------------------------------------------------------------------------
+Para fins de auditoria de código e conformidade automatizada, o identificador do 
+projeto é definido estritamente como:
+
+SPDX-License-Identifier: EPL-2.0 AND MPL-2.0 AND AGPL-3.0-only
+===============================================================================
+```
+
+## jQuery UI v1.14.1
+
+### jQuery UI License
+```
+Copyright OpenJS Foundation and other contributors, https://openjsf.org/
+
+This software consists of voluntary contributions made by many
+individuals. For exact contribution history, see the revision history
+available at https://github.com/jquery/jquery-ui
+
+The following license applies to all parts of this software except as
+documented below:
+
+====
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+====
+
+Copyright and related rights for sample code are waived via CC0. Sample
+code is defined as all source code contained within the demos directory.
+
+CC0: http://creativecommons.org/publicdomain/zero/1.0/
+
+====
+
+All files located in the node_modules and external directories are
+externally maintained libraries used by this software which have their
+own licenses; we recommend you read them, as their terms may differ from
+the terms above.
+
+```
+## jQuery v3.7.1
+
+### jQuery License
+```
+jQuery v 3.7.1
+Copyright OpenJS Foundation and other contributors, https://openjsf.org/
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+# Project Wizard
+
+> Desktop Project Generator desenvolvido em Java 17, JavaFX e AtlantaFX.
+
+O **Project Wizard** é uma aplicação desktop cujo objetivo é facilitar a criação de novos projetos através de uma interface gráfica moderna, inspirada em IDEs como IntelliJ IDEA, Rider e Visual Studio.
+
+O projeto está sendo desenvolvido de forma incremental, utilizando pequenas etapas ("one-shot scripts") para permitir testes e validação contínua.
+
+---
+
+# Objetivos
+
+O Project Wizard pretende se tornar uma plataforma para geração de projetos, inicialmente para o ecossistema Java e posteriormente para outras tecnologias.
+
+Tecnologias planejadas:
+
+- Java
+- JavaFX
+- Spring Boot
+- Maven
+- Gradle
+- Jakarta EE
+- Quarkus
+- Micronaut
+- Kotlin
+- Android
+- .NET (planejado)
+
+---
+
+# Tecnologias Utilizadas
+
+- Java 17
+- JavaFX 17
+- Maven
+- AtlantaFX 2.0.1
+- CSS
+- Git
+
+---
+
+# Interface
+
+Atualmente o projeto possui:
+
+- Tema AtlantaFX
+- Primer Dark
+- Menu Principal
+- Toolbar
+- Sidebar
+- Workspace
+- Dashboard
+- Barra de Status
+- Sistema de Navegação
+- Wizard de Novo Projeto (em desenvolvimento)
+
+---
+
+# Estrutura do Projeto
+
+```
+src/main/java/com/projectwizard
+
+core/
+    ApplicationContext
+    Constants
+    Version
+
+core/navigation/
+    NavigationController
+    NavigationTarget
+
+service/
+    DialogService
+    FileSystemService
+    ProjectService
+    SettingsService
+
+theme/
+    ThemeManager
+    ThemeType
+
+view/
+    MainWindow
+    WorkspacePane
+    NavigationPane
+    StatusBar
+    MainToolBar
+
+view/dashboard/
+view/newproject/
+view/templates/
+view/git/
+view/github/
+view/settings/
+view/about/
+```
+
+---
+
+# Recursos Atuais
+
+## Dashboard
+
+Tela inicial da aplicação.
+
+---
+
+## Sidebar
+
+Permite acessar:
+
+- Dashboard
+- New Project
+- Open Project
+- Templates
+- Git
+- GitHub
+- Settings
+- About
+
+---
+
+## Workspace
+
+Área principal onde as telas são carregadas dinamamente.
+
+---
+
+## Sistema de Temas
+
+O projeto utiliza AtlantaFX.
+
+Tema atual:
+
+- Primer Dark
+
+Temas planejados:
+
+- Dracula
+- Primer Light
+- Nord Dark
+- Nord Light
+- Cupertino
+
+---
+
+# Wizard de Projetos
+
+Em desenvolvimento.
+
+Fluxo planejado:
+
+```
+Project
+
+↓
+
+Language
+
+↓
+
+Framework
+
+↓
+
+Dependencies
+
+↓
+
+Git
+
+↓
+
+Summary
+```
+
+---
+
+# Templates Planejados
+
+## Java
+
+- Java Console
+- Java Library
+
+## JavaFX
+
+- Desktop Application
+- MVVM
+- MVP
+
+## Spring Boot
+
+- REST API
+- MVC
+- CRUD
+- Clean Architecture
+
+## Maven
+
+- Empty Project
+
+## Gradle
+
+- Empty Project
+
+---
+
+# Git
+
+Planejado:
+
+- git init
+- git clone
+- git status
+- git commit
+- git push
+
+---
+
+# GitHub
+
+Planejado:
+
+- Login
+- Criar Repositório
+- Publicar Projeto
+- Clonar
+- Abrir Pull Requests
+
+---
+
+# Arquitetura
+
+O projeto está migrando para uma arquitetura organizada por módulos.
+
+```
+core/
+
+theme/
+
+service/
+
+view/
+
+generator/
+
+template/
+
+wizard/
+
+git/
+
+github/
+```
+
+---
+
+# Roadmap
+
+## Fase 1
+
+- Interface
+- Tema
+- Sidebar
+- Workspace
+
+✔ Concluído
+
+---
+
+## Fase 2
+
+- Navegação
+- Wizard
+- Templates
+
+Em desenvolvimento
+
+---
+
+## Fase 3
+
+- Engine de geração
+
+Planejado
+
+---
+
+## Fase 4
+
+- Integração Git
+
+Planejado
+
+---
+
+## Fase 5
+
+- Integração GitHub
+
+Planejado
+
+---
+
+## Fase 6
+
+- Marketplace de Templates
+
+Planejado
+
+---
+
+# Requisitos
+
+- Java 17
+- Maven 3.9+
+
+Verificar versões:
+
+```bash
+java -version
+mvn -version
+```
+
+---
+
+# Executando
+
+```bash
+mvn clean javafx:run
+```
+
+---
+
+# Build
+
+```bash
+mvn clean package
+```
+
+---
+
+# Limpeza
+
+```bash
+mvn clean
+```
+
+---
+
+# Estado Atual
+
+O projeto encontra-se em desenvolvimento ativo.
+
+As funcionalidades são implementadas incrementalmente através de scripts "one-shot", permitindo evolução gradual da arquitetura e testes frequentes.
+
+---
+
+# Licença
+
+Consulte o diretório `license/`.

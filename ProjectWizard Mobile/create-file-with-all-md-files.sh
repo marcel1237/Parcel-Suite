@@ -1,0 +1,1 @@
+find . -name "*.md" -exec cat {} + > all_md_text_report.txt

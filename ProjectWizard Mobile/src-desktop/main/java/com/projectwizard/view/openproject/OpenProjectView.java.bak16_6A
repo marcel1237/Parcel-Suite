@@ -1,0 +1,160 @@
+package com.projectwizard.view.openproject;
+
+import java.io.File;
+import java.nio.file.Files;
+
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Window;
+
+import com.projectwizard.view.explorer.PackageExplorer;
+import com.projectwizard.view.explorer.FileTreeCell;
+import com.projectwizard.view.editor.EditorHost;
+import com.projectwizard.service.git.GitService;
+import com.projectwizard.core.navigation.NavigationController;
+import com.projectwizard.core.navigation.NavigationTarget;
+
+public class OpenProjectView extends BorderPane {
+
+    private final TextField pathField = new TextField();
+    private final Button browseButton = new Button("Browse...");
+    private final Button openButton = new Button("Open");
+    private final Button cancelButton = new Button("Cancel");
+    private File selectedDirectory;
+    private final PackageExplorer explorer = new PackageExplorer();
+    private final TextArea info = new TextArea();
+    private final EditorHost editorHost = new EditorHost();
+    private GitService gitService;
+
+    public OpenProjectView() {
+        setPadding(new Insets(20));
+
+        Label title = new Label("Open Project");
+        title.setStyle("-fx-font-size:26px;-fx-font-weight:bold;");
+
+        pathField.setPromptText("Choose a project folder...");
+        pathField.setEditable(false);
+
+        HBox pathBox = new HBox(10, pathField, browseButton);
+        HBox.setHgrow(pathField, Priority.ALWAYS);
+
+        info.setEditable(false);
+        info.setText("Choose a folder to continue.");
+        info.setWrapText(true);
+        VBox.setVgrow(info, Priority.ALWAYS);
+
+        openButton.setDisable(true);
+        browseButton.setOnAction(e -> handleBrowse());
+        openButton.setOnAction(e -> handleOpen());
+        cancelButton.setOnAction(e -> handleCancel());
+
+        HBox buttons = new HBox(10, openButton, cancelButton);
+        VBox center = new VBox(20, title, pathBox, info, buttons);
+
+        TabPane tabPane = new TabPane();
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        tabPane.getTabs().addAll(
+            new Tab("📁 Explorer", explorer),
+            new Tab("📝 Editor", editorHost)
+        );
+
+        SplitPane split = new SplitPane();
+        split.getItems().addAll(tabPane, center);
+        split.setDividerPositions(0.40);
+
+        setCenter(split);
+        setupDoubleClickHandler();
+    }
+
+    private void handleBrowse() {
+        Window window = getScene().getWindow();
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Open Project Folder");
+
+        File dir = chooser.showDialog(window);
+        if (dir != null) {
+            selectedDirectory = dir;
+            gitService = new GitService(dir);
+
+            explorer.setCellFactory(v -> new FileTreeCell());
+            explorer.openProject(dir);
+            pathField.setText(dir.getAbsolutePath());
+
+            info.setText("Folder selected:\n\n" + dir.getAbsolutePath()
+                    + "\n\n" + gitService.getRepositoryInfo()
+                    + "\n\n💡 Double-click files to preview. Click Open to load workspace!");
+
+            openButton.setDisable(false);
+        }
+    }
+
+    private void handleOpen() {
+        if (selectedDirectory == null) {
+            showAlert("Error", "No folder selected!", Alert.AlertType.ERROR);
+            return;
+        }
+
+        try {
+            NavigationController.getInstance()
+                    .navigateWithProject(NavigationTarget.WORKSPACE, selectedDirectory);
+            showAlert("Success", "Project loaded!", Alert.AlertType.INFORMATION);
+        } catch (Exception e) {
+            showAlert("Error", "Failed: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void handleCancel() {
+        pathField.clear();
+        selectedDirectory = null;
+        openButton.setDisable(true);
+        info.setText("Choose a folder to continue.");
+        explorer.setRoot(null);
+        editorHost.clear();
+    }
+
+    private void setupDoubleClickHandler() {
+        explorer.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                TreeItem<File> selected = explorer.getSelectionModel().getSelectedItem();
+                if (selected != null && selected.getValue() != null && selected.getValue().isFile()) {
+                    previewFile(selected.getValue());
+                }
+            }
+        });
+    }
+
+    private void previewFile(File file) {
+        try {
+            if (isTextFile(file)) {
+                String content = new String(Files.readAllBytes(file.toPath()));
+                if (content.length() > 1000) {
+                    content = content.substring(0, 1000) + "\n\n[... truncated ...]";
+                }
+                editorHost.setContent(content);
+                editorHost.setTitle(file.getName());
+                info.setText("📄 " + file.getName() + "\n📍 " + file.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            info.setText("❌ Error: " + e.getMessage());
+        }
+    }
+
+    private boolean isTextFile(File file) {
+        String name = file.getName().toLowerCase();
+        String[] exts = {".java", ".xml", ".json", ".properties", ".yml", ".yaml",
+                         ".md", ".txt", ".html", ".fxml", ".css", ".scss", ".sql", ".sh"};
+        for (String ext : exts) if (name.endsWith(ext)) return true;
+        return false;
+    }
+
+    private void showAlert(String title, String message, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+}

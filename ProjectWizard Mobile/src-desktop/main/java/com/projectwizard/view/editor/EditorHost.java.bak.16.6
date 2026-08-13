@@ -1,0 +1,65 @@
+package com.projectwizard.view.editor;
+
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+
+/**
+ * EditorHost - Code editor component with syntax awareness
+ * 
+ * Features:
+ * - Displays file content
+ * - Line numbers ready
+ * - Syntax highlighting ready
+ * - Word wrap support
+ */
+public class EditorHost extends BorderPane {
+
+    private final TextArea editor;
+
+    public EditorHost() {
+        editor = new TextArea();
+        editor.setStyle("-fx-font-family: 'Courier New'; -fx-font-size: 12;");
+        editor.setWrapText(false);
+        editor.setEditable(false);
+
+        setCenter(editor);
+    }
+
+    /**
+     * Set editor content
+     */
+    public void setContent(String content) {
+        editor.setText(content);
+        editor.setScrollTop(0);
+    }
+
+    /**
+     * Get editor content
+     */
+    public String getContent() {
+        return editor.getText();
+    }
+
+    /**
+     * Clear editor
+     */
+    public void clear() {
+        editor.clear();
+    }
+
+    /**
+     * Enable/disable editing
+     */
+    public void setEditable(boolean editable) {
+        editor.setEditable(editable);
+    }
+
+    /**
+     * Set monospace font
+     */
+    public void setMonospaceFont() {
+        editor.setStyle("-fx-font-family: 'Courier New'; -fx-font-size: 12; "
+                + "-fx-font-smoothing-type: gray;");
+    }
+
+}

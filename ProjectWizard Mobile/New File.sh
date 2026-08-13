@@ -1,0 +1,1 @@
+New File Standard para Shell com CHMOD pronto Teste de salvamento

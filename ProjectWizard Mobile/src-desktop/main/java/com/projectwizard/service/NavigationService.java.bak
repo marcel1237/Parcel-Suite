@@ -1,0 +1,20 @@
+package com.projectwizard.service;
+
+import com.projectwizard.view.WorkspacePane;
+import javafx.scene.Node;
+
+public class NavigationService {
+
+    private WorkspacePane workspace;
+
+    public void setWorkspace(WorkspacePane workspace) {
+        this.workspace = workspace;
+    }
+
+    public void navigate(Node node) {
+        if (workspace != null) {
+            workspace.show(node);
+        }
+    }
+
+}

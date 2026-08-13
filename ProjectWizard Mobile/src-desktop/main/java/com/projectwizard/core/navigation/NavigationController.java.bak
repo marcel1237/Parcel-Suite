@@ -1,0 +1,39 @@
+package com.projectwizard.core.navigation;
+
+import com.projectwizard.view.WorkspacePane;
+import com.projectwizard.view.dashboard.DashboardView;
+
+public final class NavigationController {
+
+    private static final NavigationController INSTANCE =
+            new NavigationController();
+
+    private WorkspacePane workspace;
+
+    private NavigationController() {
+    }
+
+    public static NavigationController getInstance() {
+        return INSTANCE;
+    }
+
+    public void setWorkspace(WorkspacePane workspace) {
+        this.workspace = workspace;
+    }
+
+    public void navigate(NavigationTarget target) {
+
+        if (workspace == null)
+            return;
+
+        switch (target) {
+
+            case HOME -> workspace.showDashboard();
+
+            default -> workspace.showDashboard();
+
+        }
+
+    }
+
+}
