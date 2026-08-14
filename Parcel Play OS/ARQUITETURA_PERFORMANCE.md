@@ -17,7 +17,13 @@ A tecnologia de inicialização imediata.
 - **EGLFS Interaction**: Em casos de emergência ou modo ultra-rápido, o Dark Volt pode renderizar uma interface básica diretamente no Framebuffer da GPU, sem esperar pelo servidor gráfico (Wayland/X11).
 - **Kernel Handshake**: Uma rotina de verificação no boot que valida as extensões SIMD (AVX, SSE) antes de carregar o restante do sistema.
 
-## 4. Segurança e Hardening
+## 4. Aceleração de Interface (Qt 6 / Session Full)
+A Sessão Full (KDE) é otimizada para extrair o máximo do hardware gráfico:
+- **Vulkan Native Rendering**: O OS utiliza Vulkan como backend padrão para a interface, eliminando latências do OpenGL legado.
+- **Zero-Copy Textures (UDMABUF)**: Implementação de passagem direta de buffers de memória entre a CPU e GPU, reduzindo o uso de processador durante animações e scroll.
+- **QML Pre-Compilation**: Todos os componentes da interface são pré-compilados durante a instalação para garantir abertura instantânea dos menus.
+
+## 5. Segurança e Hardening
 Apesar do foco em performance, a segurança é mantida:
 - **Capability-Based Access**: As otimizações privilegiadas do Thunder só são ativadas se o processo possuir as permissões necessárias (`CAP_SYS_NICE`, `CAP_IPC_LOCK`).
 - **Verificação de Integridade**: O OS valida as assinaturas digitais dos módulos do Thunder durante o carregamento.

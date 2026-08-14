@@ -1,35 +1,39 @@
-# Estratégia do Instalador: Parcel Setup Engine
+# Estratégia do instalador Parcel Play OS
 
-Este documento detalha a escolha tecnológica e a lógica de orquestração do instalador do **Parcel Play OS**.
-
-## 1. Fusão de Tecnologias
-
-Para entregar o instalador mais potente e amigável do mercado, unificamos duas tecnologias líderes:
+## Arquitetura aprovada para o MVP
 
 | Camada | Tecnologia | Função |
 | :--- | :--- | :--- |
-| **Frontend (Interface)** | **Calamares (Qt6/Kirigami)** | Fornece a experiência visual "Dark Kubuntu", seletor de kernels e branding interativo. |
-| **Backend (Motor)** | **Subiquity / Curtin** | Motor silencioso que realiza a cópia de arquivos e particionamento em alta velocidade (padrão Ubuntu). |
-| **Inteligência** | **Parcel Python Modules** | Scripts customizados que aplicam as otimizações do Thunder SDK. |
+| Interface e backend | Ubuntu Desktop Installer + Subiquity | Coleta das opções, particionamento e implantação do Resolute |
+| Payload | Conteúdo oficial da Live ISO remasterizada | GNOME, KDE Full, kernel e firmware oficiais |
+| Login | GDM | Seleção entre GNOME e Plasma |
+| Automação futura | Autoinstall | Instalações reproduzíveis em máquinas virtuais |
 
-## 2. O Seletor de Kernels (Decágono Selector)
+Calamares não será combinado com Subiquity no mesmo fluxo. Uma futura prova de conceito com Calamares deverá ser uma variante independente da ISO e terá que fornecer configuração completa de payload, particionamento e bootloader.
 
-O diferencial do Parcel Play OS é permitir que o usuário escolha o "cérebro" do seu sistema no momento da instalação entre 10 sabores distintos.
+Anaconda e archinstall não serão utilizados no MVP: o primeiro é alinhado ao ecossistema RPM/DNF e o segundo instala Arch Linux.
 
-### Categorias de Sabores:
-1.  **Gamer/Desktop**: Arch, Fedora, openSUSE.
-2.  **Servidor/Enterprise**: CentOS, Oracle, Debian, FreeBSD.
-3.  **Segurança/Portabilidade**: OpenBSD, NetBSD, Gentoo.
+## Fluxo mínimo
 
-### Lógica de Decisão:
-- **Escolha Manual**: Prioridade total do usuário.
-- **Fallback Inteligente**: Se o usuário optar pelo modo automático, o sistema selecionará o sabor **Debian**, garantindo a maior compatibilidade de drivers do mercado.
+1. Inicializar a ISO Resolute.
+2. Escolher experimentar ou instalar.
+3. Informar idioma e teclado.
+4. Escolher disco e particionamento.
+5. Criar usuário, senha e fuso horário.
+6. Implantar o payload offline da ISO.
+7. Instalar o bootloader.
+8. Reiniciar no sistema instalado.
+9. Selecionar GNOME ou Plasma pelo GDM.
 
-## 3. Fluxo de Instalação
-1.  **Boas-vindas**: Tema Breeze Dark com slides do Thunder SDK.
-2.  **Seletor de Kernel**: Exibição dos 10 sabores do Decágono.
-3.  **Particionamento Nitro**: Alinhamento de setores para o OmniLock e HugePages.
-4.  **Execução**: Deploy de alta velocidade via motor Subiquity.
+## Funcionalidades adiadas
 
----
-*Status: Arquitetura Decágono Consolidada.*
+- seletor Decágono/NitroCore;
+- benchmark de hardware;
+- Waydroid, Wine e Proton durante a instalação;
+- escolha de instalar apenas GNOME ou apenas KDE;
+- Dark Volt;
+- backend híbrido Calamares/Subiquity.
+
+Essas funcionalidades somente voltarão ao escopo depois que a instalação mínima offline for reproduzível e testada em máquina virtual.
+
+Detalhes e comparação técnica: `INSTALADOR.md`.

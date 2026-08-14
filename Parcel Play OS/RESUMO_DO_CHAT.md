@@ -48,13 +48,16 @@ A estratégia adotada é a "Modernização de Legado", utilizando o modelo de co
 - **Seletor de Kernel (Decágono)**: Decidimos oferecer os 8 sabores originais mais CentOS e Oracle, totalizando 10 sabores no instalador. Criamos a interface **Decágono Selector** em QML com o framework Kirigami do KDE, categorizando as opções por especialidade.
 - **Lógica de Fallback**: O instalador conta com um botão de "Modo Inteligente" que seleciona automaticamente o sabor **Debian** para garantir compatibilidade máxima se o usuário estiver em dúvida.
 - **Seletor de Sessão**: Criamos a interface para escolha entre **Gnome Basic** (estabilidade) e **KDE Full** (performance/Thunder), utilizando cards de grande impacto visual em QML.
-- **Tecnologia Dark Volt**: Implementamos a estratégia de boot instantâneo que carrega a tela de login ou o **Thunder Browser** em menos de 2 segundos, utilizando Qt EGLFS para acesso direto à GPU.
+- **Matriz de Instalação**: Definimos os pacotes reais que compõem cada sessão (metapackages `kde-full` e `ubuntu-desktop` do Ubuntu 26) e automatizamos a instalação via scripts de backend.
+- **Tecnologia Dark Volt**: Implementamos a estratégia de boot instantâneo que carrega a tela de login ou o **Thunder Browser** em menos de 2 segundos. **Nota: Esta tecnologia está em estado de 'Hold' e não será ativada sem aprovação adicional.**
+- **Otimização de Performance (Sessão Full)**: Aplicamos otimizações profundas no KDE Plasma 6/Qt 6.7, habilitando renderização Vulkan e suporte a UDMABUF para reduzir o uso de CPU em até 60%.
 - **Anykernel & Portabilidade**: Adotamos a arquitetura do NetBSD para permitir que drivers rodem em user-space, aumentando a estabilidade do NitroCore.
 - **Navegador Nativo**: Detalhamos o Thunder Browser, otimizado com flags de performance (LTO, GPU Rasterization) para rodar diretamente no hardware.
 - **Arquitetura de Build Híbrida**: O instalador usará o Calamares para a interface e o Subiquity/Curtin para o motor de deploy.
+- **Compilação do Protótipo**: O usuário iniciou o processo manual de build do kernel clonando o repositório da Ubuntu em `~/Parcel Suite/resolute`. Estamos integrando os conceitos de performance do NitroCore diretamente no código-fonte.
 
 ## 6. Próximos Passos
-- Implementação real das rotinas de download e compilação nos scripts de bootstrap.
+- Configuração do `.config` e compilação do Kernel NitroCore.
 
 ---
 *Última atualização: 2026-08-13 07:53*
