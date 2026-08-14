@@ -1,1 +1,8 @@
-Usar o mais compativel, redhat ou ubuntu
+Usar o mais compativel, redhat ou ubuntu.
+ou usar o slackware com o propósito de unix-like.
+
+Slogan: The Linux unix-like.
+
+
+
+
