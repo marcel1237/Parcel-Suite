@@ -1,5 +1,7 @@
 # Instalador mínimo do Parcel Play OS
 
+> Este documento avalia o instalador do ramo Ubuntu/Linux. A avaliação específica para o Live FreeBSD, incluindo Calamares, Anaconda e `bsdinstall`, está em `LIVE_CD_FREEBSD.md`.
+
 ## Objetivo da primeira Live ISO
 
 Entregar uma Live ISO Resolute amd64 que:

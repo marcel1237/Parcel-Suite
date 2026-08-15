@@ -1,0 +1,3 @@
+usar apenas o mais necessário do OS e colocar as outras coisa do kernel linux. 
+
+sys/kern (FreeBSD)

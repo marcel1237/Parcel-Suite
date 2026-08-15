@@ -7,6 +7,70 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Rastreabilidade**: Os registros devem distinguir explicitamente entre funcionalidade planejada, protótipo, implementação real, teste executado e resultado confirmado.
 - **Segurança**: Funcionalidades não devem ser descritas como implementadas quando existirem somente como comentários, placeholders ou documentação conceitual.
 
+## [2026-08-15] - Auditoria Geral do Estado do Projeto
+- **Ação**: Inspeção da estrutura, documentação, scripts de build, configuração GRUB, módulos Calamares/QML/Python e artefatos locais do Parcel Play OS.
+- **Natureza**: Análise estática; nenhuma funcionalidade do sistema operacional foi implementada ou alterada.
+- **Validações**: Todos os scripts `.sh` passaram em `bash -n`; os módulos Python passaram em compilação sintática; `kms-config.json` é válido; `grub-11-kernels.cfg` passou em `grub-script-check`.
+- **Limites dos Testes**: ShellCheck não estava disponível. QML não foi executado. Não houve boot, instalação, compilação de kernel ou benchmark. QEMU/KVM permanecem indisponíveis.
+- **Estado Confirmado**: O projeto é uma especificação arquitetural com protótipo de ISO/menu. Apenas o Ubuntu oficial possui payload real; NitroCore, Thunder SDK, instalador Parcel e BSDs não estão implementados de ponta a ponta.
+- **Build**: `build_os.sh` executa somente a criação da árvore FHS; bootstrap e kernel estão comentados, e seus scripts são simulações.
+- **Instalador**: O MVP recente escolhe Ubuntu Desktop Installer/Subiquity, mas o código experimental presente é Calamares e suas operações relevantes estão comentadas.
+- **Defeito Identificado**: O seletor QML grava `seguranca` para NetBSD, não inclui Ubuntu, não implementa filtro/feedback e redefine Debian ao carregar.
+- **Risco de Segurança**: A proposta de ativar `mitigations=off` quando AVX-512 é detectado não possui justificativa técnica segura e não deve ser automatizada. `intel_pstate=passive` também não deve ser aplicado indiscriminadamente.
+- **Portabilidade**: Vulkan, EGLFS e `/dev/dri/card0` são forçados sem detecção ou fallback; essas configurações podem falhar em hardware não previsto.
+- **Documentação**: Foram identificadas contradições entre documentos antigos que declaram recursos ativos/integrados e registros recentes que corretamente os classificam como planejados.
+- **Recomendação**: Priorizar uma ISO Ubuntu Resolute reproduzível, com GNOME, KDE e Subiquity testados, antes de compilar NitroCore ou integrar BSDs.
+- **Documento Técnico**: Diagnóstico completo, matriz de maturidade, riscos e sequência recomendada registrados em `ANALISE_PROJETO_2026-08-15.md`.
+
+## [2026-08-15] - Correção dos Links Diretos de Kernels
+- **Problema**: `TRANSPARENCIA_KERNEL.md` listava principalmente páginas de navegação e não fornecia, de modo consistente, URLs clonáveis, branches ou a natureza de cada repositório.
+- **Ação**: Catálogo reestruturado com links diretos oficiais, comandos `git clone`, branch recomendado quando aplicável e documentação primária.
+- **Distinção Técnica**: Cada fonte passou a ser classificada como árvore completa, árvore downstream, empacotamento, patchset ou árvore de sistema BSD.
+- **Ubuntu Resolute**: Documentados o repositório Launchpad direto, os branches `master` e `master-next`, o clone do branch de integração e verificações obrigatórias antes do build.
+- **Correção Conceitual**: O repositório Gentoo `linux-patches` foi identificado corretamente como patchset, não como kernel completo. FreeBSD, NetBSD e OpenBSD foram identificados como árvores completas do sistema base.
+- **Rastreabilidade**: A política agora exige URL, branch/tag, commit completo, tipo da fonte e data da auditoria para qualquer revisão usada pelo Parcel Play OS.
+- **Documento Atualizado**: `TRANSPARENCIA_KERNEL.md`.
+
+## [2026-08-15] - Comparação Inicial entre OpenBSD e FreeBSD
+- **Ação**: Iniciada comparação técnica documental entre OpenBSD e FreeBSD usando documentação primária dos dois projetos.
+- **Escopo**: Objetivos, arquitetura do kernel, segurança, rede, armazenamento, virtualização, hardware, pacotes, licenciamento e implicações para o Parcel Play OS.
+- **OpenBSD**: Identificado como referência principal para segurança preventiva, auditabilidade, `pledge`, `unveil`, PF e redução de superfície.
+- **FreeBSD**: Identificado como referência principal para OpenZFS, GEOM, jails, VNET, bhyve, Capsicum, Linuxulator e escalabilidade operacional.
+- **Limite**: Nenhum código foi unido, portado, compilado ou executado. Os kernels, módulos, APIs internas e userspaces não são intercambiáveis.
+- **Decisão Inicial**: Manter OpenBSD e FreeBSD como sistemas independentes e comparar mecanismos isolados antes de considerar qualquer porte.
+- **Próximo Experimento Proposto**: Duas VMs amd64 mínimas e equivalentes, com OpenBSD 7.9 e FreeBSD 15.1-RELEASE, para medir boot, memória, instalação, atualização, rede e complexidade de sandbox.
+- **Documento Técnico**: Análise, matriz comparativa e roteiro experimental registrados em `COMPARACAO_OPENBSD_FREEBSD.md`.
+
+## [2026-08-15] - Auditoria para Live CD FreeBSD
+- **Ação**: Analisados os 23 arquivos Markdown do projeto e confrontadas as decisões sobre FreeBSD com a documentação oficial atual.
+- **Baseline Escolhido**: FreeBSD 15.1-RELEASE amd64 `disc1.iso`, que oferece Live de terminal e instalação offline por `bsdinstall`.
+- **Tamanho**: A imagem oficial possui 1.352.255.488 bytes e não cabe em CD-R convencional; deve ser tratada como Live ISO para DVD, USB ou VM.
+- **Limite Oficial**: O Live fornecido pelo FreeBSD é somente terminal, com usuário `root` e senha vazia; não contém GNOME ou Plasma.
+- **Live Gráfico**: Classificado como distribuição FreeBSD customizada separada, a ser construída em ambiente FreeBSD com a infraestrutura oficial de release.
+- **Correção de Boot**: Registrado que copiar apenas `loader.efi` não integra o FreeBSD. Loader, `/boot`, kernel, módulos, rootfs e distribuições precisam permanecer localizáveis.
+- **Ambiente Local**: `xorriso`, `7z` e `sha256sum` estão disponíveis; QEMU, `bsdtar`, `signify` e a ISO FreeBSD estão ausentes. Aproximadamente 129 GiB estavam livres.
+- **Testes**: Nenhum download, boot, particionamento ou instalação foi executado nesta etapa.
+- **Próximo Marco**: Baixar/verificar a ISO oficial, instalar QEMU/OVMF, testar Live UEFI e concluir instalação offline em disco virtual vazio.
+- **Documento Técnico**: Auditoria completa, matriz dos 23 documentos, fases, riscos e critérios registrados em `LIVE_CD_FREEBSD.md`.
+
+## [2026-08-15] - Avaliação de Calamares e Anaconda no FreeBSD
+- **Calamares Disponível**: Confirmado `sysutils/calamares` 3.3.14 nos Ports/pacotes do FreeBSD 15 amd64; a aplicação Qt pode ser instalada e usada em prova de conceito visual.
+- **Bloqueio Calamares**: O KPMCore no FreeBSD não possui backend funcional de particionamento e compila um backend dummy. A configuração necessária para instalar uma distribuição FreeBSD também não acompanha o port.
+- **Consequência**: A presença do pacote não autoriza escrita em disco. Particionamento, UFS/ZFS, implantação do base/kernel, configuração e FreeBSD loader exigiriam backend próprio.
+- **Anaconda**: Rejeitado para o FreeBSD por dependências estruturais de Linux, dracut, Blivet, RPM/DNF, Kickstart, `.treeinfo` e bootloaders Linux; não foi identificado suporte ou port oficial FreeBSD.
+- **Decisão MVP**: `bsdinstall` permanece o único instalador autoritativo.
+- **Experimento Futuro**: Calamares poderá ser testado somente como frontend/branding, sem operações destrutivas, ou como interface sobre backend Parcel-FreeBSD próprio.
+- **Documento Atualizado**: Matriz, módulos incompatíveis, opções arquiteturais e vereditos registrados em `LIVE_CD_FREEBSD.md`; `INSTALADOR.md` passou a apontar para a análise FreeBSD.
+
+## [2026-08-15] - Localização do Código do bsdinstall e Live FreeBSD
+- **Código Aberto**: Confirmado que instalador e infraestrutura Live fazem parte da árvore oficial `freebsd-src`.
+- **bsdinstall**: Fontes localizadas em `usr.sbin/bsdinstall/`, incluindo orquestrador shell, `partedit`, `distfetch`, `distextract`, scripts de configuração e manual.
+- **Live/ISO**: Fontes localizadas em `release/`, incluindo `Makefile`, `release.sh`, `rc.local`, scripts amd64 para ISO/USB e ferramentas de manifesto/pacotes.
+- **Conclusão**: O Live CD não é um aplicativo isolado; é um sistema FreeBSD preparado pelo pipeline de release e iniciado com o fluxo do `bsdinstall`.
+- **Estratégia Parcel**: Preservar inicialmente os backends nativos destrutivos e adicionar branding/launcher gráfico por cima, em vez de reimplementar partições e implantação.
+- **Rastreabilidade**: Exigir tag/branch e commit completo do `freebsd-src` antes de modificar qualquer arquivo.
+- **Documento Atualizado**: Mapa dos diretórios, responsabilidades e pontos de customização adicionado a `LIVE_CD_FREEBSD.md`.
+
 ## [2026-08-13] - Compatibilidade e Possível União de Kernels em C
 - **Ação**: Análise conceitual e documental da compatibilidade entre as onze opções da mídia; nenhum kernel foi unido, alterado ou compilado.
 - **Conclusão Linux**: Os oito perfis Linux são o grupo tecnicamente mais compatível. A solução recomendada é uma única árvore Linux/Ubuntu Resolute com patches comuns e configurações por flavor, produzindo kernel, módulos e initramfs separados.

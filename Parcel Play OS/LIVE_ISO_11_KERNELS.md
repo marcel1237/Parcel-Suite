@@ -117,6 +117,8 @@ FreeBSD, NetBSD e OpenBSD receberão branding por seus mecanismos nativos, não 
 
 ## FreeBSD
 
+O procedimento específico e a auditoria atualizada dos documentos do projeto estão em `LIVE_CD_FREEBSD.md`.
+
 Payload mínimo:
 
 - `loader.efi` ou outro bootloader FreeBSD nativo;
@@ -344,10 +346,12 @@ Os caminhos reais da release escolhida devem ser obtidos da própria imagem, nã
 3. iniciar a imagem original em VM UEFI;
 4. executar o modo Live de terminal;
 5. instalar com `bsdinstall` num disco virtual;
-6. extrair o conteúdo para a área BSD da mídia;
-7. adicionar `loader.efi` ao menu EFI principal;
-8. confirmar que o loader encontra kernel, módulos e arquivos de distribuição;
+6. inspecionar a ESP, El Torito, rootfs e dispositivos enumerados pelo loader original;
+7. criar um protótipo UEFI que preserve o ambiente completo de boot FreeBSD;
+8. adicionar `loader.efi` ao menu somente junto do payload e dos caminhos exigidos;
 9. repetir a instalação offline pela mídia híbrida.
+
+Copiar apenas `loader.efi` para a ISO Parcel não é suficiente. Ainda precisa ser demonstrado como o loader localizará `/boot`, kernel, módulos, rootfs e distribuições na mídia híbrida. Extrair a ISO para uma subpasta arbitrária ou aninhar a ISO como arquivo não constitui boot validado.
 
 #### Desktop Live futuro
 
