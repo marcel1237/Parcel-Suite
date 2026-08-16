@@ -1,0 +1,2 @@
+Arquivo que combina o acesso de todos os package / package manager! Acessando sendo um binário simples no estilo appimage. Um binário que acessa todos os .deb .rpm .snap .flatpak de todas as direções para todas as direções do universo, matematicamente! Ai coloca no discover cabo! coloca em algum lugar também, pode fazer os cara pega também... caboooooo
+

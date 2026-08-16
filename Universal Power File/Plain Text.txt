@@ -1,0 +1,1 @@
+Fazer um código estilo appimage que vai alterando direitinho conforme o tipo de arquivo seja aplicativo, seja video, texto, seja imagem, qualquer coisa. Basta dar uma cryptografadinha e pronto! Ninguem descobre a brincadeira! é um arquivo bin. É só pegar os tontinho já que extensão de arquivos não existe!
