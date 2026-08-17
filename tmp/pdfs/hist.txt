@@ -1,0 +1,173 @@
+                                                                                CENTRO UNIVERSITÁRIO LEONARDO DA VINCI
+                                                                 SOCIEDADE EDUCACIONAL LEONARDO DA VINCI S/S LTDA
+                                               Recredenciado pela Portaria nº 876, de 28 de novembro de 2025, publicada no DOU
+                                                                            de 01 de dezembro de 2025, seção 1, página 98 a 99.
+                                                       Rua Doutor Pedrinho, N° 79 - Bairro Rio Morto - CEP 89082-262 - Indaial/SC
+                                                                                                            Fone: (47) 3281-9000
+
+
+                                                                                                                                       Data de Emissão: 16/08/2026 - 06:32AM
+                       Código de Autenticação
+ 2026081600337730449000000000000402787917
+Para verificação de autenticidade acesse o site validador.vitru.com.br na
+              opção verificar autenticidade de documentos.
+
+
+
+
+                                                                HISTÓRICO ESCOLAR
+                                                        Análise e Desenvolvimento de Sistemas
+             Renovação de Reconhecimento pela Portaria Nº 155, de 21 de junho de 2023, publicada no DOU de 22 de junho de 2023, seção 1,
+                                                                  páginas 237-241.
+
+
+                                                                                       Dados Pessoais:
+          Nome: Marcel Aparecido de Andrade                                                                          Sexo: Masculino
+          Data de Nasc.: 29/04/1986                                         Naturalidade: SÃO VICENTE/SP             Nacionalidade: Brasileiro
+
+
+                                                                                    Documentação
+          Nº RG: -                                                          Órgão Expedidor: -                       Emissão: -
+          CPF: 363.915.538-66
+
+
+                                                                                   Processo Seletivo
+          Forma de ingresso: Vestibular
+          Edital: 2025/2                                                                                             Mês/Ano: novembro/2025
+
+
+                                                                                       Ensino Superior
+          Ano/Sem. de Ingresso: 2025/2                                                                               Histórico Expedido: 16/08/2026
+          Matrícula: 37730449
+
+
+                 PERÍODO                                                                                    CARGA
+            S            DISCIPLINA/DOCENTE                                                                            FREQUÊNCIA       MÉDIA        SITUAÇÃO
+                  LETIVO                                                                                   HORÁRIA
+                              Produção do Conhecimento Científico e Tecnologias Emergentes (159972)
+                     ---                                                                                     80             ---           ---         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+
+                              Engenharia e Projeto de Software (ADS19)
+                     ---                                                                                     80             ---           ---         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+
+                              Fundamentos de Redes de Computadores (ADS25)
+            1        ---                                                                                     80             ---           ---         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+
+                              Introdução ao Desenvolvimento de Sistemas Web (ADS07)
+                     ---                                                                                     80             ---           ---         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+                              Imersão Profissional: Desafios Contemporâneos (164016)
+                   2025/2                                                                                    40             F/S          10,00        Aprovado
+                              Rayane Louise Candida Diniz - Mestrado
+                              Perspectivas Profissionais (198471)
+                   2026/1                                                                                    80             F/S          8,40         Aprovado
+                              Cristian Giacomoni - Doutorado
+
+                              Arquitetura de Computadores (INF14)
+                   2026/1                                                                                    80             F/S          8,80         Aprovado
+                              Caio Steglich Borges - Mestrado
+                              Lógica e Técnicas de Programação (ADS05)
+            2      2026/1                                                                                    80             F/S          9,35         Aprovado
+                              João Victor Rocha Araújo - Mestrado
+                              Segurança em Tecnologia da Informação (GTI08)
+                   2026/1                                                                                    80             F/S          9,50         Aprovado
+                              Caio Steglich Borges - Mestrado
+
+                              Imersão Profissional: Carreira e Sucesso (164019)
+                   2026/1                                                                                    40             F/S          9,70         Aprovado
+                              Marcelo Borghezan - Doutorado
+
+                              Cidadania e Protagonismo Social (159976)
+                   2026/2                                                                                    80             ***           ***         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+                              Análise Orientada a Objetos (173477)
+                   2026/2                                                                                    80             ***           ***         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+
+                              Programação Orientada a Objetos (ADS17)
+            3      2026/2                                                                                    80             ***           ***         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+
+                              Sistemas e Aplicações Distribuídas (GTI04)
+                   2026/2                                                                                    80             ***           ***         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+                              Imersão Profissional: Inteligência Artificial (173470)
+                   2026/2                                                                                    40             ***           ***         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+                              Empreendedorismo Criativo (159474)
+                     ---                                                                                     80             ---           ---         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+
+                              Banco de Dados (172971)
+                     ---                                                                                     80             ---           ---         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+                              Linguagens de Programação (189476)
+                     ---                                                                                     80             ---           ---         A cursar
+                              Rodrigo de Paula e Silva Ribeiro -
+                                                               CENTRO UNIVERSITÁRIO LEONARDO DA VINCI
+                                                   SOCIEDADE EDUCACIONAL LEONARDO DA VINCI S/S LTDA
+                                 Recredenciado pela Portaria nº 876, de 28 de novembro de 2025, publicada no DOU
+                                                              de 01 de dezembro de 2025, seção 1, página 98 a 99.
+                                         Rua Doutor Pedrinho, N° 79 - Bairro Rio Morto - CEP 89082-262 - Indaial/SC
+                                                                                              Fone: (47) 3281-9000
+
+
+ 4    PERÍODO                                                                                 CARGA
+ S            DISCIPLINA/DOCENTE                                                                         FREQUÊNCIA   MÉDIA   SITUAÇÃO
+       LETIVO                                                                                HORÁRIA
+                 Estruturas de Dados (189474)
+         ---                                                                                      80         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+                 Estudo Contemporâneo e Transversal: Indústria, Transformação Digital e
+         ---     Inovação (159479)                                                                10         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+                 Imersão Profissional: Projeto de Banco de Dados (173474)
+         ---                                                                                      40         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+
+                 Programação para Dispositivos Móveis (150475)
+         ---                                                                                      80         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+
+                 Programação para Web (189475)
+         ---                                                                                      80         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+                 Gerência de Projetos (INF53)
+         ---                                                                                      80         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+ 5               Interação Humano-Computador (ADS02)
+         ---                                                                                      80         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+
+                 Estudo Contemporâneo e Transversal: Propriedade Intelectual, Leitura de
+         ---     Imagens, Gráficos e Mapas (159485)                                               10         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+
+                 Imersão Profissional: Implementação de uma Aplicação (173478)
+         ---                                                                                      40         ---       ---     A cursar
+                 Rodrigo de Paula e Silva Ribeiro -
+                                                                                              CARGA       CARGA
+                                                                                             HORÁRIA     HORÁRIA
+                                                                                             PREVISTA INTEGRALIZADA
+SUBTOTAL                                                                                         1.820      400
+ATIVIDADES COMPLEMENTARES ¹                                                                       40         0
+ATIVIDADES DE EXTENSÃO ²                                                                         207         0
+CARGA HORÁRIA TOTAL DO CURSO                                                                     2.067      400
+( S ) Semestre do Curso
+(F/S) Frequência Suficiente, ou seja, igual ou superior à exigida pela instituição.
+¹ O acadêmico não atingiu a carga horária das ATIVIDADES COMPLEMENTARES de 40 horas
+
+
+² O acadêmico não atingiu a carga horária das ATIVIDADES DE EXTENSÃO de 207 horas
+
+
+
+                                            Assinatura realizada por meio de certificado ICP-
+                                            Brasil por:
+                                            Rodrigo Murched Botelho
+                                            CPF: 370.667.348-74
+                                            Consulta de veracidade https://validar.iti.gov.br/
+
