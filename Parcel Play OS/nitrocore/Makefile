@@ -10,5 +10,6 @@ obj-$(CONFIG_NITRO_CFI)      += security/nitro_cfi.o
 obj-$(CONFIG_NITRO_NTSYNC)   += sync/nitro_ntsync.o
 obj-$(CONFIG_NITRO_AUDIO)    += audio/nitro_audio.o
 obj-$(CONFIG_NITRO_STORAGE)  += storage/nitro_storage.o
+obj-$(CONFIG_NITRO_VERIFY)   += integrity/nitro_verify.o
 obj-$(CONFIG_NITRO_NET_XDP)  += net/nitro_net.o
 obj-$(CONFIG_NITROCORE)      += fs/nitro_prefetcher.o

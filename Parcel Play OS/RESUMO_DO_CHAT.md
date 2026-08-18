@@ -89,8 +89,13 @@ A estratégia adotada é a "Modernização de Legado", utilizando o modelo de co
 - **Otimização de Compilação (Sony Style)**: Definimos o uso de **Clang, LTO e PGO** para gerar binários ultra-otimizados para CPUs AMD Zen.
 - **Mockup Thunder Browser**: Criamos o design em QML para o nosso navegador nativo, focado em modo Kiosk, aceleração total da GPU e suporte a **HDR Nativo**.
 - **Nitro-CFI**: Implementamos a camada de segurança **Control Flow Integrity**.
+- **Segurança BSD Híbrida**: Integramos o **Modo Jogo** com isolamento por capacidades (estilo **Capsicum**) e o **Nitro-Verify** para integridade de arquivos (estilo **Veriexec**).
+- **Central de Segurança**: Desenhamos e prototipamos em QML a **Central de Segurança Nitro**.
+- **Mergulho em `sys/kern` (FreeBSD)**: Iniciamos uma análise exaustiva do coração do FreeBSD 15. Extraímos a lógica de **Boot Orquestrado (Sysinit)** para o Dark Volt, o framework **Newbus** para nossa visão Anykernel de drivers, e os **Mutexes Adaptativos** para eliminar gargalos de performance multi-core no NitroCore.
+- **Inteligência ZFS**: Aprendemos com o sistema de buffers do ZFS (dbuf) para aprimorar o **OmniLock**, garantindo que o cache de jogos seja priorizado sobre o sistema de arquivos comum.
 - **macOS & XNU**: Analisamos a arquitetura híbrida do macOS (XNU).
-- **Escalonamento Multi-Core**: Aprendemos com o escalonador **ULE** do FreeBSD para garantir que o NitroCore mantenha a interface responsiva mesmo sob carga máxima.
+- **Escalonamento Multi-Core**: Aprendemos com o escalonador **ULE** do FreeBSD.
+- **Integração Tríade BSD**: Consolidamos o uso de **Capsicum** (FreeBSD), **Veriexec** (NetBSD) e **PF** (OpenBSD) no NitroCore, focando em segurança por capacidades, integridade de arquivos e firewall determinístico para jogos.
 - **Instalador Nitro-Net**: Criamos a tela de configuração de rede.
 - **Convergência de Mercado**: Identificamos que o **Parcel Play OS** se enquadra na vanguarda das distribuições imutáveis e híbridas de 2026.
 - **Nitro-Switcher**: Desenhamos um widget para o KDE Plasma que permite ao usuário escolher o sabor do kernel NitroCore para a próxima reinicialização com um clique.

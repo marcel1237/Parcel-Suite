@@ -1,0 +1,11 @@
+study=fault-injection-readiness
+date=2026-08-18T15:35:04-03:00
+kernel=7.0.0-29-generic
+CONFIG_UBSAN=y
+CONFIG_FUNCTION_ERROR_INJECTION=y
+node-missing=/sys/kernel/debug/failslab
+node-missing=/sys/kernel/debug/fail_page_alloc
+node-missing=/sys/kernel/debug/fail_function
+debugfs-writable=no
+injection-executed=no
+reason=requires writable debugfs, disposable VM, selected target and recovery assertion

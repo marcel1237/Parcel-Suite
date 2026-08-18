@@ -1,0 +1,1 @@
+policy=batch iterations=20000 mean_us=9.226 p50_us=8.730 p95_us=10.057 p99_us=17.111 max_us=932.032

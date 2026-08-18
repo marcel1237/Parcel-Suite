@@ -67,6 +67,14 @@ config NITRO_AUDIO
 	  Enable low-latency audio IRQ prioritization.
 	  Inspired by FreeBSD's OSS and Sony PlayStation audio architecture.
 
+config NITRO_VERIFY
+	bool "Nitro-Verify Integrity Shield (NetBSD Style)"
+	depends on NITROCORE
+	default y
+	help
+	  Enable file integrity verification via IMA and BPF-LSM.
+	  Inspired by NetBSD Veriexec.
+
 config NITRO_STORAGE
 	bool "Nitro Warp Storage (Direct Storage)"
 	depends on NITROCORE

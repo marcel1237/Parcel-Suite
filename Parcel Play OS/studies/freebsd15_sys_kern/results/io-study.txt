@@ -1,0 +1,2 @@
+method=read-write bytes=67108864 received=67108864 seconds=0.027807 mib_s=2301.61
+method=sendfile bytes=67108864 received=67108864 seconds=0.011400 mib_s=5614.04

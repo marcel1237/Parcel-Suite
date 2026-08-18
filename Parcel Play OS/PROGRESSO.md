@@ -2,6 +2,64 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-08-18] - Execução dos Cinco Estudos FreeBSD `sys/kern`
+- **Suíte Criada**: Implementada estrutura reproduzível em `studies/freebsd15_sys_kern/` para boottrace, fault injection, scheduler, rede/arquivos e algoritmos isolados.
+- **Segurança**: Nenhum teste alterou kernel, sysctl, tracefs, debugfs, módulos, GRUB, scheduler global ou discos. Fault injection real foi bloqueada fora de VM descartável.
+- **Build**: Três binários C compilados com `-Wall -Wextra -Werror`; testes de algoritmos passaram.
+- **Algoritmos**: Implementações userspace independentes de PID, min/max e regressão incremental passaram em testes normais e ASan/UBSan com leak detection desativada.
+- **Scheduler**: Cinco repetições de 20.000 iterações compararam `SCHED_OTHER` e `SCHED_BATCH`. As médias ficaram próximas e outliers variaram; não foi encontrada justificativa para substituir EEVDF ou portar ULE.
+- **I/O**: Em `socketpair` local com arquivo temporário de 64 MiB, `read/write` obteve média de 2.225,51 MiB/s e `sendfile` 4.922,52 MiB/s, razão de 2,212×. O teste não representa rede física, kTLS, FreeBSD ou DirectStorage.
+- **Boottrace**: Coletor executado, mas system bus e tracefs estavam inacessíveis/somente leitura no sandbox; nenhum tempo de boot foi confirmado.
+- **Fault Injection**: Detectados `CONFIG_UBSAN=y` e `CONFIG_FUNCTION_ERROR_INJECTION=y`, porém debugfs estava somente leitura e os nós de injeção não estavam disponíveis.
+- **Bloqueios**: QEMU, KVM, FreeBSD executável, `fio`, `iperf3`, Gamescope e estatísticas kTLS estavam ausentes.
+- **Resultados Brutos**: Preservados em `studies/freebsd15_sys_kern/results/`, incluindo cinco repetições.
+- **Documento Técnico**: Método, números, interpretação, limites e infraestrutura restante registrados em `RESULTADOS_ESTUDOS_FREEBSD15_SYS_KERN_2026-08-18.md`.
+
+## [2026-08-18] - Auditoria FreeBSD 15 `sys/kern` para Ubuntu Resolute
+- **Escopo**: Inventário e classificação dos 248 arquivos presentes em `Kernels/FreeBSD 15/sys/kern`, cobrindo build, processos, scheduler, locks, tempo, Jails, segurança, tracing, memória, DMA, devices, VFS, rede, IPC, TTY e infraestrutura genérica.
+- **Limite da Fonte**: Confirmado que o diretório é somente um recorte de aproximadamente 7,7 MB; faltam headers `sys/sys`, VM, rede, segurança, arquitetura, configuração, árvore de build superior, COPYRIGHT e metadados Git.
+- **Conclusão de Portabilidade**: Nenhum arquivo completo é recomendado para cópia direta ao Linux. As APIs internas FreeBSD (`proc`, `vnode`, UMA, mbuf, Jail, Capsicum, VNET, SYSINIT e locks) são incompatíveis com as APIs Linux.
+- **Equivalentes Linux**: Confirmada na árvore Ubuntu a presença de RCU, lockdep, fault injection, boot tracing, workqueues, SLUB, XArray, Maple Tree, kTLS, cgroups, namespaces, Landlock, IMA, fs-verity, KCOV, KASAN, KCSAN e UBSAN.
+- **Melhor Uso**: Utilizar FreeBSD para definir benchmarks, testes de falha, políticas e hipóteses; mapear conceitos para APIs Linux existentes; extrair somente algoritmos pequenos primeiro em userspace.
+- **Candidatos de Estudo**: `kern_boottrace.c`, `kern_fail.c`, `sched_ule.c`, `kern_sendfile.c`, `uipc_ktls.c`, `vfs_cache.c`, `subr_pidctrl.c`, `subr_clockcalib.c`, `subr_filter.c` e `subr_stats.c`.
+- **Licenças**: Identificados 130 arquivos BSD-2-Clause, 63 BSD-3-Clause, 9 BSD-4-Clause, 2 Beerware, 2 expressões combinadas e 42 arquivos sem SPDX explícito. Qualquer porte exige auditoria individual, preservação de avisos e compatibilidade GPL-2.0.
+- **Scheduler**: Recomendado estudar heurísticas ULE via `sched_ext`, sem substituir o scheduler Linux ou copiar locks/runqueues FreeBSD.
+- **Isolamento**: Jails/Capsicum devem orientar o threat model; implementação deve usar namespaces, cgroup v2, seccomp, Landlock e LSM Linux.
+- **Rede/VFS**: Sendfile, kTLS e namecache devem ser comparados por benchmark; não portar mbuf, sockets ou vnode/VFS.
+- **Experimentos**: Definidos experimentos de boottrace, fault injection, scheduler, rede/arquivos e algoritmos isolados, sempre com baseline, VM, testes e kernel Ubuntu fallback.
+- **Documento Técnico**: Inventário completo, famílias, equivalentes Linux, ranking, licenças, experimentos e processo de porte registrados em `PORTABILIDADE_FREEBSD15_SYS_KERN_PARA_UBUNTU.md`.
+
+## [2026-08-18] - Auditoria Completa de Arquitetura e Direção
+- **Ação**: Auditoria integral das propostas recentes, código NitroCore, scripts, instalador, QML, Live ISO, gestão de pacotes, imutabilidade, ZFS, Gamescope, BSDs, segurança e governança.
+- **Veredito**: A visão Ubuntu + desktop + gaming permanece válida, mas a expansão simultânea para kernel próprio, dez sabores, três BSDs, vários gestores de pacotes, browser, auto-cura e storage P2P está desviando recursos do MVP.
+- **Direção Mantida**: Ubuntu Resolute como baseline, kernel oficial como fallback, GNOME/KDE, Subiquity, Live reproduzível, Gamescope opcional, Flatpak e testes em VM.
+- **Direção Reformulada**: NitroCore deve ser uma fila pequena de patches sobre uma árvore Ubuntu fixada; Decágono permanece catálogo de referências; AUR/DNF somente em containers; BSDs permanecem sistemas/payloads separados.
+- **Direção Rejeitada no MVP**: Anaconda, Thunder Browser próprio, Dark Volt no early boot, NTSYNC reimplementado, `mitigations=off`, mistura de árvores Linux de versões distintas e alegações de KARL/DirectStorage/Capsicum já implementados.
+- **Validação Estática**: Dezoito scripts passaram em `bash -n`; três módulos Python passaram em AST; JSON e GRUB passaram; `git diff --check` passou.
+- **Defeito Confirmado**: `desktop-file-validate` reprovou `config/wayland-sessions/parcel-full-session.desktop` pela chave `DesktopNames` não padronizada.
+- **Build NitroCore**: Não executável no estado atual; ambas as árvores Linux estão sem `.config` e preparação, e nenhuma inclui `nitrocore/` no build principal.
+- **Dependências Ausentes**: Gamescope, Calamares, QML runtime, Podman, Distrobox, ZFS e `ukify` não estavam disponíveis no host auditado.
+- **Segurança**: Bloqueado o uso automático de `mitigations=off`; recomendadas APIs Linux existentes como IMA/fs-verity, AppArmor/SELinux, seccomp, Landlock, namespaces e KCFI.
+- **NTSYNC**: Recomendado abandonar o stub próprio e usar a implementação oficial do kernel Linux.
+- **P2PDMA**: Classificado como pesquisa de longo prazo dependente de topologia e drivers, não como DirectStorage implementado.
+- **Roadmap**: Definidos marcos sequenciais para higiene, ISO, instalação, gaming, primeiro patch NitroCore, containers/armazenamento e BSD.
+- **Documento Técnico**: Vereditos por componente, evidências, riscos e critérios de entrada no roadmap registrados em `AUDITORIA_COMPLETA_DIRECAO_2026-08-18.md`.
+
+## [2026-08-18] - Nova Auditoria e Inventário das Alterações
+- **Marco de Comparação**: Estado atual comparado ao commit `60a5f63` de 15 de agosto de 2026; nenhum commit posterior foi encontrado.
+- **Inventário Git**: Identificados 73 arquivos adicionados ao índice, 21 arquivos com modificações adicionais fora do índice, 5.222 arquivos não rastreados e nenhuma remoção rastreada.
+- **Documentação**: Catalogados 41 novos documentos entre a raiz, `nitrocore/` e `supervised_learning/`, cobrindo referências técnicas, arquitetura, segurança, gaming, pacotes, BSD e interfaces.
+- **NitroCore**: Localizados `Kconfig`, `Makefile` e onze protótipos C. Confirmado que a árvore ainda não está integrada aos `Kconfig`/`Makefile` principais das fontes Linux e não há módulo `.ko` produzido ou testado.
+- **Scripts**: Dezoito scripts passaram em `bash -n`. A validação confirma apenas sintaxe; vários scripts mantêm comandos centrais comentados e imprimem sucesso sem gerar o artefato declarado.
+- **Python**: Os três módulos Python do instalador passaram na análise sintática. Suas operações relevantes permanecem comentadas e nenhum fluxo Calamares foi executado.
+- **Fontes Importadas**: Catalogados 4.722 arquivos Connectiva Linux 4, 248 arquivos FreeBSD 15 e 250 arquivos FreeBSD 16 não rastreados, além das árvores Linux 7.1.8 e Ubuntu ocultadas pelo `.gitignore`.
+- **Correção FreeBSD**: Os diretórios FreeBSD locais contêm somente recortes de `sys/kern`; `usr.sbin/bsdinstall/` e `release/` continuam ausentes do workspace.
+- **Inconsistência de Versão**: A árvore vanilla declara Linux 7.1.8, o script antigo declara 6.18.44 e a árvore chamada Resolute contém changelog Noble 6.8.0-30.30.
+- **Risco de Segurança**: Mantida a advertência contra ativar `mitigations=off` com base na presença de AVX-512. Também foram identificadas flags de compilação e seleção `znver3/znver4` sem detecção suficiente do processador.
+- **Classificação de Maturidade**: Código NitroCore, módulos Calamares, QML, gestão híbrida, NTSYNC, CFI, Jail, UKI e storage P2P classificados como protótipos não integrados, não como funcionalidades concluídas.
+- **Testes Não Executados**: Não houve compilação de kernel, boot, instalação, carregamento de módulo, benchmark, execução QML ou alteração de ZFS/GRUB.
+- **Documento Técnico**: Inventário nominal, matriz de maturidade, riscos, validações e sequência recomendada registrados em `ANALISE_ALTERACOES_2026-08-18.md`.
+
 ## Regra de Documentação
 - **Obrigatório**: Toda análise, decisão técnica, comando executado, alteração de código, teste e resultado relacionado ao Parcel Play OS deve ser registrado em um arquivo Markdown (`.md`).
 - **Rastreabilidade**: Os registros devem distinguir explicitamente entre funcionalidade planejada, protótipo, implementação real, teste executado e resultado confirmado.
@@ -328,8 +386,16 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Ação**: Atualização do `Kconfig` e `Makefile` do NitroCore para incluir as novas proteções e motores.
 - **Ação**: Desenvolvimento do mockup QML do **Thunder Browser** nativo com suporte a **HDR Brightness Mapping**.
 - **Ação**: Implementação técnica do protótipo **Nitro-CFI** (`nitro_cfi.c`), integrando segurança de integridade de fluxo estilo OpenBSD.
+- **Ação**: Desenvolvimento do **Modo Jogo** (`MODO_JOGO_CAPSICUM.md`) utilizando isolamento por capacidades inspirado no FreeBSD Capsicum.
+- **Ação**: Implementação do motor de integridade **Nitro-Verify** (`nitro_verify.c`) e sua documentação (`NITRO_VERIFY.md`), emulando o NetBSD Veriexec.
+- **Ação**: Início da Fase 7 da Aprendizagem Supervisionada do FreeBSD, analisando o gerenciamento de buffers do ZFS (`dbuf.c`).
+- **Ação**: Design e criação do mockup QML da **Central de Segurança Nitro**, integrando Jails, Verificação e CFI.
+- **Ação**: Início da **Análise Completa de `sys/kern`** (FreeBSD 15), identificando as tecnologias de Boot (sysinit), Hardware (Newbus) e Sincronização (Adaptive Mutexes).
+- **Ação**: Criação do documento especializado `ANALISE_SYS_KERN_FREEBSD.md` para portabilidade dessas tecnologias para o NitroCore.
+- **Ação**: Atualização da `ZFS_GAMING_ZONE.md` com a inteligência de limites dinâmicos de cache.
 - **Ação**: Análise de mercado e convergência tecnológica, criando o documento `CONVERGENCIA_MERCADO.md` comparando o Parcel Play OS com Bazzite, Vanilla OS, blendOS e CachyOS.
-- **Ação**: Início da Fase 6 da Aprendizagem Supervisionada do FreeBSD, analisando o escalonador **ULE** para aprimorar a responsividade multi-core do NitroCore.
+- **Ação**: Início da Fase 6 da Aprendizagem Supervisionada do FreeBSD, analisando o escalonador **ULE**.
+- **Ação**: Criação do dossiê `INTEGRACAO_TRIADE_BSD.md`, detalhando o uso de **Capsicum** (FreeBSD), **Veriexec** (NetBSD) e **PF** (OpenBSD) no NitroCore.
 - **Ação**: Criação da tela de **Configuração de Rede Nitro-Net** no instalador, permitindo habilitar Zero-Copy e algoritmos de vanguarda (BBR).
 - **Ação**: Criação do dossiê técnico `MACOS_TECH.md` detalhando a arquitetura híbrida Mach + FreeBSD.
 - **Ação**: Design do widget **Nitro-Switcher** para o KDE Plasma, integrando com o `grub-reboot` para troca de kernels.

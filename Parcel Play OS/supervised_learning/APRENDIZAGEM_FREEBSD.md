@@ -46,5 +46,17 @@ A Sony utilizou o FreeBSD como base para o PS4 e PS5 devido ao controle total (l
     - **Lição**: A separação das filas reduz a contenção entre os núcleos, permitindo que a interface do usuário (KDE/Gnome) permaneça responsiva mesmo quando o sistema está sob carga pesada (ex: compilando o kernel).
     - **Aplicação no NitroCore**: O `nitro_sched.c` evoluirá para suportar **Independent Run-Queues**, garantindo que o "Nitro-Boost" da interface não seja prejudicado por processos de background em outros núcleos.
 
+### [Fase 7] - Cache e Buffer de Dados (`sys/contrib/openzfs/module/zfs/dbuf.c`)
+- **Foco**: Acelerar o acesso a metadados de arquivos.
+- **Análise: ZFS `dbuf.c`**:
+    - **Mecanismo**: O ZFS gerencia um cache de "dbufs" (data buffers) com limites de memória baixa e alta (`lowater`/`hiwater`). Ele mantém estatísticas detalhadas de "hits" e "misses" para cada nível de cache.
+    - **Lição**: A estabilidade de performance do ZFS vem de não deixar o cache crescer de forma ilimitada, disparando a "evicção" de dados frios antes que a memória acabe.
+    - **Aplicação no NitroCore**: O **OmniLock** herdará esta lógica de limites dinâmicos. Quando o jogo começar a exigir mais RAM, o NitroCore limpará automaticamente buffers de disco de menor prioridade (do sistema host) para manter os dados do jogo em cache quente, assim como o ZFS faz ao atingir a `hiwater` de memória.
+
+### [Fase 8] - O Coração do Sistema (`sys/kern`)
+- **Foco**: Analisar a infraestrutura básica: Boot, Devices e Locking.
+- **Destaque**: Análise concluída de `init_main.c` (Boot orquestrado), `subr_bus.c` (Abstração Newbus) e `kern_mutex.c` (Sincronização Adaptativa).
+- **Detalhes**: Veja o dossiê especializado em [ANALISE_SYS_KERN_FREEBSD.md](file:///home/marcel/Parcel%20Suite/Parcel%20Suite/Parcel%20Play%20OS/supervised_learning/ANALISE_SYS_KERN_FREEBSD.md).
+
 ---
 *Este processo é contínuo e nunca deve ser interrompido.*

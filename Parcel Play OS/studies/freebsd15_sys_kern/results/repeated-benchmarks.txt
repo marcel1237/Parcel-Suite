@@ -1,0 +1,29 @@
+study=repeated-userspace-benchmarks
+date=2026-08-18T15:35:34-03:00
+kernel=7.0.0-29-generic
+runs=5
+run=1
+policy=other iterations=20000 mean_us=10.685 p50_us=8.940 p95_us=13.898 p99_us=21.301 max_us=3711.854
+policy=batch iterations=20000 mean_us=9.059 p50_us=8.730 p95_us=10.337 p99_us=15.854 max_us=828.737
+method=read-write bytes=67108864 received=67108864 seconds=0.027285 mib_s=2345.64
+method=sendfile bytes=67108864 received=67108864 seconds=0.012465 mib_s=5134.32
+run=2
+policy=other iterations=20000 mean_us=8.982 p50_us=8.939 p95_us=9.918 p99_us=15.854 max_us=139.264
+policy=batch iterations=20000 mean_us=9.358 p50_us=8.940 p95_us=10.406 p99_us=17.321 max_us=2354.629
+method=read-write bytes=67108864 received=67108864 seconds=0.029632 mib_s=2159.80
+method=sendfile bytes=67108864 received=67108864 seconds=0.013142 mib_s=4869.82
+run=3
+policy=other iterations=20000 mean_us=9.069 p50_us=8.870 p95_us=10.057 p99_us=16.343 max_us=355.492
+policy=batch iterations=20000 mean_us=9.076 p50_us=8.870 p95_us=10.057 p99_us=16.412 max_us=489.797
+method=read-write bytes=67108864 received=67108864 seconds=0.029649 mib_s=2158.58
+method=sendfile bytes=67108864 received=67108864 seconds=0.012943 mib_s=4944.63
+run=4
+policy=other iterations=20000 mean_us=9.132 p50_us=8.940 p95_us=9.918 p99_us=17.111 max_us=804.641
+policy=batch iterations=20000 mean_us=9.099 p50_us=8.939 p95_us=9.987 p99_us=16.343 max_us=538.127
+method=read-write bytes=67108864 received=67108864 seconds=0.030016 mib_s=2132.17
+method=sendfile bytes=67108864 received=67108864 seconds=0.014101 mib_s=4538.81
+run=5
+policy=other iterations=20000 mean_us=9.087 p50_us=8.939 p95_us=9.987 p99_us=16.832 max_us=924.210
+policy=batch iterations=20000 mean_us=8.919 p50_us=8.939 p95_us=9.638 p99_us=16.273 max_us=88.628
+method=read-write bytes=67108864 received=67108864 seconds=0.027452 mib_s=2331.36
+method=sendfile bytes=67108864 received=67108864 seconds=0.012488 mib_s=5125.02

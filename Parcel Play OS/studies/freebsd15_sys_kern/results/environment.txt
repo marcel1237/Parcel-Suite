@@ -1,0 +1,12 @@
+study=environment-capabilities
+date=2026-08-18T15:35:05-03:00
+kernel=7.0.0-29-generic
+qemu-system-x86_64=no
+iperf3=no
+fio=no
+gamescope=no
+bpftrace=yes
+trace-cmd=yes
+bpftool=yes
+kvm=no
+tls-stat=no

@@ -1,0 +1,17 @@
+study=boottrace-equivalent
+date=2026-08-18T15:35:04-03:00
+kernel=7.0.0-29-generic
+cmdline=BOOT_IMAGE=/boot/vmlinuz-7.0.0-29-generic root=UUID=7f8dda93-a902-49bc-a802-13e15a9cc09b ro quiet splash crashkernel=2G-4G:320M,4G-32G:512M,32G-64G:1024M,64G-128G:2048M,128G-:4096M
+
+[systemd-analyze]
+Failed to connect to system scope bus via local transport: Operation not permitted (consider using --machine=<user>@.host --user to connect to bus of other user)
+
+[systemd-analyze-blame]
+Failed to connect to system scope bus via local transport: Operation not permitted (consider using --machine=<user>@.host --user to connect to bus of other user)
+
+[tracefs]
+tracefs on /sys/kernel/tracing type tracefs (ro,nosuid,nodev,noexec,relatime)
+tracefs-readable=no
+tracefs-writable=no
+
+[kernel-log-landmarks]
