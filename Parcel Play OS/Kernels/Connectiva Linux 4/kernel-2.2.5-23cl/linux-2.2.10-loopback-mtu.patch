@@ -1,0 +1,20 @@
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/net/core/dev.c linux.ac/net/core/dev.c
+--- linux.vanilla/net/core/dev.c	Mon Mar 29 10:25:57 1999
++++ linux.ac/net/core/dev.c	Thu Jun 17 23:06:47 1999
+@@ -19,6 +19,7 @@
+  *		Adam Sulmicki <adam@cfar.umd.edu>
+  *
+  *	Changes:
++ *		Marcelo Tosatti <marcelo@conectiva.com.br> : dont accept mtu 0 or <
+  *		Alan Cox	:	device private ioctl copies fields back.
+  *		Alan Cox	:	Transmit queue code does relevant stunts to
+  *					keep the queue safe.
+@@ -1470,7 +1471,7 @@
+ 			 *	MTU must be positive.
+ 			 */
+ 			 
+-			if (ifr->ifr_mtu<0)
++			if (ifr->ifr_mtu<=0)
+ 				return -EINVAL;
+ 
+ 			if (dev->change_mtu)

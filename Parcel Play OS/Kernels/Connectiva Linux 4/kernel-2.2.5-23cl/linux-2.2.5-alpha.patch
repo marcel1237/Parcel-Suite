@@ -1,0 +1,497 @@
+--- linux/include/asm-alpha/pgtable.h.alpha	Wed Mar 10 21:11:51 1999
++++ linux/include/asm-alpha/pgtable.h	Mon Apr 26 11:16:14 1999
+@@ -1,3 +1,4 @@
++
+ #ifndef _ALPHA_PGTABLE_H
+ #define _ALPHA_PGTABLE_H
+ 
+@@ -71,7 +72,7 @@
+ 			   struct vm_area_struct *vma,
+ 			   unsigned long addr)
+ {
+-	tbi(2 + ((vma->vm_flags & VM_EXEC) != 0), addr);
++	tbi(((vma->vm_flags & VM_EXEC) != 0) ? 3 : 2, addr);
+ }
+ 
+ __EXTERN_INLINE void
+@@ -169,6 +170,7 @@
+ 
+ /* ipi_msg_flush_tb is owned by the holder of the global kernel lock. */
+ struct ipi_msg_flush_tb_struct {
++	spinlock_t flush_lock;
+ 	volatile unsigned int flush_tb_mask;
+ 	union {
+ 		struct mm_struct *	flush_mm;
+--- linux/arch/alpha/kernel/core_cia.c.alpha	Sun Sep  6 13:34:33 1998
++++ linux/arch/alpha/kernel/core_cia.c	Mon Apr 26 11:16:14 1999
+@@ -598,7 +598,7 @@
+ {
+ 	CIA_jd = *(vuip)CIA_IOC_CIA_ERR;
+ 	DBGM(("CIA_pci_clr_err: CIA ERR after read 0x%x\n", CIA_jd));
+-	*(vuip)CIA_IOC_CIA_ERR = 0x0180;
++	*(vuip)CIA_IOC_CIA_ERR = CIA_jd;
+ 	mb();
+ 	return 0;
+ }
+@@ -698,6 +698,10 @@
+ 		reason = buf;
+ 		break;
+ 	}
++	mb();
++	mb();  /* magic */
++	draina();
++	cia_pci_clr_err();
+ 	wrmces(rdmces());	/* reset machine check pending flag */
+ 	mb();
+ 
+--- linux/arch/alpha/kernel/setup.c.alpha	Mon Apr 26 11:16:14 1999
++++ linux/arch/alpha/kernel/setup.c	Mon Apr 26 11:16:14 1999
+@@ -106,6 +106,7 @@
+ WEAK(alphabook1_mv);
+ WEAK(avanti_mv);
+ WEAK(cabriolet_mv);
++WEAK(clipper_mv);
+ WEAK(dp264_mv);
+ WEAK(eb164_mv);
+ WEAK(eb64p_mv);
+@@ -324,6 +325,12 @@
+ 	}
+ 
+ 	/* Round it up to an even number of pages. */
++#if 1
++	/* enforce maximum of 2GB even if there is more... :-\ */
++	if (high >= 0x80000000UL)
++		high = 0x7fffffffUL;
++
++#endif
+ 	high = (high + PAGE_SIZE) & (PAGE_MASK*2);
+ 	return PAGE_OFFSET + high;
+ }
+@@ -443,11 +450,11 @@
+ 	static struct alpha_machine_vector *tsunami_vecs[]  __initlocaldata =
+ 	{
+ 		NULL,
+-		&dp264_mv,		/* dp164 */
++		&dp264_mv,		/* dp264 */
+ 		&dp264_mv,		/* warhol */
+ 		&dp264_mv,		/* windjammer */
+ 		&monet_mv,		/* monet */
+-		&dp264_mv,		/* clipper */
++		&clipper_mv,		/* clipper */
+ 		&dp264_mv,		/* goldrush */
+ 		&webbrick_mv,		/* webbrick */
+ 		&dp264_mv,		/* catamaran */
+@@ -532,6 +539,7 @@
+ 		&alphabook1_mv,
+ 		&avanti_mv,
+ 		&cabriolet_mv,
++		&clipper_mv,
+ 		&dp264_mv,
+ 		&eb164_mv,
+ 		&eb64p_mv,
+--- linux/arch/alpha/kernel/smp.c.alpha	Mon Mar 29 01:36:32 1999
++++ linux/arch/alpha/kernel/smp.c	Mon Apr 26 11:16:14 1999
+@@ -1,3 +1,4 @@
++
+ /*
+  *	linux/arch/alpha/kernel/smp.c
+  */
+@@ -780,51 +781,71 @@
+ 	send_ipi_message(to_whom, IPI_CPU_STOP);
+ }
+ 
++#define INIT_TIMEOUT 1000000
++unsigned long tb_flush_count = 0;
++unsigned long tb_flush_again_count = 0;
++unsigned long tb_flush_max_retry = 0;
++
+ void
+ flush_tlb_all(void)
+ {
+ 	unsigned long to_whom = cpu_present_map ^ (1 << smp_processor_id());
+-	long timeout = 1000000;
++	long timeout = INIT_TIMEOUT;
+ 
+-	spin_lock_own(&kernel_flag, "flush_tlb_all");
++	spin_lock(&ipi_msg_flush_tb.flush_lock);
+ 
+ 	ipi_msg_flush_tb.flush_tb_mask = to_whom;
+-	send_ipi_message(to_whom, IPI_TLB_ALL);
+-	tbia();
+-
+-	while (ipi_msg_flush_tb.flush_tb_mask && --timeout) {
++	do {
++		send_ipi_message(to_whom, IPI_TLB_ALL);
+ 		udelay(1);
+ 		barrier();
++	} while (ipi_msg_flush_tb.flush_tb_mask && --timeout);
++	++tb_flush_count;
++	tb_flush_again_count += (timeout != INIT_TIMEOUT);
++	if (tb_flush_max_retry < INIT_TIMEOUT - timeout) {
++		tb_flush_max_retry = INIT_TIMEOUT - timeout;
++		printk("flush_tlb_all: %d / %d / %d\n", tb_flush_again_count,
++		       tb_flush_count, tb_flush_max_retry);
+ 	}
+ 
++	tbia();
++
+ 	if (timeout == 0) {
+ 		printk("flush_tlb_all: STUCK on CPU %d mask 0x%x\n",
+ 		       smp_processor_id(),
+ 		       ipi_msg_flush_tb.flush_tb_mask);
+ 		ipi_msg_flush_tb.flush_tb_mask = 0;
+ 	}
++
++	spin_unlock(&ipi_msg_flush_tb.flush_lock);
+ }
+ 
+ void
+ flush_tlb_mm(struct mm_struct *mm)
+ {
+ 	unsigned long to_whom = cpu_present_map ^ (1 << smp_processor_id());
+-	long timeout = 1000000;
++	long timeout = INIT_TIMEOUT;
+ 
+-	spin_lock_own(&kernel_flag, "flush_tlb_mm");
+-
+-	ipi_msg_flush_tb.flush_tb_mask = to_whom;
+-	ipi_msg_flush_tb.p.flush_mm = mm;
+-	send_ipi_message(to_whom, IPI_TLB_MM);
++	spin_lock(&ipi_msg_flush_tb.flush_lock);
+ 
+ 	if (mm != current->mm)
+ 		flush_tlb_other(mm);
+ 	else
+ 		flush_tlb_current(mm);
+ 
+-	while (ipi_msg_flush_tb.flush_tb_mask && --timeout) {
++	ipi_msg_flush_tb.flush_tb_mask = to_whom;
++	ipi_msg_flush_tb.p.flush_mm = mm;
++	do {
++		send_ipi_message(to_whom, IPI_TLB_MM);
+ 		udelay(1);
+ 		barrier();
++	} while (ipi_msg_flush_tb.flush_tb_mask && --timeout);
++	++tb_flush_count;
++	tb_flush_again_count += (timeout != INIT_TIMEOUT);
++	if (tb_flush_max_retry < INIT_TIMEOUT - timeout) {
++		tb_flush_max_retry = INIT_TIMEOUT - timeout;
++		printk("flush_tlb_mm: %d / %d / %d\n", tb_flush_again_count,
++		       tb_flush_count, tb_flush_max_retry);
+ 	}
+ 
+ 	if (timeout == 0) {
+@@ -833,6 +854,8 @@
+ 		       ipi_msg_flush_tb.flush_tb_mask);
+ 		ipi_msg_flush_tb.flush_tb_mask = 0;
+ 	}
++
++	spin_unlock(&ipi_msg_flush_tb.flush_lock);
+ }
+ 
+ void
+@@ -841,23 +864,29 @@
+ 	int cpu = smp_processor_id();
+ 	unsigned long to_whom = cpu_present_map ^ (1 << cpu);
+ 	struct mm_struct * mm = vma->vm_mm;
+-	int timeout = 1000000;
+-
+-	spin_lock_own(&kernel_flag, "flush_tlb_page");
++	int timeout = INIT_TIMEOUT;
+ 
+-	ipi_msg_flush_tb.flush_tb_mask = to_whom;
+-	ipi_msg_flush_tb.p.flush_vma = vma;
+-	ipi_msg_flush_tb.flush_addr = addr;
+-	send_ipi_message(to_whom, IPI_TLB_PAGE);
++	spin_lock(&ipi_msg_flush_tb.flush_lock);
+ 
+ 	if (mm != current->mm)
+ 		flush_tlb_other(mm);
+ 	else
+ 		flush_tlb_current_page(mm, vma, addr);
+ 
+-	while (ipi_msg_flush_tb.flush_tb_mask && --timeout) {
++	ipi_msg_flush_tb.flush_tb_mask = to_whom;
++	ipi_msg_flush_tb.p.flush_vma = vma;
++	ipi_msg_flush_tb.flush_addr = addr;
++	do {
++		send_ipi_message(to_whom, IPI_TLB_PAGE);
+ 		udelay(1);
+ 		barrier();
++	} while (ipi_msg_flush_tb.flush_tb_mask && --timeout);
++	++tb_flush_count;
++	tb_flush_again_count += (timeout != INIT_TIMEOUT);
++	if (tb_flush_max_retry < INIT_TIMEOUT - timeout) {
++		tb_flush_max_retry = INIT_TIMEOUT - timeout;
++		printk("flush_tlb_page: %d / %d / %d\n", tb_flush_again_count,
++		       tb_flush_count, tb_flush_max_retry);
+ 	}
+ 
+ 	if (timeout == 0) {
+@@ -866,6 +895,8 @@
+ 		       ipi_msg_flush_tb.flush_tb_mask);
+ 		ipi_msg_flush_tb.flush_tb_mask = 0;
+ 	}
++
++	spin_unlock(&ipi_msg_flush_tb.flush_lock);
+ }
+ 
+ void
+@@ -1071,3 +1102,4 @@
+ 	}
+ }
+ #endif /* DEBUG_RWLOCK */
++
+--- linux/arch/alpha/kernel/sys_dp264.c.alpha	Sun Feb 21 22:06:36 1999
++++ linux/arch/alpha/kernel/sys_dp264.c	Mon Apr 26 11:16:14 1999
+@@ -66,6 +66,33 @@
+ }
+ 
+ static void
++clipper_update_irq_hw(unsigned long irq, unsigned long mask, int unmask_p)
++{
++	if (irq >= 16) {
++		volatile unsigned long *csr;
++
++		if (TSUNAMI_bootcpu < 2)
++			if (!TSUNAMI_bootcpu)
++				csr = &TSUNAMI_cchip->dim0.csr;
++			else
++				csr = &TSUNAMI_cchip->dim1.csr;
++		else
++			if (TSUNAMI_bootcpu == 2)
++				csr = &TSUNAMI_cchip->dim2.csr;
++			else
++				csr = &TSUNAMI_cchip->dim3.csr;
++		
++		*csr = (~mask >> 16) | (1UL << 55); /* master ISA enable */
++		mb();
++		*csr;
++	}
++	else if (irq >= 8)
++		outb(mask >> 8, 0xA1);	/* ISA PIC2 */
++	else
++		outb(mask, 0x21);	/* ISA PIC1 */
++}
++
++static void
+ dp264_device_interrupt(unsigned long vector, struct pt_regs * regs)
+ {
+ #if 1
+@@ -105,11 +132,16 @@
+ 	ack = irq = (vector - 0x800) >> 4;
+ 
+         /*
+-         * The DP264 SRM console reports PCI interrupts with a vector
+-	 * 0x100 *higher* than one might expect, as PCI IRQ 0 (ie bit 0)
+-	 * shows up as IRQ 16, etc, etc. We adjust it down by 16 to have
+-	 * it line up with the actual bit numbers from the DIM registers,
+-	 * which is how we manage the interrupts/mask. Sigh...
++         * The EV6 machines SRM console reports PCI interrupts with a vector
++	 * calculated by:
++	 *
++	 *	0x900 + (0x10 * DRIR-bit)
++	 *
++	 * So bit 16 shows up as IRQ 32, etc, etc.
++	 * 
++	 * On DP264/BRICK/MONET, we adjust it down by 16 because at least
++	 * that many of the low order bits of the DRIR are not used, and
++	 * so we don't count them.
+          */
+         if (irq >= 32)
+                 ack = irq = irq - 16;
+@@ -117,11 +149,32 @@
+ 	handle_irq(irq, ack, regs);
+ }
+ 
++static void 
++clipper_srm_device_interrupt(unsigned long vector, struct pt_regs * regs)
++{
++	int irq, ack;
++
++	ack = irq = (vector - 0x800) >> 4;
++
++        /*
++         * The EV6 machines SRM console reports PCI interrupts with a vector
++	 * calculated by:
++	 *
++	 *	0x900 + (0x10 * DRIR-bit)
++	 *
++	 * So bit 16 shows up as IRQ 32, etc, etc.
++	 * 
++	 * CLIPPER uses bits 8-47 for PCI interrupts, so we do not need
++	 * to scale down the vector reported, we just use it.
++	 *
++	 * Eg IRQ 24 is DRIR bit 8, etc, etc
++         */
++	handle_irq(irq, ack, regs);
++}
++
+ static void __init
+ dp264_init_irq(void)
+ {
+-	volatile unsigned long *csr;
+-
+ 	outb(0, DMA1_RESET_REG);
+ 	outb(0, DMA2_RESET_REG);
+ 	outb(DMA_MODE_CASCADE, DMA2_MODE_REG);
+@@ -130,23 +183,26 @@
+ 	if (alpha_using_srm)
+ 		alpha_mv.device_interrupt = dp264_srm_device_interrupt;
+ 
+-	if (TSUNAMI_bootcpu < 2)
+-		if (!TSUNAMI_bootcpu)
+-			csr = &TSUNAMI_cchip->dim0.csr;
+-		else
+-			csr = &TSUNAMI_cchip->dim1.csr;
+-	else
+-		if (TSUNAMI_bootcpu == 2)
+-			csr = &TSUNAMI_cchip->dim2.csr;
+-		else
+-			csr = &TSUNAMI_cchip->dim3.csr;
+-		
+-	/* Note invert on MASK bits.  */
+-        *csr = ~(alpha_irq_mask);
+-	mb();
+-        *csr;
++	dp264_update_irq_hw(16, alpha_irq_mask, 0);
++
++        enable_irq(55);     /* Enable ISA interrupt controller.  */
++	enable_irq(2);
++}
++
++static void __init
++clipper_init_irq(void)
++{
++	outb(0, DMA1_RESET_REG);
++	outb(0, DMA2_RESET_REG);
++	outb(DMA_MODE_CASCADE, DMA2_MODE_REG);
++	outb(0, DMA2_MASK_REG);
++
++	if (alpha_using_srm)
++		alpha_mv.device_interrupt = clipper_srm_device_interrupt;
++
++	clipper_update_irq_hw(16, alpha_irq_mask, 0);
+ 
+-        enable_irq(55);     /* Enable CYPRESS interrupt controller (ISA).  */
++        enable_irq(55);     /* Enable ISA interrupt controller.  */
+ 	enable_irq(2);
+ }
+ 
+@@ -221,7 +277,7 @@
+ 	const long min_idsel = 5, max_idsel = 10, irqs_per_slot = 5;
+ 	int irq = COMMON_TABLE_LOOKUP;
+ 
+-	if (irq >= 0)
++	if (irq > 0)
+ 		irq += 16 * dev2hose(dev);
+ 
+ 	return irq;
+@@ -300,10 +356,10 @@
+ 		{    30,    30,    30,    30,    30}, /* IdSel 11 21143 #2 */
+ 		{    -1,    -1,    -1,    -1,    -1}, /* IdSel 12 unused */
+ 		{    -1,    -1,    -1,    -1,    -1}, /* IdSel 13 unused */
+-		{    47,    47,    46,    45,    44}, /* IdSel 14 slot 0 */
++		{    35,    35,    34,    33,    32}, /* IdSel 14 slot 0 */
+ 		{    39,    39,    38,    37,    36}, /* IdSel 15 slot 1 */
+ 		{    43,    43,    42,    41,    40}, /* IdSel 16 slot 2 */
+-		{    35,    35,    34,    33,    32}, /* IdSel 17 slot 3 */
++		{    47,    47,    46,    45,    44}, /* IdSel 17 slot 3 */
+ };
+ 	const long min_idsel = 7, max_idsel = 17, irqs_per_slot = 5;
+ 	int irq = COMMON_TABLE_LOOKUP;
+@@ -311,6 +367,28 @@
+ 	return irq;
+ }
+ 
++static int __init
++clipper_map_irq(struct pci_dev *dev, int slot, int pin)
++{
++	static char irq_tab[7][5] __initlocaldata = {
++		/*INT    INTA   INTB   INTC   INTD */
++		{ 16+ 8, 16+ 8, 16+ 9, 16+10, 16+11}, /* IdSel 1 slot 1 */
++		{ 16+12, 16+12, 16+13, 16+14, 16+15}, /* IdSel 2 slot 2 */
++		{ 16+16, 16+16, 16+17, 16+18, 16+19}, /* IdSel 3 slot 3 */
++		{ 16+20, 16+20, 16+21, 16+22, 16+23}, /* IdSel 4 slot 4 */
++		{ 16+24, 16+24, 16+25, 16+26, 16+27}, /* IdSel 5 slot 5 */
++		{ 16+28, 16+28, 16+29, 16+30, 16+31}, /* IdSel 6 slot 6 */
++		{    -1,    -1,    -1,    -1,    -1}  /* IdSel 7 ISA Bridge */
++	};
++	const long min_idsel = 1, max_idsel = 7, irqs_per_slot = 5;
++	int irq = COMMON_TABLE_LOOKUP;
++
++	if (irq > 0)
++		irq += 16 * dev2hose(dev);
++
++	return irq;
++}
++
+ static void __init
+ dp264_pci_fixup(void)
+ {
+@@ -336,6 +414,13 @@
+ 	SMC669_Init(0);
+ }
+ 
++static void __init
++clipper_pci_fixup(void)
++{
++	layout_all_busses(DEFAULT_IO_BASE, DEFAULT_MEM_BASE);
++	common_pci_fixup(clipper_map_irq, common_swizzle);
++}
++
+ 
+ /*
+  * The System Vectors
+@@ -407,5 +492,26 @@
+ 	pci_fixup:		webbrick_pci_fixup,
+ 	kill_arch:		generic_kill_arch,
+ };
+-/* No alpha_mv alias for webbrick, since we compile it in unconditionally
+-   with DP264; setup_arch knows how to cope.  */
++struct alpha_machine_vector clipper_mv __initmv = {
++	vector_name:		"Clipper",
++	DO_EV6_MMU,
++	DO_DEFAULT_RTC,
++	DO_TSUNAMI_IO,
++	DO_TSUNAMI_BUS,
++	machine_check:		tsunami_machine_check,
++	max_dma_address:	ALPHA_MAX_DMA_ADDRESS,
++
++	nr_irqs:		64,
++	irq_probe_mask:		_PROBE_MASK(64),
++	update_irq_hw:		clipper_update_irq_hw,
++	ack_irq:		generic_ack_irq,
++	device_interrupt:	dp264_device_interrupt,
++
++	init_arch:		tsunami_init_arch,
++	init_irq:		clipper_init_irq,
++	init_pit:		generic_init_pit,
++	pci_fixup:		clipper_pci_fixup,
++	kill_arch:		generic_kill_arch,
++};
++/* No alpha_mv alias for webbrick/monet/clipper, since we compile them
++   in unconditionally with DP264; setup_arch knows how to cope.  */
+--- linux/arch/alpha/config.in.alpha	Mon Feb  1 15:03:20 1999
++++ linux/arch/alpha/config.in	Mon Apr 26 11:16:14 1999
+@@ -149,6 +149,7 @@
+ 
+ if [ "$CONFIG_ALPHA_CABRIOLET" = "y" -o "$CONFIG_ALPHA_AVANTI" = "y" \
+ 	-o "$CONFIG_ALPHA_EB64P" = "y" -o "$CONFIG_ALPHA_JENSEN" = "y" \
++	-o "$CONFIG_ALPHA_TAKARA" = "y" -o "$CONFIG_ALPHA_EB164" = "y" \
+ 	-o "$CONFIG_ALPHA_MIKASA" = "y" -o "$CONFIG_ALPHA_ALCOR" = "y" \
+ 	-o "$CONFIG_ALPHA_SABLE" = "y" -o "$CONFIG_ALPHA_MIATA" = "y" \
+ 	-o "$CONFIG_ALPHA_NORITAKE" = "y" -o "$CONFIG_ALPHA_PC164" = "y" \
+@@ -173,7 +174,11 @@
+ 	define_bool CONFIG_ALPHA_AVANTI y
+ fi
+ 
+-bool 'Symmetric multi-processing support' CONFIG_SMP
++if [ "$CONFIG_ALPHA_SABLE" = "y" -o "$CONFIG_ALPHA_RAWHIDE" = "y" \
++	-o "$CONFIG_ALPHA_DP264" = "y" -o "$CONFIG_ALPHA_GENERIC" = "y" ]
++then
++	bool 'Symmetric multi-processing support' CONFIG_SMP
++fi
+ 
+ if [ "$CONFIG_PCI" = "y" ]; then
+   bool 'PCI quirks' CONFIG_PCI_QUIRKS

@@ -1,0 +1,32 @@
+--- pcmcia-cs-3.0.9/etc/rc.pcmcia.pcmciascript	Mon Oct 19 05:54:43 1998
++++ pcmcia-cs-3.0.9/etc/rc.pcmcia	Fri Apr 16 18:37:25 1999
+@@ -4,6 +4,13 @@
+ #
+ # This is designed to work in BSD as well as SysV init setups.  See
+ # the HOWTO for customization instructions.
++#
++# chkconfig: 2345 45 96
++# description: PCMCIA support is usually to support things like ethernet \
++#              and modems in laptops.  It won't get started unless \
++#              configured so it is safe to have it installed on machines \
++#              that don't need it.
++#
+ 
+ usage()
+ {
+--- pcmcia-cs-3.0.9/etc/serial.pcmciascript	Fri Apr 16 18:49:14 1999
++++ pcmcia-cs-3.0.9/etc/serial	Fri Apr 16 19:00:31 1999
+@@ -24,12 +24,7 @@
+ . $0.opts
+ 
+ # Newer kernels do not have "cua" devices
+-if [ -c /dev/cua1 ] ; then
+-    NR=`expr $MINOR - 64`
+-    DIALOUT=cua$NR
+-else
+-    DIALOUT=$DEVICE
+-fi
++DIALOUT=$DEVICE
+ 
+ case "$ACTION" in
+ 

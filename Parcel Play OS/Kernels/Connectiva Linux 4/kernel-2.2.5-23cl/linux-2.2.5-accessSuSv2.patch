@@ -1,0 +1,13 @@
+
+--- fs/open.c~	Mon Apr  5 13:19:48 1999
++++ fs/open.c	Fri Apr  9 12:08:58 1999
+@@ -301,6 +301,9 @@
+ 	res = PTR_ERR(dentry);
+ 	if (!IS_ERR(dentry)) {
+ 		res = permission(dentry->d_inode, mode);
++		/* SuS v2 requires we report a read only fs too */
++		if(!res && (mode & S_IWOTH) && IS_RDONLY(dentry->d_inode))
++			res = -EROFS;
+ 		dput(dentry);
+ 	}
+ 

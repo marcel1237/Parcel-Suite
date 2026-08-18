@@ -1,0 +1,148 @@
+
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/init/main.c linux.ac/init/main.c
+--- linux.vanilla/init/main.c	Wed Mar 10 21:13:12 1999
++++ linux.ac/init/main.c	Wed Apr  7 14:10:42 1999
+@@ -352,7 +352,7 @@
+ int rows, cols;
+ 
+ #ifdef CONFIG_BLK_DEV_RAM
+-extern int rd_doload;		/* 1 = load ramdisk, 0 = don't load */
++extern int rd_doload;		/* 1 = load ramdisk, 0 = don't load 2 = dual disk */
+ extern int rd_prompt;		/* 1 = prompt for ramdisk, 0 = don't prompt */
+ extern int rd_size;		/* Size of the ramdisk(s) */
+ extern int rd_image_start;	/* starting block # of image */
+@@ -893,7 +893,7 @@
+ static void __init load_ramdisk(char *str, int *ints)
+ {
+    if (ints[0] > 0 && ints[1] >= 0)
+-      rd_doload = ints[1] & 1;
++      rd_doload = ints[1] & 3;
+ }
+ 
+ static void __init prompt_ramdisk(char *str, int *ints)
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/drivers/block/rd.c linux.ac/drivers/block/rd.c
+--- linux.vanilla/drivers/block/rd.c	Mon Mar 29 10:25:55 1999
++++ linux.ac/drivers/block/rd.c	Wed Apr  7 14:15:12 1999
+@@ -425,7 +425,7 @@
+ /*
+  * This routine loads in the RAM disk image.
+  */
+-__initfunc(static void rd_load_image(kdev_t device,int offset))
++__initfunc(static void rd_load_image(kdev_t device,int offset, int unit))
+ {
+  	struct inode inode, out_inode;
+ 	struct file infile, outfile;
+@@ -438,7 +438,7 @@
+ 	unsigned short devblocks = 0;
+ 	char rotator[4] = { '|' , '/' , '-' , '\\' };
+ 
+-	ram_device = MKDEV(MAJOR_NR, 0);
++	ram_device = MKDEV(MAJOR_NR, unit);
+ 
+ 	memset(&infile, 0, sizeof(infile));
+ 	memset(&inode, 0, sizeof(inode));
+@@ -536,7 +536,7 @@
+ 
+ successful_load:
+ 	invalidate_buffers(device);
+-	ROOT_DEV = MKDEV(MAJOR_NR,0);
++	ROOT_DEV = MKDEV(MAJOR_NR,unit);
+ 
+ done:
+ 	if (infile.f_op->release)
+@@ -545,12 +545,21 @@
+ }
+ 
+ 
+-__initfunc(void rd_load(void))
++__initfunc(void rd_load_disk(int n))
+ {
++#ifdef CONIFG_BLK_DEV_INITRD
++	extern kdev_t real_root_dev;
++#endif
+ 	if (rd_doload == 0)
+ 		return;
+ 	
+-	if (MAJOR(ROOT_DEV) != FLOPPY_MAJOR) return;
++	if (MAJOR(ROOT_DEV) != FLOPPY_MAJOR
++#ifdef CONFIG_BLK_DEV_INITRD	
++		&& MAJOR(real_root_dev) != FLOPPY_MAJOR
++#endif		
++	)
++		return;
++  
+ 
+ 	if (rd_prompt) {
+ #ifdef CONFIG_BLK_DEV_FD
+@@ -561,15 +570,25 @@
+ 		wait_for_keypress();
+ 	}
+ 
+-	rd_load_image(ROOT_DEV,rd_image_start);
++	rd_load_image(ROOT_DEV,rd_image_start, n);
+ 
+ }
+ 
++void rd_load(void)
++{
++ 	rd_load_disk(0);
++}
++  
++void rd_load_secondary(void)
++{
++	rd_load_disk(1);
++}
++  
+ 
+ #ifdef CONFIG_BLK_DEV_INITRD
+ __initfunc(void initrd_load(void))
+ {
+-	rd_load_image(MKDEV(MAJOR_NR, INITRD_MINOR),0);
++	rd_load_image(MKDEV(MAJOR_NR, INITRD_MINOR),0, 0);
+ }
+ #endif
+ 
+@@ -693,6 +712,13 @@
+ crd_load(struct file * fp, struct file *outfp))
+ {
+ 	int result;
++
++	insize = 0;  /* valid bytes in inbuf */
++	inptr = 0;   /* index of next byte to be processed in inbuf */
++	outcnt = 0;  /* bytes in output buffer */
++	exit_code = 0;
++	bytes_out = 0;
++	crc = 0xFFFFFFFF;
+ 	
+ 	crd_infp = fp;
+ 	crd_outfp = outfp;
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/fs/super.c linux.ac/fs/super.c
+--- linux.vanilla/fs/super.c	Sat Jan  9 21:50:47 1999
++++ linux.ac/fs/super.c	Wed Apr  7 21:00:23 1999
+@@ -1155,12 +1155,22 @@
+ 
+ #ifdef CONFIG_BLK_DEV_FD
+ 	if (MAJOR(ROOT_DEV) == FLOPPY_MAJOR) {
++#ifdef CONFIG_BLK_DEV_RAM	
++		extern int rd_doload;
++#endif		
+ 		floppy_eject();
+ #ifndef CONFIG_BLK_DEV_RAM
+ 		printk(KERN_NOTICE "(Warning, this kernel has no ramdisk support)\n");
+-#endif
+-		printk(KERN_NOTICE "VFS: Insert root floppy and press ENTER\n");
+-		wait_for_keypress();
++#else
++		/* rd_doload is 2 for a dual initrd/ramload setup */
++		if(rd_doload==2)
++			rd_load_secondary();
++		else
++#endif		
++		{
++			printk(KERN_NOTICE "VFS: Insert root floppy and press ENTER\n");
++			wait_for_keypress();
++		}
+ 	}
+ #endif
+ 
+

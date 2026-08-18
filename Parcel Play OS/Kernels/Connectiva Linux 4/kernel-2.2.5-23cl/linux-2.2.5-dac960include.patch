@@ -1,0 +1,11 @@
+--- linux/drivers/block/cpqarray.h~	Wed Apr 14 23:12:49 1999
++++ linux/drivers/block/cpqarray.h	Wed Apr 14 23:29:02 1999
+@@ -31,7 +31,7 @@
+ #include <linux/malloc.h>
+ #include <linux/config.h>
+ #include <linux/proc_fs.h>
+-#include <linux/md.h>
++#include <linux/raid/md.h>
+ #include <linux/timer.h>
+ #endif
+ 

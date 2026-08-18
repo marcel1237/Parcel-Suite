@@ -54,10 +54,19 @@ A estratégia adotada é a "Modernização de Legado", utilizando o modelo de co
 - **Anykernel & Portabilidade**: Adotamos a arquitetura do NetBSD para permitir que drivers rodem em user-space, aumentando a estabilidade do NitroCore.
 - **Navegador Nativo**: Detalhamos o Thunder Browser, otimizado com flags de performance (LTO, GPU Rasterization) para rodar diretamente no hardware.
 - **Arquitetura de Build Híbrida**: O instalador usará o Calamares para a interface e o Subiquity/Curtin para o motor de deploy.
-- **Compilação do Protótipo**: O usuário iniciou o processo manual de build do kernel clonando o repositório da Ubuntu em `~/Parcel Suite/resolute`. Estamos integrando os conceitos de performance do NitroCore diretamente no código-fonte.
+- **Compilação do Protótipo**: O usuário iniciou o processo manual de build do kernel clonando o repositório da Ubuntu em `~/Parcel Suite/resolute`.
+- **DNA NitroCore**: Criamos a estrutura de subdiretórios em `nitrocore/` e os primeiros protótipos de código C para o Escalonador de Resposta e Gestão de Memória.
+- **Injeção de Inteligência (SteamOS & Security)**: Criamos a documentação de integração com o **SteamOS**, focando em tecnologias como **Gamescope**, **HDR** e **EPP Boost**.
+- **Aprendizagem Supervisionada FreeBSD**: Iniciamos um processo contínuo de análise dos núcleos **FreeBSD 15 e 16**, utilizando o **PlayStation (Sony)** como referência de sucesso comercial. Implementamos o protótipo de rede `nitro_net.c` focado em aceleração via XDP.
+- **Trindade da Performance**: Consolidamos Orbis OS, FreeBSD e SteamOS como os pilares técnicos finais do NitroCore.
+- **Aceleração Gamescope + OmniLock**: O KDE rodará sob o Gamescope com texturas "fincadas" na RAM física, eliminando engasgos de vídeo.
+- **Engenharia de I/O**: Extraímos a lógica do ZFS ARC e do VFS Read-ahead do FreeBSD para acelerar o carregamento de ativos de jogos.
+- **Sony & FreeBSD**: Criamos um estudo de caso sobre o uso do FreeBSD pela Sony no PlayStation. Iniciamos a tradução técnica do código de Zero-Copy e de Gestão de Memória (Wiring) do FreeBSD para o NitroCore, implementando o suporte a **AF_XDP** para rede ultra-rápida.
+- **Laboratório de Kernels**: Analisamos a pasta `Kernels/` e identificamos ativos cruciais: Linux Vanilla 7.1.8 (Vanguarda), Ubuntu 26 (Compatibilidade), Connectiva 4 (Legado Brasileiro) e FreeBSD 15/16 (Rede).
+- **DNA NitroCore**: Iniciamos o merge técnico das fontes, comparando Kconfigs e preparando um script híbrido de build que une a base ultra-moderna 7.1.8 com a compatibilidade do Ubuntu 26.
 
 ## 6. Próximos Passos
-- Configuração do `.config` e compilação do Kernel NitroCore.
+- Execução das 3 vertentes de análise de DNA: Comparação de Kconfigs, utilidade do legado Connectiva e script de build unificado.
 
 ---
 *Última atualização: 2026-08-13 07:53*

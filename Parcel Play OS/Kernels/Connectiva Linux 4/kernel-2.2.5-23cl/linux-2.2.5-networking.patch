@@ -1,0 +1,508 @@
+These changes fix some really embarassing and bad bugs.  Here is
+what these patches fix:
+
+1) Certain large server boxes could trigger a TCP data structure
+   memory leak that would over time eat all of available memory
+   plus sockets and make the machine unusable.  This was particularly
+   seen on machines running IRC servers.
+
+2) A denial of service was possible via SYN flooding if you changed
+   your spoofed source address frequently, it would overflow the
+   routing cache due to lack of proper garbage collection.
+
+3) Tricks could be pulled via the CMSG interface to fool the kernel
+   into an oops.
+
+--- linux/include/net/dst.h.orig	Mon Apr 19 00:25:23 1999
++++ linux/include/net/dst.h	Mon Apr 19 00:30:56 1999
+@@ -16,11 +16,7 @@
+  * 1 - rare events and bugs (default)
+  * 2 - trace mode.
+  */
+-#ifdef  NO_ANK_FIX
+ #define RT_CACHE_DEBUG		0
+-#else
+-#define RT_CACHE_DEBUG		1
+-#endif
+ 
+ #define DST_GC_MIN	(1*HZ)
+ #define DST_GC_INC	(5*HZ)
+--- linux/include/net/pkt_sched.h.orig	Mon Apr 19 00:25:23 1999
++++ linux/include/net/pkt_sched.h	Mon Apr 19 00:25:28 1999
+@@ -215,6 +215,8 @@
+    (stamp) = __cur>>psched_clock_scale; \
+ })
+ 
++#define PSCHED_EXPORTLIST_1
++
+ #elif defined (__alpha__)
+ 
+ #define PSCHED_WATCHER u32
+--- linux/include/net/route.h.orig	Mon Apr 19 00:25:23 1999
++++ linux/include/net/route.h	Mon Apr 19 00:30:56 1999
+@@ -114,6 +114,7 @@
+ extern int		ip_route_output(struct rtable **, u32 dst, u32 src, u32 tos, int oif);
+ extern int		ip_route_input(struct sk_buff*, u32 dst, u32 src, u8 tos, struct device *devin);
+ extern unsigned short	ip_rt_frag_needed(struct iphdr *iph, unsigned short new_mtu);
++extern void		ip_rt_update_pmtu(struct dst_entry *dst, unsigned mtu);
+ extern void		ip_rt_send_redirect(struct sk_buff *skb);
+ 
+ extern unsigned		inet_addr_type(u32 addr);
+--- linux/net/core/neighbour.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/core/neighbour.c	Mon Apr 19 00:25:28 1999
+@@ -1170,7 +1170,7 @@
+ 	for (h=0; h <= NEIGH_HASHMASK; h++) {
+ 		if (h < s_h) continue;
+ 		if (h > s_h)
+-			memset(&cb->args[2], 0, sizeof(cb->args) - 2*sizeof(cb->args[0]));
++			s_idx = 0;
+ 		start_bh_atomic();
+ 		for (n = tbl->hash_buckets[h], idx = 0; n;
+ 		     n = n->next, idx++) {
+@@ -1179,12 +1179,14 @@
+ 			if (neigh_fill_info(skb, n, NETLINK_CB(cb->skb).pid,
+ 					    cb->nlh->nlmsg_seq, RTM_NEWNEIGH) <= 0) {
+ 				end_bh_atomic();
+-				goto done;
++				cb->args[1] = h;
++				cb->args[2] = idx;
++				return -1;
+ 			}
+ 		}
+ 		end_bh_atomic();
+ 	}
+-done:
++
+ 	cb->args[1] = h;
+ 	cb->args[2] = idx;
+ 	return skb->len;
+@@ -1355,10 +1357,10 @@
+ 		t->neigh_dev[0].ctl_name = dev->ifindex;
+ 		memset(&t->neigh_vars[12], 0, sizeof(ctl_table));
+ 	} else {
+-		t->neigh_vars[12].data = (&p->locktime) + 1;
+-		t->neigh_vars[13].data = (&p->locktime) + 2;
+-		t->neigh_vars[14].data = (&p->locktime) + 3;
+-		t->neigh_vars[15].data = (&p->locktime) + 4;
++		t->neigh_vars[12].data = (int*)(p+1);
++		t->neigh_vars[13].data = (int*)(p+1) + 1;
++		t->neigh_vars[14].data = (int*)(p+1) + 2;
++		t->neigh_vars[15].data = (int*)(p+1) + 3;
+ 	}
+ 	t->neigh_neigh_dir[0].ctl_name = pdev_id;
+ 
+--- linux/net/core/scm.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/core/scm.c	Mon Apr 19 00:25:28 1999
+@@ -122,7 +122,15 @@
+ 		err = -EINVAL;
+ 
+ 		/* Verify that cmsg_len is at least sizeof(struct cmsghdr) */
+-		if ((unsigned long)(((char*)cmsg - (char*)msg->msg_control)
++		/* The first check was omitted in <= 2.2.5. The reasoning was
++		   that parser checks cmsg_len in any case, so that
++		   additional check would be work duplication.
++		   But if cmsg_level is not SOL_SOCKET, we do not check 
++		   for too short ancillary data object at all! Oops.
++		   OK, let's add it...
++		 */
++		if (cmsg->cmsg_len < sizeof(struct cmsghdr) ||
++		    (unsigned long)(((char*)cmsg - (char*)msg->msg_control)
+ 				    + cmsg->cmsg_len) > msg->msg_controllen)
+ 			goto error;
+ 
+--- linux/net/ipv4/af_inet.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv4/af_inet.c	Mon Apr 19 00:25:28 1999
+@@ -513,17 +513,6 @@
+ 	    (sk->num != 0))
+ 		return -EINVAL;
+ 		
+-	snum = ntohs(addr->sin_port);
+-#ifdef CONFIG_IP_MASQUERADE
+-	/* The kernel masquerader needs some ports. */
+-	if((snum >= PORT_MASQ_BEGIN) && (snum <= PORT_MASQ_END))
+-		return -EADDRINUSE;
+-#endif		 
+-	if (snum == 0) 
+-		snum = sk->prot->good_socknum();
+-	if (snum < PROT_SOCK && !capable(CAP_NET_BIND_SERVICE))
+-		return(-EACCES);
+-	
+ 	chk_addr_ret = inet_addr_type(addr->sin_addr.s_addr);
+ 	if (addr->sin_addr.s_addr != 0 && chk_addr_ret != RTN_LOCAL &&
+ 	    chk_addr_ret != RTN_MULTICAST && chk_addr_ret != RTN_BROADCAST) {
+@@ -545,6 +534,17 @@
+ 	if(chk_addr_ret == RTN_MULTICAST || chk_addr_ret == RTN_BROADCAST)
+ 		sk->saddr = 0;  /* Use device */
+ 
++	snum = ntohs(addr->sin_port);
++#ifdef CONFIG_IP_MASQUERADE
++	/* The kernel masquerader needs some ports. */
++	if((snum >= PORT_MASQ_BEGIN) && (snum <= PORT_MASQ_END))
++		return -EADDRINUSE;
++#endif		 
++	if (snum == 0) 
++		snum = sk->prot->good_socknum();
++	if (snum < PROT_SOCK && !capable(CAP_NET_BIND_SERVICE))
++		return(-EACCES);
++	
+ 	/* Make sure we are allowed to bind here. */
+ 	if(sk->prot->verify_bind(sk, snum))
+ 		return -EADDRINUSE;
+--- linux/net/ipv4/ip_sockglue.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv4/ip_sockglue.c	Mon Apr 19 00:25:28 1999
+@@ -150,7 +150,8 @@
+ 	struct cmsghdr *cmsg;
+ 
+ 	for (cmsg = CMSG_FIRSTHDR(msg); cmsg; cmsg = CMSG_NXTHDR(msg, cmsg)) {
+-		if ((unsigned long)(((char*)cmsg - (char*)msg->msg_control)
++		if (cmsg->cmsg_len < sizeof(struct cmsghdr) ||
++		    (unsigned long)(((char*)cmsg - (char*)msg->msg_control)
+ 				    + cmsg->cmsg_len) > msg->msg_controllen) {
+ 			return -EINVAL;
+ 		}
+--- linux/net/ipv4/route.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv4/route.c	Mon Apr 19 00:25:28 1999
+@@ -281,6 +281,9 @@
+ 	if (atomic_read(&rth->u.dst.use))
+ 		return 0;
+ 
++	if (rth->u.dst.expires && (long)(rth->u.dst.expires - jiffies) <= 0)
++		return 1;
++
+ 	age = jiffies - rth->u.dst.lastuse;
+ 	if (age <= tmo1 && !rt_fast_clean(rth))
+ 		return 0;
+@@ -305,7 +308,7 @@
+ 		while ((rth = *rthp) != NULL) {
+ 			if (rth->u.dst.expires) {
+ 				/* Entrie is expired even if it is in use */
+-				if ((long)(now - rth->u.dst.expires) < tmo) {
++				if ((long)(now - rth->u.dst.expires) <= 0) {
+ 					tmo >>= 1;
+ 					rthp = &rth->u.rt_next;
+ 					continue;
+@@ -564,8 +567,11 @@
+ 			 */
+ 			if (attempts-- > 0) {
+ 				int saved_elasticity = ip_rt_gc_elasticity;
++				int saved_int = ip_rt_gc_min_interval;
+ 				ip_rt_gc_elasticity = 1;
++				ip_rt_gc_min_interval = 0;
+ 				rt_garbage_collect();
++				ip_rt_gc_min_interval = saved_int;
+ 				ip_rt_gc_elasticity = saved_elasticity;
+ 				goto restart;
+ 			}
+@@ -885,7 +891,16 @@
+ 			}
+ 		}
+ 	}
+-	return est_mtu;
++	return est_mtu ? : new_mtu;
++}
++
++void ip_rt_update_pmtu(struct dst_entry *dst, unsigned mtu)
++{
++	if (dst->pmtu > mtu && mtu >= 68 &&
++	    !(dst->mxlock&(1<<RTAX_MTU))) {
++		dst->pmtu = mtu;
++		dst_set_expires(dst, ip_rt_mtu_expires);
++	}
+ }
+ 
+ static struct dst_entry * ipv4_dst_check(struct dst_entry * dst, u32 cookie)
+@@ -1850,7 +1865,7 @@
+ 	for (h=0; h < RT_HASH_DIVISOR; h++) {
+ 		if (h < s_h) continue;
+ 		if (h > s_h)
+-			memset(&cb->args[1], 0, sizeof(cb->args) - sizeof(cb->args[0]));
++			s_idx = 0;
+ 		start_bh_atomic();
+ 		for (rt = rt_hash_table[h], idx = 0; rt; rt = rt->u.rt_next, idx++) {
+ 			if (idx < s_idx)
+--- linux/net/ipv4/tcp_ipv4.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv4/tcp_ipv4.c	Mon Apr 19 00:25:28 1999
+@@ -629,6 +629,7 @@
+ 
+ 	if (!tcp_v4_unique_address(sk)) {
+ 		kfree_skb(buff);
++		sk->daddr = 0;
+ 		return -EADDRNOTAVAIL;
+ 	}
+ 
+@@ -722,7 +723,7 @@
+ /* 
+  * This routine does path mtu discovery as defined in RFC1191.
+  */
+-static inline void do_pmtu_discovery(struct sock *sk, struct iphdr *ip)
++static inline void do_pmtu_discovery(struct sock *sk, struct iphdr *ip, unsigned mtu)
+ {
+ 	struct tcp_opt *tp = &sk->tp_pinfo.af_tcp;
+ 
+@@ -742,8 +743,10 @@
+      	 * There is a small race when the user changes this flag in the
+ 	 * route, but I think that's acceptable.
+ 	 */
+-	if (sk->dst_cache &&
+-	    sk->ip_pmtudisc != IP_PMTUDISC_DONT &&
++	if (sk->dst_cache == NULL)
++		return;
++	ip_rt_update_pmtu(sk->dst_cache, mtu);
++	if (sk->ip_pmtudisc != IP_PMTUDISC_DONT &&
+ 	    tp->pmtu_cookie > sk->dst_cache->pmtu) {
+ 		tcp_sync_mss(sk, sk->dst_cache->pmtu);
+ 
+@@ -830,7 +833,7 @@
+ 			return;
+ 
+ 		if (code == ICMP_FRAG_NEEDED) { /* PMTU discovery (RFC1191) */
+-			do_pmtu_discovery(sk, iph); 
++			do_pmtu_discovery(sk, iph, ntohs(skb->h.icmph->un.frag.mtu));
+ 			return;
+ 		}
+ 
+@@ -1595,6 +1598,7 @@
+ 		 * the new socket..
+ 		 */
+ 		if (atomic_read(&nsk->sock_readers)) {
++			skb_orphan(skb);
+ 			__skb_queue_tail(&nsk->back_log, skb);
+ 			return 0;
+ 		}
+--- linux/net/ipv6/af_inet6.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv6/af_inet6.c	Mon Apr 19 00:25:28 1999
+@@ -190,7 +190,7 @@
+ 	struct sockaddr_in6 *addr=(struct sockaddr_in6 *)uaddr;
+ 	struct sock *sk = sock->sk;
+ 	__u32 v4addr = 0;
+-	unsigned short snum = 0;
++	unsigned short snum;
+ 	int addr_type = 0;
+ 
+ 	/* If the socket has its own bind function then use it. */
+@@ -203,12 +203,6 @@
+ 	    (sk->num != 0))
+ 		return -EINVAL;
+ 		
+-	snum = ntohs(addr->sin6_port);
+-	if (snum == 0) 
+-		snum = sk->prot->good_socknum();
+-	if (snum < PROT_SOCK && !capable(CAP_NET_BIND_SERVICE))
+-		return(-EACCES);
+-	
+ 	addr_type = ipv6_addr_type(&addr->sin6_addr);
+ 	if ((addr_type & IPV6_ADDR_MULTICAST) && sock->type == SOCK_STREAM)
+ 		return(-EINVAL);
+@@ -240,6 +234,12 @@
+ 	if (!(addr_type & IPV6_ADDR_MULTICAST))
+ 		memcpy(&sk->net_pinfo.af_inet6.saddr, &addr->sin6_addr, 
+ 		       sizeof(struct in6_addr));
++
++	snum = ntohs(addr->sin6_port);
++	if (snum == 0) 
++		snum = sk->prot->good_socknum();
++	if (snum < PROT_SOCK && !capable(CAP_NET_BIND_SERVICE))
++		return(-EACCES);
+ 
+ 	/* Make sure we are allowed to bind here. */
+ 	if(sk->prot->verify_bind(sk, snum))
+--- linux/net/ipv6/datagram.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv6/datagram.c	Mon Apr 19 00:25:28 1999
+@@ -235,17 +235,15 @@
+ 
+ 	for (cmsg = CMSG_FIRSTHDR(msg); cmsg; cmsg = CMSG_NXTHDR(msg, cmsg)) {
+ 
+-		if ((unsigned long)(((char*)cmsg - (char*)msg->msg_control)
++		if (cmsg->cmsg_len < sizeof(struct cmsghdr) ||
++		    (unsigned long)(((char*)cmsg - (char*)msg->msg_control)
+ 				    + cmsg->cmsg_len) > msg->msg_controllen) {
+ 			err = -EINVAL;
+ 			goto exit_f;
+ 		}
+ 
+-		if (cmsg->cmsg_level != SOL_IPV6) {
+-			if (net_ratelimit())
+-				printk(KERN_DEBUG "invalid cmsg_level %d\n", cmsg->cmsg_level);
++		if (cmsg->cmsg_level != SOL_IPV6)
+ 			continue;
+-		}
+ 
+ 		switch (cmsg->cmsg_type) {
+  		case IPV6_PKTINFO:
+--- linux/net/ipv6/ip6_fib.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv6/ip6_fib.c	Mon Apr 19 00:25:28 1999
+@@ -890,9 +890,6 @@
+ 
+ 	RT6_TRACE("fib6_del_route\n");
+ 
+-	if (!(rt->rt6i_flags&RTF_CACHE))
+-		fib6_prune_clones(fn, rt);
+-
+ 	/* Unlink it */
+ 	*rtp = rt->u.next;
+ 	rt->rt6i_node = NULL;
+@@ -938,6 +935,9 @@
+ 		return -ENOENT;
+ 
+ 	BUG_TRAP(fn->fn_flags&RTN_RTINFO);
++
++	if (!(rt->rt6i_flags&RTF_CACHE))
++		fib6_prune_clones(fn, rt);
+ 
+ 	/*
+ 	 *	Walk the leaf entries looking for ourself
+--- linux/net/ipv6/ndisc.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv6/ndisc.c	Mon Apr 19 00:25:28 1999
+@@ -813,7 +813,7 @@
+ 		}
+ 	}
+ 
+-	rd_len = min(IPV6_MIN_MTU-sizeof(struct ipv6hdr)-len, ntohs(skb->nh.ipv6h->payload_len) + 8);
++	rd_len = min(IPV6_MIN_MTU-sizeof(struct ipv6hdr)-len, skb->len + 8);
+ 	rd_len &= ~0x7;
+ 	len += rd_len;
+ 
+@@ -873,7 +873,7 @@
+ 	*(opt++) = (rd_len >> 3);
+ 	opt += 6;
+ 
+-	memcpy(opt, &skb->nh.ipv6h, rd_len - 8);
++	memcpy(opt, skb->nh.ipv6h, rd_len - 8);
+ 
+ 	icmph->icmp6_cksum = csum_ipv6_magic(&ifp->addr, &skb->nh.ipv6h->saddr,
+ 					     len, IPPROTO_ICMPV6,
+--- linux/net/ipv6/tcp_ipv6.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/ipv6/tcp_ipv6.c	Mon Apr 19 00:25:28 1999
+@@ -445,6 +445,7 @@
+ 			tp->ext_header_len = exthdrlen;
+ 			sk->tp_pinfo.af_tcp.af_specific = &ipv6_specific;
+ 			sk->backlog_rcv = tcp_v6_do_rcv;
++			goto failure;
+ 		} else {
+ 			ipv6_addr_set(&np->saddr, 0, 0, __constant_htonl(0x0000FFFF),
+ 				      sk->saddr);
+@@ -474,7 +475,7 @@
+ 
+ 	if ((err = dst->error) != 0) {
+ 		dst_release(dst);
+-		return err;
++		goto failure;
+ 	}
+ 
+ 	if (fl.oif == 0 && addr_type&IPV6_ADDR_LINKLOCAL) {
+@@ -491,7 +492,7 @@
+ 	if (saddr == NULL) {
+ 		err = ipv6_get_saddr(dst, &np->daddr, &saddr_buf);
+ 		if (err)
+-			return err;
++			goto failure;
+ 
+ 		saddr = &saddr_buf;
+ 	}
+@@ -506,17 +507,19 @@
+ 	/* Reset mss clamp */
+ 	tp->mss_clamp = ~0;
+ 
++	err = -ENOBUFS;
+ 	buff = sock_wmalloc(sk, (MAX_HEADER + sk->prot->max_header),
+ 			    0, GFP_KERNEL);
+ 
+ 	if (buff == NULL)
+-		return -ENOBUFS;
++		goto failure;
+ 
+ 	sk->dport = usin->sin6_port;
+ 
+ 	if (!tcp_v6_unique_address(sk)) {
+ 		kfree_skb(buff);
+-		return -EADDRNOTAVAIL;
++		err = -EADDRNOTAVAIL;
++		goto failure;
+ 	}
+ 
+ 	/*
+@@ -530,6 +533,12 @@
+ 	tcp_connect(sk, buff, dst->pmtu);
+ 
+ 	return 0;
++
++failure:
++	dst_release(xchg(&sk->dst_cache, NULL));
++	memcpy(&np->daddr, 0, sizeof(struct in6_addr));
++	sk->daddr = 0;
++	return err;
+ }
+ 
+ static int tcp_v6_sendmsg(struct sock *sk, struct msghdr *msg, int len)
+@@ -1256,6 +1265,7 @@
+ 		 * the new socket..
+ 		 */
+ 		if (atomic_read(&nsk->sock_readers)) {
++			skb_orphan(skb);
+ 			__skb_queue_tail(&nsk->back_log, skb);
+ 			return 0;
+ 		}
+--- linux/net/sched/cls_fw.c.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/sched/cls_fw.c	Mon Apr 19 00:25:28 1999
+@@ -7,6 +7,10 @@
+  *		2 of the License, or (at your option) any later version.
+  *
+  * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
++ *
++ * Changes:
++ * Karlis Peisenieks <karlis@mt.lv> : 990415 : fw_walk off by one
++ * Karlis Peisenieks <karlis@mt.lv> : 990415 : fw_delete killed all the filter (and kernel).
+  */
+ 
+ #include <linux/config.h>
+@@ -146,7 +150,7 @@
+ 
+ static int fw_delete(struct tcf_proto *tp, unsigned long arg)
+ {
+-	struct fw_head *head = (struct fw_head*)xchg(&tp->root, NULL);
++	struct fw_head *head = (struct fw_head*)tp->root;
+ 	struct fw_filter *f = (struct fw_filter*)arg;
+ 	struct fw_filter **fp;
+ 
+@@ -273,7 +277,7 @@
+ 	if (arg->stop)
+ 		return;
+ 
+-	for (h = 0; h <= 256; h++) {
++	for (h = 0; h < 256; h++) {
+ 		struct fw_filter *f;
+ 
+ 		for (f = head->ht[h]; f; f = f->next) {
+--- linux/net/sched/cls_rsvp.h.orig	Mon Apr 19 00:25:23 1999
++++ linux/net/sched/cls_rsvp.h	Mon Apr 19 00:25:28 1999
+@@ -193,23 +193,23 @@
+ 				    && src[2] == f->src[2]
+ #endif
+ 				    ) {
++					*res = f->res;
+ 
+ 					RSVP_POLICE();
+ 
+ matched:
+-					if (f->tunnelhdr == 0) {
+-						*res = f->res;
++					if (f->tunnelhdr == 0)
+ 						return 0;
+-					} else {
+-						tunnelid = f->res.classid;
+-						nhptr = (void*)(xprt + f->tunnelhdr - sizeof(*nhptr));
+-						goto restart;
+-					}
++
++					tunnelid = f->res.classid;
++					nhptr = (void*)(xprt + f->tunnelhdr - sizeof(*nhptr));
++					goto restart;
+ 				}
+ 			}
+ 
+ 			/* And wildcard bucket... */
+ 			for (f = s->ht[16]; f; f = f->next) {
++				*res = f->res;
+ 				RSVP_POLICE();
+ 				goto matched;
+ 			}

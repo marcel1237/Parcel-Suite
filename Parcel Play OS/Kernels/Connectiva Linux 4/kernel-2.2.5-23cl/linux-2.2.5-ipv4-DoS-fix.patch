@@ -1,0 +1,10 @@
+--- linux/net/ipv4/ip_options.c.msw	Wed Jun  2 08:30:54 1999
++++ linux/net/ipv4/ip_options.c	Wed Jun  2 08:31:04 1999
+@@ -452,7 +452,6 @@
+ error:
+ 	if (skb) {
+ 		icmp_send(skb, ICMP_PARAMETERPROB, 0, htonl((pp_ptr-iph)<<24));
+-		kfree_skb(skb);
+ 	}
+ 	return -EINVAL;
+ }

@@ -1,0 +1,285 @@
+
+--- linux/include/linux/sysctl.h.patch11	Sun Mar 21 10:22:00 1999
++++ linux/include/linux/sysctl.h	Wed Mar 24 17:15:35 1999
+@@ -209,7 +209,8 @@
+ 	NET_IPV4_ICMP_PARAMPROB_RATE=62,
+ 	NET_IPV4_ICMP_ECHOREPLY_RATE=63,
+ 	NET_IPV4_ICMP_IGNORE_BOGUS_ERROR_RESPONSES=64,
+-	NET_IPV4_IGMP_MAX_MEMBERSHIPS=65
++	NET_IPV4_IGMP_MAX_MEMBERSHIPS=65,
++	NET_IPV4_ALWAYS_DEFRAG=66,
+ };
+ 
+ enum {
+--- linux/net/ipv4/sysctl_net_ipv4.c.patch11	Mon Jan  4 18:31:35 1999
++++ linux/net/ipv4/sysctl_net_ipv4.c	Wed Mar 24 17:15:35 1999
+@@ -41,6 +41,9 @@
+ /* From ip_output.c */
+ extern int sysctl_ip_dynaddr;
+ 
++/* From ip_input.c */
++extern int sysctl_ip_always_defrag;
++
+ /* From ip_masq.c */
+ extern int sysctl_ip_masq_debug;
+ 
+@@ -127,6 +130,8 @@
+ 	 &sysctl_ipfrag_low_thresh, sizeof(int), 0644, NULL, &proc_dointvec},
+ 	{NET_IPV4_DYNADDR, "ip_dynaddr",
+ 	 &sysctl_ip_dynaddr, sizeof(int), 0644, NULL, &proc_dointvec},
++	{NET_IPV4_ALWAYS_DEFRAG, "ip_always_defrag",
++	 &sysctl_ip_always_defrag, sizeof(int), 0644, NULL, &proc_dointvec},
+ #ifdef CONFIG_IP_MASQUERADE
+ 	{NET_IPV4_IP_MASQ_DEBUG, "ip_masq_debug",
+ 	 &sysctl_ip_masq_debug, sizeof(int), 0644, NULL, &proc_dointvec},
+--- linux/net/ipv4/ip_input.c.patch11	Sun Mar 21 10:22:00 1999
++++ linux/net/ipv4/ip_input.c	Wed Mar 24 17:19:32 1999
+@@ -154,6 +154,7 @@
+ 
+ struct ip_mib ip_statistics={2,IPDEFTTL,};	/* Forwarding=No, Default TTL=64 */
+ 
++int sysctl_ip_always_defrag = 0;
+ 
+ /*
+  *	Handle the issuing of an ioctl() request
+@@ -170,11 +171,6 @@
+ 	}
+ }
+ 
+-
+-#if defined(CONFIG_IP_TRANSPARENT_PROXY) && !defined(CONFIG_IP_ALWAYS_DEFRAG)
+-#define CONFIG_IP_ALWAYS_DEFRAG 1
+-#endif
+-
+ /*
+  *	0 - deliver
+  *	1 - block
+@@ -235,18 +231,17 @@
+ 	unsigned char hash;
+ 	int flag = 0;
+ 
+-#ifndef CONFIG_IP_ALWAYS_DEFRAG
+ 	/*
+ 	 *	Reassemble IP fragments.
+ 	 */
+ 
+-	if (iph->frag_off & htons(IP_MF|IP_OFFSET)) {
++	if (sysctl_ip_always_defrag == 0 &&
++	    (iph->frag_off & htons(IP_MF|IP_OFFSET))) {
+ 		skb = ip_defrag(skb);
+ 		if (!skb)
+ 			return 0;
+ 		iph = skb->nh.iph;
+ 	}
+-#endif
+ 
+ #ifdef CONFIG_IP_MASQUERADE
+ 	/*
+@@ -433,7 +428,8 @@
+ 	
+ #ifdef CONFIG_IP_ALWAYS_DEFRAG
+ 	/* Won't send ICMP reply, since skb->dst == NULL. --RR */
+-	if (iph->frag_off & htons(IP_MF|IP_OFFSET)) {
++	if (sysctl_ip_always_defrag != 0 &&
++	    iph->frag_off & htons(IP_MF|IP_OFFSET)) {
+ 		skb = ip_defrag(skb);
+ 		if (!skb)
+ 			return 0;
+--- linux/net/ipv4/icmp.c.patch11	Sun Mar 21 10:22:00 1999
++++ linux/net/ipv4/icmp.c	Wed Mar 24 17:15:35 1999
+@@ -320,6 +320,8 @@
+ /* Control parameter - ignore bogus broadcast responses? */
+ int sysctl_icmp_ignore_bogus_error_responses =0;
+ 
++extern int sysctl_ip_always_defrag;
++
+ /*
+  *	ICMP control array. This specifies what to do with each ICMP.
+  */
+@@ -698,7 +700,7 @@
+ 				break;
+ 			case ICMP_FRAG_NEEDED:
+ 				if (ipv4_config.no_pmtu_disc) {
+-					if (net_ratelimit())
++					if (sysctl_ip_always_defrag == 0 && net_ratelimit())
+ 						printk(KERN_INFO "ICMP: %s: fragmentation needed and DF set.\n",
+ 					       in_ntoa(iph->daddr));
+ 				} else {
+@@ -710,7 +712,7 @@
+ 				}
+ 				break;
+ 			case ICMP_SR_FAILED:
+-				if (net_ratelimit())
++				if (sysctl_ip_always_defrag == 0 && net_ratelimit())
+ 					printk(KERN_INFO "ICMP: %s: Source Route Failed.\n", in_ntoa(iph->daddr));
+ 				break;
+ 			default:
+@@ -740,7 +742,7 @@
+ 	
+ 		if (inet_addr_type(iph->daddr) == RTN_BROADCAST)
+ 		{
+-			if (net_ratelimit())
++			if (sysctl_ip_always_defrag == 0 && net_ratelimit())
+ 				printk(KERN_WARNING "%s sent an invalid ICMP error to a broadcast.\n",
+ 			       	in_ntoa(skb->nh.iph->saddr));
+ 			return; 
+@@ -923,7 +925,7 @@
+ static void icmp_address(struct icmphdr *icmph, struct sk_buff *skb, int len)
+ {
+ #if 0
+-	if (net_ratelimit())
++	if (sysctl_ip_always_defrag == 0 && net_ratelimit())
+ 		printk(KERN_DEBUG "a guy asks for address mask. Who is it?\n");
+ #endif		
+ }
+@@ -953,7 +955,7 @@
+ 		if (mask == ifa->ifa_mask && inet_ifa_match(rt->rt_src, ifa))
+ 			return;
+ 	}
+-	if (net_ratelimit())
++	if (sysctl_ip_always_defrag == 0 && net_ratelimit())
+ 		printk(KERN_INFO "Wrong address mask %08lX from %08lX/%s\n",
+ 		       ntohl(mask), ntohl(rt->rt_src), dev->name);
+ }
+--- linux/net/ipv4/ip_masq.c.patch11	Wed Mar 17 00:52:05 1999
++++ linux/net/ipv4/ip_masq.c	Wed Mar 24 17:15:35 1999
+@@ -814,6 +814,8 @@
+  * 	Be careful, it can be called from u-space
+  */
+ 
++extern int sysctl_ip_always_defrag;
++
+ struct ip_masq * ip_masq_new(int proto, __u32 maddr, __u16 mport, __u32 saddr, __u16 sport, __u32 daddr, __u16 dport, unsigned mflags)
+ {
+         struct ip_masq *ms, *mst;
+@@ -844,6 +846,7 @@
+                 return NULL;
+         }
+ 	MOD_INC_USE_COUNT;
++	sysctl_ip_always_defrag++;
+         memset(ms, 0, sizeof(*ms));
+ 	init_timer(&ms->timer);
+ 	ms->timer.data     = (unsigned long)ms;
+@@ -988,6 +991,7 @@
+ mport_nono:
+         kfree_s(ms, sizeof(*ms));
+ 
++	sysctl_ip_always_defrag--;
+ 	MOD_DEC_USE_COUNT;
+         return NULL;
+ }
+--- linux/net/ipv4/ip_fw.c.patch11	Mon Jan 11 01:56:43 1999
++++ linux/net/ipv4/ip_fw.c	Wed Mar 24 17:15:35 1999
+@@ -474,6 +474,11 @@
+ 		return 1;
+ #ifdef CONFIG_IP_TRANSPARENT_PROXY
+ 	} else if (strcmp(label,IP_FW_LABEL_REDIRECT) == 0) {
++		extern int sysctl_ip_always_defrag;
++		static int enabled = 0;
++
++		if(!enabled)
++			sysctl_ip_always_defrag++;
+ 		*answer = FW_REDIRECT;
+ 		return 1;
+ #endif
+--- linux/net/ipv4/Config.in.patch11	Sun Mar 21 10:22:00 1999
++++ linux/net/ipv4/Config.in	Wed Mar 24 17:38:10 1999
+@@ -31,31 +31,30 @@
+ 	    define_bool CONFIG_NETLINK_DEV y
+ 	fi
+     fi
+-    bool 'IP: always defragment (required for masquerading)' CONFIG_IP_ALWAYS_DEFRAG
+     if [ "$CONFIG_IP_MULTIPLE_TABLES" = "y" ]; then
+ 	bool 'IP: use FWMARK value as routing key' CONFIG_IP_ROUTE_FWMARK
+     fi
+   fi
+ fi
++
+ if [ "$CONFIG_IP_FIREWALL" = "y" ]; then
+-  if [ "$CONFIG_IP_ALWAYS_DEFRAG" != "n" ]; then
+-    bool 'IP: transparent proxy support' CONFIG_IP_TRANSPARENT_PROXY
+-    bool 'IP: masquerading' CONFIG_IP_MASQUERADE
+-    if [ "$CONFIG_IP_MASQUERADE" != "n" ]; then
+-      comment 'Protocol-specific masquerading support will be built as modules.'
+-      bool 'IP: ICMP masquerading' CONFIG_IP_MASQUERADE_ICMP
+-      comment 'Protocol-specific masquerading support will be built as modules.'
+-      if [ "$CONFIG_EXPERIMENTAL" = "y" ]; then
+-        bool 'IP: masquerading special modules support' CONFIG_IP_MASQUERADE_MOD 
+-        if [ "$CONFIG_IP_MASQUERADE_MOD" = "y" ]; then
+-          tristate 'IP: ipautofw masq support (EXPERIMENTAL)' CONFIG_IP_MASQUERADE_IPAUTOFW
+-          tristate 'IP: ipportfw masq support (EXPERIMENTAL)' CONFIG_IP_MASQUERADE_IPPORTFW
+-          tristate 'IP: ip fwmark masq-forwarding support (EXPERIMENTAL)' CONFIG_IP_MASQUERADE_MFW
+-	fi
+-      fi
+-    fi
++  bool 'IP: transparent proxy support' CONFIG_IP_TRANSPARENT_PROXY 
++  bool 'IP: masquerading' CONFIG_IP_MASQUERADE 
++  if [ "$CONFIG_IP_MASQUERADE" != "n" ]; then 
++     comment 'Protocol-specific masquerading support will be built as modules.' 
++     bool 'IP: ICMP masquerading' CONFIG_IP_MASQUERADE_ICMP 
++     comment 'Protocol-specific masquerading support will be built as modules.' 
++     if [ "$CONFIG_EXPERIMENTAL" = "y" ]; then 
++       bool 'IP: masquerading special modules support' CONFIG_IP_MASQUERADE_MOD  
++       if [ "$CONFIG_IP_MASQUERADE_MOD" = "y" ]; then 
++         tristate 'IP: ipautofw masq support (EXPERIMENTAL)' CONFIG_IP_MASQUERADE_IPAUTOFW 
++         tristate 'IP: ipportfw masq support (EXPERIMENTAL)' CONFIG_IP_MASQUERADE_IPPORTFW 
++	 tristate 'IP: ip fwmark masq-forwarding support (EXPERIMENTAL)' CONFIG_IP_MASQUERADE_MFW
++       fi
++     fi
+   fi
+ fi
++
+ bool 'IP: optimize as router not host' CONFIG_IP_ROUTER
+ tristate 'IP: tunneling' CONFIG_NET_IPIP
+ tristate 'IP: GRE tunnels over IP' CONFIG_NET_IPGRE
+--- linux/net/netsyms.c.patch11	Mon Mar 22 14:20:51 1999
++++ linux/net/netsyms.c	Wed Mar 24 17:15:35 1999
+@@ -93,6 +93,7 @@
+ 
+ #ifdef CONFIG_SYSCTL
+ extern int sysctl_max_syn_backlog;
++extern int sysctl_ip_always_defrag;
+ #endif
+ 
+ EXPORT_SYMBOL(dev_lockct);
+@@ -345,6 +346,7 @@
+ 
+ #ifdef CONFIG_SYSCTL
+ EXPORT_SYMBOL(sysctl_max_syn_backlog);
++EXPORT_SYMBOL(sysctl_ip_always_defrag);
+ #endif
+ #endif
+ 
+--- linux/net/ipv4/icmp.c.patch11_fix	Tue Apr 20 00:05:19 1999
++++ linux/net/ipv4/icmp.c	Tue Apr 20 00:12:48 1999
+@@ -539,10 +539,9 @@
+ 	 *	Now check at the protocol level
+ 	 */
+ 	if (!rt) {
+-#ifndef CONFIG_IP_ALWAYS_DEFRAG
+-		if (net_ratelimit())
++		if (sysctl_ip_always_defrag == 0 &&
++		    net_ratelimit())
+ 			printk(KERN_DEBUG "icmp_send: destinationless packet\n");
+-#endif
+ 		return;
+ 	}
+ 	if (rt->rt_flags&(RTCF_BROADCAST|RTCF_MULTICAST))
+--- linux/net/ipv4/ip_input.c.patch11_fix	Tue Apr 20 00:05:19 1999
++++ linux/net/ipv4/ip_input.c	Tue Apr 20 00:13:08 1999
+@@ -426,7 +426,6 @@
+ 	__skb_trim(skb, len);
+ 	}
+ 	
+-#ifdef CONFIG_IP_ALWAYS_DEFRAG
+ 	/* Won't send ICMP reply, since skb->dst == NULL. --RR */
+ 	if (sysctl_ip_always_defrag != 0 &&
+ 	    iph->frag_off & htons(IP_MF|IP_OFFSET)) {
+@@ -436,7 +435,6 @@
+ 		iph = skb->nh.iph;
+ 		ip_send_check(iph);
+ 	}
+-#endif
+ 
+ #ifdef CONFIG_FIREWALL
+ 	/*

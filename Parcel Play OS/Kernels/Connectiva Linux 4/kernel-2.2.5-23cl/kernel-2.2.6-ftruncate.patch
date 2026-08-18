@@ -1,0 +1,14 @@
+diff -u --recursive --new-file v2.2.5/linux/fs/open.c linux/fs/open.c
+--- v2.2.5/linux/fs/open.c	Tue Mar 23 14:35:48 1999
++++ linux/fs/open.c	Fri Apr 16 14:21:39 1999
+@@ -69,6 +69,10 @@
+ 	int error;
+ 	struct iattr newattrs;
+ 
++	/* Not pretty: "inode->i_size" shouldn't really be "off_t". But it is. */
++	if ((off_t) length < 0)
++		return -EINVAL;
++
+ 	down(&inode->i_sem);
+ 	newattrs.ia_size = length;
+ 	newattrs.ia_valid = ATTR_SIZE | ATTR_CTIME;

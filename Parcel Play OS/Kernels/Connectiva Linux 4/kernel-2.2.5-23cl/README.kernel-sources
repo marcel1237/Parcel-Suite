@@ -1,0 +1,11 @@
+If you are looking for the kernel source code and are only finding include 
+(.h) files in this directory, you need to install the kernel-source binary 
+RPM from your installation media.  You can get this package from the Red Hat 
+Software FTP site (ftp.redhat.com) or from your CD-ROM.  This package
+includes 
+the default configuration that Red Hat Software used to build the kernel 
+originally installed with Red Hat Linux.
+
+Instructions on using RPM to install packages as well as instructions
+on building a custom kernel are available in the Red Hat Installation
+Guide, in the Red Hat Linux boxed set, or on line at http://www.redhat.com.

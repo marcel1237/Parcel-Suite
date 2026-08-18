@@ -1,0 +1,366 @@
+diff -rup 2.2.6-dist/arch/alpha/kernel/setup.c 2.2.6/arch/alpha/kernel/setup.c
+--- 2.2.6-dist/arch/alpha/kernel/setup.c	Thu Jan 14 10:21:40 1999
++++ 2.2.6/arch/alpha/kernel/setup.c	Sat Apr 24 15:17:01 1999
+@@ -183,6 +183,11 @@ setup_arch(char **cmdline_p, unsigned lo
+ 			vec = get_sysvec_byname(p+9);
+ 			continue;
+ 		}
++
++		if (strncmp(p, "cycle=", 6) == 0) {
++			est_cycle_freq = simple_strtol(p+6, NULL, 0);
++			continue;
++		}
+ 	}
+ 
+ 	/* Replace the command line, not that we've killed it with strtok.  */
+@@ -721,8 +726,8 @@ int get_cpuinfo(char *buffer)
+ 		       (char*)cpu->serial_no,
+ 		       systype_name, sysvariation_name, hwrpb->sys_revision,
+ 		       (char*)hwrpb->ssn,
+-		       hwrpb->cycle_freq ? : est_cycle_freq,
+-		       hwrpb->cycle_freq ? "" : "est.",
++		       est_cycle_freq ? : hwrpb->cycle_freq,
++		       est_cycle_freq ? "est." : "",
+ 		       hwrpb->intr_freq / 4096,
+ 		       (100 * hwrpb->intr_freq / 4096) % 100,
+ 		       hwrpb->pagesize,
+diff -rup 2.2.6-dist/arch/alpha/kernel/time.c 2.2.6/arch/alpha/kernel/time.c
+--- 2.2.6-dist/arch/alpha/kernel/time.c	Sat Apr 24 15:47:27 1999
++++ 2.2.6/arch/alpha/kernel/time.c	Sat Apr 24 15:17:01 1999
+@@ -223,7 +223,7 @@ time_init(void)
+ {
+ 	void (*irq_handler)(int, void *, struct pt_regs *);
+ 	unsigned int year, mon, day, hour, min, sec, cc1, cc2;
+-	unsigned long cycle_freq;
++	unsigned long cycle_freq, diff, one_percent;
+ 
+ 	/*
+ 	 * The Linux interpretation of the CMOS clock register contents:
+@@ -237,19 +237,30 @@ time_init(void)
+ 	/* Read cycle counter exactly on falling edge of update flag */
+ 	cc1 = rpcc();
+ 
+-	/* If our cycle frequency isn't valid, go another round and give
+-	   a guess at what it should be.  */
+-	cycle_freq = hwrpb->cycle_freq;
+-	if (cycle_freq == 0) {
+-		printk("HWRPB cycle frequency bogus.  Estimating... ");
+-
++	if (!est_cycle_freq) {
++		/* Sometimes the hwrpb->cycle_freq value is bogus. 
++	   	Go another round to check up on it and see.  */
+ 		do { } while (!(CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP));
+ 		do { } while (CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP);
+ 		cc2 = rpcc();
+-		est_cycle_freq = cycle_freq = cc2 - cc1;
++		est_cycle_freq = cc2 - cc1;
+ 		cc1 = cc2;
++	}
+ 
+-		printk("%lu Hz\n", cycle_freq);
++	/* If the given value is within 1% of what we calculated, 
++	   accept it.  Otherwise, use what we found.  */
++	cycle_freq = hwrpb->cycle_freq;
++	one_percent = cycle_freq / 100;
++	diff = cycle_freq - est_cycle_freq;
++	if (diff < 0)
++		diff = -diff;
++	if (diff > one_percent) {
++		cycle_freq = est_cycle_freq;
++		printk("HWRPB cycle frequency bogus.  Estimated %lu Hz\n",
++		       cycle_freq);
++	}
++	else {
++		est_cycle_freq = 0;
+ 	}
+ 
+ 	/* From John Bowman <bowman@math.ualberta.ca>: allow the values
+diff -rup 2.2.6-dist/arch/alpha/lib/clear_user.S 2.2.6/arch/alpha/lib/clear_user.S
+--- 2.2.6-dist/arch/alpha/lib/clear_user.S	Sun Nov 30 10:59:02 1997
++++ 2.2.6/arch/alpha/lib/clear_user.S	Sat Apr 24 15:14:30 1999
+@@ -80,6 +80,7 @@ $tail:
+ 	ret	$31, ($28), 1	# .. e1 :
+ 
+ __do_clear_user:
++	ldgp	$29,0($27)	# we do exceptions -- we need the gp.
+ 	and	$6, 7, $4	# e0    : find dest misalignment
+ 	beq	$0, $zerolength # .. e1 :
+ 	addq	$0, $4, $1	# e0    : bias counter
+diff -rup 2.2.6-dist/arch/alpha/lib/copy_user.S 2.2.6/arch/alpha/lib/copy_user.S
+--- 2.2.6-dist/arch/alpha/lib/copy_user.S	Sat Apr 25 22:35:18 1998
++++ 2.2.6/arch/alpha/lib/copy_user.S	Sat Apr 24 15:13:19 1999
+@@ -46,6 +46,8 @@
+ 	.globl __copy_user
+ 	.ent __copy_user
+ __copy_user:
++	ldgp $29,0($27)			# we do exceptions -- we need the gp.
++	.prologue 1
+ 	and $6,7,$3
+ 	beq $0,$35
+ 	beq $3,$36
+Only in 2.2.6/arch/alpha/lib: io.c.rej
+diff -rup 2.2.6-dist/arch/alpha/lib/strlen_user.S 2.2.6/arch/alpha/lib/strlen_user.S
+--- 2.2.6-dist/arch/alpha/lib/strlen_user.S	Wed Jun 24 14:30:08 1998
++++ 2.2.6/arch/alpha/lib/strlen_user.S	Sat Apr 24 15:12:37 1999
+@@ -27,7 +27,8 @@
+ 
+ 	.align 3
+ __strlen_user:
+-	.prologue 0
++	ldgp	$29,0($27)	# we do exceptions -- we need the gp.
++	.prologue 1
+ 
+ 	EX( ldq_u t0, 0(a0) )	# load first quadword (a0 may be misaligned)
+ 	lda     t1, -1(zero)
+diff -rup 2.2.6-dist/arch/alpha/lib/strncpy_from_user.S 2.2.6/arch/alpha/lib/strncpy_from_user.S
+--- 2.2.6-dist/arch/alpha/lib/strncpy_from_user.S	Thu Feb  6 04:48:45 1997
++++ 2.2.6/arch/alpha/lib/strncpy_from_user.S	Sat Apr 24 15:11:58 1999
+@@ -31,6 +31,7 @@
+ 	.globl __strncpy_from_user
+ 	.ent __strncpy_from_user
+ 	.frame $30, 0, $26
++	.prologue 1
+ 
+ 	.align 3
+ $aligned:
+@@ -99,6 +100,7 @@ $a_eoc:
+ 	/*** The Function Entry Point ***/
+ 	.align 3
+ __strncpy_from_user:
++	ldgp	$29, 0($27)	# we do exceptions -- we need the gp.
+ 
+ 	mov	a0, v0		# save the string start
+ 	beq	a2, $zerolength
+diff -rup 2.2.6-dist/include/asm-alpha/semaphore.h 2.2.6/include/asm-alpha/semaphore.h
+--- 2.2.6-dist/include/asm-alpha/semaphore.h	Sat Apr 24 15:47:32 1999
++++ 2.2.6/include/asm-alpha/semaphore.h	Sat Apr 24 15:19:44 1999
+@@ -53,24 +53,31 @@ extern inline void down(struct semaphore
+ 	   it's return address in $28.  The pv is loaded as usual.
+ 	   The gp is clobbered (in the module case) as usual.  */
+ 
++	/* This little bit of silliness is to get the GP loaded for
++	   a function that ordinarily wouldn't.  Otherwise we could
++	   have it done by the macro directly, which can be optimized
++	   the linker.  */
++	register void *pv __asm__("$27") = __down_failed;
++	
+ 	__asm__ __volatile__ (
+ 		"/* semaphore down operation */\n"
+-		"1:	ldl_l	$27,%0\n"
+-		"	subl	$27,1,$27\n"
+-		"	mov	$27,$28\n"
+-		"	stl_c	$28,%0\n"
++		"1:	ldl_l	$24,%1\n"
++		"	subl	$24,1,$24\n"
++		"	mov	$24,$28\n"
++		"	stl_c	$28,%1\n"
+ 		"	beq	$28,2f\n"
+-		"	blt	$27,3f\n"
++		"	blt	$24,3f\n"
+ 		"4:	mb\n"
+ 		".section .text2,\"ax\"\n"
+ 		"2:	br	1b\n"
+-		"3:	lda	$24,%0\n"
+-		"	jsr	$28,__down_failed\n"
++		"3:	lda	$24,%1\n"
++		"	jsr	$28,($27),__down_failed\n"
+ 		"	ldgp	$29,0($28)\n"
+ 		"	br	4b\n"
+ 		".previous"
+-		: : "m"(sem->count)
+-		: "$24", "$27", "$28", "memory");
++		: "=r"(pv)
++		: "m"(sem->count), "r"(pv)
++		: "$24", "$28", "memory");
+ }
+ 
+ extern inline int down_interruptible(struct semaphore * sem)
+@@ -81,27 +88,28 @@ extern inline int down_interruptible(str
+ 	   value is in $24.  */
+ 
+ 	register int ret __asm__("$24");
++	register void *pv __asm__("$27") = __down_failed_interruptible;
+ 
+ 	__asm__ __volatile__ (
+ 		"/* semaphore down interruptible operation */\n"
+-		"1:	ldl_l	$27,%1\n"
+-		"	subl	$27,1,$27\n"
+-		"	mov	$27,$28\n"
+-		"	stl_c	$28,%1\n"
++		"1:	ldl_l	$24,%2\n"
++		"	subl	$24,1,$24\n"
++		"	mov	$24,$28\n"
++		"	stl_c	$28,%2\n"
+ 		"	beq	$28,2f\n"
+-		"	blt	$27,3f\n"
++		"	blt	$24,3f\n"
+ 		"	mov	$31,%0\n"
+ 		"4:	mb\n"
+ 		".section .text2,\"ax\"\n"
+ 		"2:	br	1b\n"
+-		"3:	lda	$24,%1\n"
+-		"	jsr	$28,__down_failed_interruptible\n"
++		"3:	lda	$24,%2\n"
++		"	jsr	$28,($27),__down_failed_interruptible\n"
+ 		"	ldgp	$29,0($28)\n"
+ 		"	br	4b\n"
+ 		".previous"
+-		: "=r"(ret)
+-		: "m"(sem->count)
+-		: "$27", "$28", "memory");
++		: "=r"(ret), "=r"(pv)
++		: "m"(sem->count), "r"(pv)
++		: "$28", "memory");
+ 
+ 	return ret;
+ }
+@@ -171,26 +179,29 @@ extern inline void up(struct semaphore *
+ 	   it's return address in $28.  The pv is loaded as usual.
+ 	   The gp is clobbered (in the module case) as usual.  */
+ 
++	register void *pv __asm__("$27") = __up_wakeup;
++
+ 	__asm__ __volatile__ (
+ 		"/* semaphore up operation */\n"
+ 		"	mb\n"
+-		"1:	ldl_l	$27,%0\n"
+-		"	addl	$27,1,$27\n"
+-		"	mov	$27,$28\n"
+-		"	stl_c	$28,%0\n"
++		"1:	ldl_l	$24,%1\n"
++		"	addl	$24,1,$24\n"
++		"	mov	$24,$28\n"
++		"	stl_c	$28,%1\n"
+ 		"	beq	$28,2f\n"
+ 		"	mb\n"
+ 		"	ble	$27,3f\n"
+ 		"4:\n"
+ 		".section .text2,\"ax\"\n"
+ 		"2:	br	1b\n"
+-		"3:	lda	$24,%0\n"
+-		"	jsr	$28,__up_wakeup\n"
++		"3:	lda	$24,%1\n"
++		"	jsr	$28,($27),__up_wakeup\n"
+ 		"	ldgp	$29,0($28)\n"
+ 		"	br	4b\n"
+ 		".previous"
+-		: : "m"(sem->count)
+-		: "$24", "$27", "$28", "memory");
++		: "=r"(pv)
++		: "m"(sem->count), "r"(pv)
++		: "$24", "$28", "memory");
+ }
+ 
+ #endif
+diff -rup 2.2.6-dist/include/asm-alpha/uaccess.h 2.2.6/include/asm-alpha/uaccess.h
+--- 2.2.6-dist/include/asm-alpha/uaccess.h	Sat Apr 24 15:47:32 1999
++++ 2.2.6/include/asm-alpha/uaccess.h	Sat Apr 24 15:21:48 1999
+@@ -160,7 +160,7 @@ struct __large_struct { unsigned long bu
+ 		: "=r"(__gu_val), "=r"(__gu_err)	\
+ 		: "m"(__m(addr)), "1"(__gu_err))
+ 
+-#ifdef __HAVE_CPU_BWX
++#ifdef __alpha_bwx__
+ /* Those lucky bastards with ev56 and later CPUs can do byte/word moves.  */
+ 
+ #define __get_user_16(addr)				\
+@@ -274,7 +274,7 @@ __asm__ __volatile__("1: stl %r2,%1\n"		
+ 		: "=r"(__pu_err)				\
+ 		: "m"(__m(addr)), "rJ"(x), "0"(__pu_err))
+ 
+-#ifdef __HAVE_CPU_BWX
++#ifdef __alpha_bwx__
+ /* Those lucky bastards with ev56 and later CPUs can do byte/word moves.  */
+ 
+ #define __put_user_16(x,addr)					\
+@@ -363,15 +363,21 @@ extern void __copy_user(void);
+ extern inline long
+ __copy_tofrom_user_nocheck(void *to, const void *from, long len)
+ {
++	/* This little bit of silliness is to get the GP loaded for
++	   a function that ordinarily wouldn't.  Otherwise we could
++	   have it done by the macro directly, which can be optimized
++	   the linker.  */
++	register void * pv __asm__("$27") = __copy_user;
++
+ 	register void * __cu_to __asm__("$6") = to;
+ 	register const void * __cu_from __asm__("$7") = from;
+ 	register long __cu_len __asm__("$0") = len;
+ 
+ 	__asm__ __volatile__(
+-		"jsr $28,__copy_user"
+-		: "=r" (__cu_len), "=r" (__cu_from), "=r" (__cu_to)
+-		: "0" (__cu_len), "1" (__cu_from), "2" (__cu_to)
+-		: "$1","$2","$3","$4","$5","$27","$28","memory");
++		"jsr $28,(%3),__copy_user\n\tldgp $29,0($28)"
++		: "=r" (__cu_len), "=r" (__cu_from), "=r" (__cu_to), "=r"(pv)
++		: "0" (__cu_len), "1" (__cu_from), "2" (__cu_to), "3"(pv)
++		: "$1","$2","$3","$4","$5","$28","memory");
+ 
+ 	return __cu_len;
+ }
+@@ -380,14 +386,17 @@ extern inline long
+ __copy_tofrom_user(void *to, const void *from, long len, const void *validate)
+ {
+ 	if (__access_ok((long)validate, len, get_fs())) {
++		register void * pv __asm__("$27") = __copy_user;
+ 		register void * __cu_to __asm__("$6") = to;
+ 		register const void * __cu_from __asm__("$7") = from;
+ 		register long __cu_len __asm__("$0") = len;
+ 		__asm__ __volatile__(
+-			"jsr $28,__copy_user"
+-			: "=r" (__cu_len), "=r" (__cu_from), "=r" (__cu_to)
+-			: "0" (__cu_len), "1" (__cu_from), "2" (__cu_to)
+-			: "$1","$2","$3","$4","$5","$27","$28","memory");
++			"jsr $28,(%3),__copy_user\n\tldgp $29,0($28)"
++			: "=r"(__cu_len), "=r"(__cu_from), "=r"(__cu_to),
++			  "=r" (pv)
++			: "0" (__cu_len), "1" (__cu_from), "2" (__cu_to), 
++			  "3" (pv)
++			: "$1","$2","$3","$4","$5","$28","memory");
+ 		len = __cu_len;
+ 	}
+ 	return len;
+@@ -423,13 +432,19 @@ extern void __do_clear_user(void);
+ extern inline long
+ __clear_user(void *to, long len)
+ {
++	/* This little bit of silliness is to get the GP loaded for
++	   a function that ordinarily wouldn't.  Otherwise we could
++	   have it done by the macro directly, which can be optimized
++	   the linker.  */
++	register void * pv __asm__("$27") = __do_clear_user;
++
+ 	register void * __cl_to __asm__("$6") = to;
+ 	register long __cl_len __asm__("$0") = len;
+ 	__asm__ __volatile__(
+-		"jsr $28,__do_clear_user"
+-		: "=r"(__cl_len), "=r"(__cl_to)
+-		: "0"(__cl_len), "1"(__cl_to)
+-		: "$1","$2","$3","$4","$5","$27","$28","memory");
++		"jsr $28,(%2),__do_clear_user\n\tldgp $29,0($28)"
++		: "=r"(__cl_len), "=r"(__cl_to), "=r"(pv)
++		: "0"(__cl_len), "1"(__cl_to), "2"(pv)
++		: "$1","$2","$3","$4","$5","$28","memory");
+ 	return __cl_len;
+ }
+ 
+@@ -437,13 +452,14 @@ extern inline long
+ clear_user(void *to, long len)
+ {
+ 	if (__access_ok((long)to, len, get_fs())) {
++		register void * pv __asm__("$27") = __do_clear_user;
+ 		register void * __cl_to __asm__("$6") = to;
+ 		register long __cl_len __asm__("$0") = len;
+ 		__asm__ __volatile__(
+-			"jsr $28,__do_clear_user"
+-			: "=r"(__cl_len), "=r"(__cl_to)
+-			: "0"(__cl_len), "1"(__cl_to)
+-			: "$1","$2","$3","$4","$5","$27","$28","memory");
++			"jsr $28,(%2),__do_clear_user\n\tldgp $29,0($28)"
++			: "=r"(__cl_len), "=r"(__cl_to), "=r"(pv)
++			: "0"(__cl_len), "1"(__cl_to), "2"(pv)
++			: "$1","$2","$3","$4","$5","$28","memory");
+ 		len = __cl_len;
+ 	}
+ 	return len;

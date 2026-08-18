@@ -1,0 +1,995 @@
+Index: fs/inode.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/inode.c,v
+retrieving revision 1.1.1.26
+retrieving revision 1.3
+diff -u -p -r1.1.1.26 -r1.3
+--- fs/inode.c	1999/03/23 22:56:31	1.1.1.26
++++ fs/inode.c	1999/03/29 17:40:18	1.3
+@@ -48,6 +48,8 @@ static LIST_HEAD(inode_in_use);
+ static LIST_HEAD(inode_unused);
+ static struct list_head inode_hashtable[HASH_SIZE];
+ 
++__u32 inode_generation_count = 0;
++
+ /*
+  * A simple spinlock to protect the list manipulations.
+  *
+@@ -778,6 +780,10 @@ void __init inode_init(void)
+ 	if (max > MAX_INODE)
+ 		max = MAX_INODE;
+ 	max_inodes = max;
++
++	/* Get a random number. */
++	get_random_bytes (&inode_generation_count,
++			  sizeof (inode_generation_count));
+ }
+ 
+ /* This belongs in file_table.c, not here... */
+Index: fs/locks.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/locks.c,v
+retrieving revision 1.1.1.17
+retrieving revision 1.5
+diff -u -p -r1.1.1.17 -r1.5
+--- fs/locks.c	1999/03/23 22:56:32	1.1.1.17
++++ fs/locks.c	1999/03/29 17:40:18	1.5
+@@ -672,8 +672,11 @@ static int posix_make_lock(struct file *
+ 
+ 	if (((start += l->l_start) < 0) || (l->l_len < 0))
+ 		return (0);
++	fl->fl_end = start + l->l_len - 1;
++	if (l->l_len > 0 && fl->fl_end < 0)
++		return (0);
+ 	fl->fl_start = start;	/* we record the absolute position */
+-	if ((l->l_len == 0) || ((fl->fl_end = start + l->l_len - 1) < 0))
++	if (l->l_len == 0)
+ 		fl->fl_end = OFFSET_MAX;
+ 	
+ 	fl->fl_file = filp;
+Index: fs/ext2/ialloc.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/ext2/ialloc.c,v
+retrieving revision 1.1.1.10
+retrieving revision 1.2
+diff -u -p -r1.1.1.10 -r1.2
+--- fs/ext2/ialloc.c	1998/10/24 13:51:00	1.1.1.10
++++ fs/ext2/ialloc.c	1999/03/09 20:17:39	1.2
+@@ -268,21 +268,6 @@ error_return:
+ }
+ 
+ /*
+- * This function increments the inode version number
+- *
+- * This may be used one day by the NFS server
+- */
+-static void inc_inode_version (struct inode * inode,
+-			       struct ext2_group_desc *gdp,
+-			       int mode)
+-{
+-	inode->u.ext2_i.i_version++;
+-	mark_inode_dirty(inode);
+-
+-	return;
+-}
+-
+-/*
+  * There are two policies for allocating an inode.  If the new inode is
+  * a directory, then a forward search is made for a block group with both
+  * free space and a low directory-to-inode ratio; if that fails, then of
+@@ -493,8 +478,9 @@ repeat:
+ 	if (inode->u.ext2_i.i_flags & EXT2_SYNC_FL)
+ 		inode->i_flags |= MS_SYNCHRONOUS;
+ 	insert_inode_hash(inode);
++	inode->i_generation = inode_generation_count++;
++	inode->u.ext2_i.i_version = inode->i_generation;
+ 	mark_inode_dirty(inode);
+-	inc_inode_version (inode, gdp, mode);
+ 
+ 	unlock_super (sb);
+ 	if(DQUOT_ALLOC_INODE(sb, inode)) {
+Index: fs/ext2/inode.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/ext2/inode.c,v
+retrieving revision 1.1.1.10
+retrieving revision 1.3
+diff -u -p -r1.1.1.10 -r1.3
+--- fs/ext2/inode.c	1999/03/23 22:56:36	1.1.1.10
++++ fs/ext2/inode.c	1999/03/29 17:40:19	1.3
+@@ -51,6 +51,10 @@ void ext2_delete_inode (struct inode * i
+ 	    inode->i_ino == EXT2_ACL_DATA_INO)
+ 		return;
+ 	inode->u.ext2_i.i_dtime	= CURRENT_TIME;
++	/* When we delete an inode, we increment its i_version. If it
++	   is ever read in from disk again, it will have a different
++	   i_version. */
++	inode->u.ext2_i.i_version++;
+ 	mark_inode_dirty(inode);
+ 	ext2_update_inode(inode, IS_SYNC(inode));
+ 	inode->i_size = 0;
+@@ -553,6 +557,7 @@ void ext2_read_inode (struct inode * ino
+ #endif
+ 	}
+ 	inode->u.ext2_i.i_version = le32_to_cpu(raw_inode->i_version);
++	inode->i_generation = inode->u.ext2_i.i_version;
+ 	inode->u.ext2_i.i_block_group = block_group;
+ 	inode->u.ext2_i.i_next_alloc_block = 0;
+ 	inode->u.ext2_i.i_next_alloc_goal = 0;
+Index: fs/ext2/ioctl.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/ext2/ioctl.c,v
+retrieving revision 1.1.1.6
+retrieving revision 1.2
+diff -u -p -r1.1.1.6 -r1.2
+--- fs/ext2/ioctl.c	1998/05/08 20:59:53	1.1.1.6
++++ fs/ext2/ioctl.c	1999/03/09 20:17:39	1.2
+@@ -77,6 +77,7 @@ int ext2_ioctl (struct inode * inode, st
+ 			return -EROFS;
+ 		if (get_user(inode->u.ext2_i.i_version, (int *) arg))
+ 			return -EFAULT;	
++		inode->i_generation = inode->u.ext2_i.i_version;
+ 		inode->i_ctime = CURRENT_TIME;
+ 		mark_inode_dirty(inode);
+ 		return 0;
+Index: fs/nfs/dir.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/nfs/dir.c,v
+retrieving revision 1.1.1.25
+retrieving revision 1.2
+diff -u -p -r1.1.1.25 -r1.2
+--- fs/nfs/dir.c	1999/03/09 18:21:01	1.1.1.25
++++ fs/nfs/dir.c	1999/03/15 17:47:04	1.2
+@@ -1146,8 +1146,9 @@ new_dentry->d_parent->d_name.name,new_de
+ 	 */
+ 	if (old_dentry->d_count > 1) {
+ 		nfs_wb_all(old_inode);
+-		shrink_dcache_parent(old_dentry);
++/*		shrink_dcache_parent(old_dentry); FIXME */
+ 	}
++	goto do_rename;
+ 
+ 	/*
+ 	 * Now check the use counts ... we can't safely do the
+Index: fs/nfsd/nfsfh.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/nfsd/nfsfh.c,v
+retrieving revision 1.1.1.14
+retrieving revision 1.4
+diff -u -p -r1.1.1.14 -r1.4
+--- fs/nfsd/nfsfh.c	1999/03/23 22:56:42	1.1.1.14
++++ fs/nfsd/nfsfh.c	1999/03/29 17:40:21	1.4
+@@ -4,6 +4,7 @@
+  * NFS server file handle treatment.
+  *
+  * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
++ * Portions Copyright (C) 1999 G. Allen Morris III <gam3@acm.org>
+  */
+ 
+ #include <linux/sched.h>
+@@ -21,6 +22,7 @@
+ #define NFSDDBG_FACILITY		NFSDDBG_FH
+ #define NFSD_PARANOIA 1
+ /* #define NFSD_DEBUG_VERBOSE 1 */
++/* #define NFSD_DEBUG_VERY_VERBOSE 1 */
+ 
+ extern unsigned long max_mapnr;
+ 
+@@ -50,15 +52,16 @@ static LIST_HEAD(path_inuse);
+ static int nfsd_nr_fixups = 0;
+ static int nfsd_nr_paths = 0;
+ #define NFSD_MAX_PATHS 500
+-#define NFSD_MAX_FIXUPAGE 60*HZ
++#define NFSD_MAX_FIXUPS 500
++#define NFSD_MAX_FIXUP_AGE 30*HZ
+ 
+ struct nfsd_fixup {
+ 	struct list_head lru;
+-	ino_t	dir;
++	unsigned long reftime;
++	ino_t	dirino;
+ 	ino_t	ino;
+ 	kdev_t	dev;
+-	struct dentry *dentry;
+-	unsigned long reftime;
++	ino_t	new_dirino;
+ };
+ 
+ struct nfsd_path {
+@@ -70,7 +73,8 @@ struct nfsd_path {
+ 	char	name[1];
+ };
+ 
+-static struct nfsd_fixup * find_cached_lookup(kdev_t dev, ino_t dir, ino_t ino)
++static struct nfsd_fixup *
++find_cached_lookup(kdev_t dev, ino_t dirino, ino_t ino)
+ {
+ 	struct list_head *tmp = fixup_head.next;
+ 
+@@ -78,32 +82,43 @@ static struct nfsd_fixup * find_cached_l
+ 		struct nfsd_fixup *fp;
+ 
+ 		fp = list_entry(tmp, struct nfsd_fixup, lru);
++#ifdef NFSD_DEBUG_VERY_VERBOSE
++printk("fixup %lu %lu, %lu %lu %s %s\n",
++        fp->ino, ino,
++	fp->dirino, dirino,
++	kdevname(fp->dev), kdevname(dev));
++#endif
+ 		if (fp->ino != ino)
+ 			continue;
+-		if (fp->dir != dir)
++		if (fp->dirino != dirino)
+ 			continue;
+ 		if (fp->dev != dev)
+ 			continue;
++		fp->reftime = jiffies;	
+ 		list_del(tmp);
+ 		list_add(tmp, &fixup_head);
+-		fp->reftime = jiffies;
+ 		return fp;
+ 	}
+ 	return NULL;
+ }
+ 
+ /*
+- * Save the dentry pointer from a successful lookup.
++ * Save the dirino from a rename.
+  */
+-static void add_to_lookup_cache(struct dentry *dentry, struct knfs_fh *fh)
++void
++add_to_rename_cache(ino_t new_dirino,
++                    kdev_t dev, ino_t dirino, ino_t ino)
+ {
+ 	struct nfsd_fixup *fp;
+ 
+-	fp = find_cached_lookup(u32_to_kdev_t(fh->fh_dev), 
+-				u32_to_ino_t(fh->fh_dirino),
+-				u32_to_ino_t(fh->fh_ino));
++	if (dirino == new_dirino)
++		return;
++
++	fp = find_cached_lookup(dev, 
++				dirino,
++				ino);
+ 	if (fp) {
+-		fp->dentry = dentry;
++		fp->new_dirino = new_dirino;
+ 		return;
+ 	}
+ 
+@@ -114,19 +129,30 @@ static void add_to_lookup_cache(struct d
+ 	 */
+ 	fp = kmalloc(sizeof(struct nfsd_fixup), GFP_KERNEL);
+ 	if (fp) {
+-		fp->dir = u32_to_kdev_t(fh->fh_dirino);
+-		fp->ino = u32_to_ino_t(fh->fh_ino);
+-		fp->dev = u32_to_ino_t(fh->fh_dev);
+-		fp->dentry = dentry;
+-		fp->reftime = jiffies;
++		fp->dirino = dirino;
++		fp->ino = ino;
++		fp->dev = dev;
++		fp->new_dirino = new_dirino;
+ 		list_add(&fp->lru, &fixup_head);
+ 		nfsd_nr_fixups++;
+ 	}
+ }
+ 
++/*
++ * Save the dentry pointer from a successful lookup.
++ */
++
+ static void free_fixup_entry(struct nfsd_fixup *fp)
+ {
+ 	list_del(&fp->lru);
++#ifdef NFSD_DEBUG_VERY_VERBOSE
++printk("free_rename_entry: %lu->%lu %lu/%s\n",
++		fp->dirino,
++		fp->new_dirino,
++		fp->ino,
++		kdevname(fp->dev),
++		(jiffies - fp->reftime));
++#endif
+ 	kfree(fp);
+ 	nfsd_nr_fixups--;
+ }
+@@ -211,9 +237,9 @@ restart:
+ 	if (new) {
+ 		new->users = 0;	
+ 		new->reftime = jiffies;	
+-		new->ino = inode->i_ino;	
+-		new->dev = inode->i_dev;	
+-		result = copy_path(new->name, dentry, len);	
++		new->ino = inode->i_ino;
++		new->dev = inode->i_dev;
++		result = copy_path(new->name, dentry, len);
+ 		if (!result)
+ 			goto retry;
+ 		list_add(&new->lru, &path_inuse);
+@@ -300,8 +326,8 @@ static int filldir_one(void * __buf, con
+ 	int result = 0;
+ 
+ 	buf->sequence++;
+-#ifdef NFSD_DEBUG_VERBOSE
+-printk("filldir_one: seq=%d, ino=%ld, name=%s\n", buf->sequence, ino, name);
++#ifdef NFSD_DEBUG_VERY_VERBOSE
++printk("filldir_one: seq=%d, ino=%lu, name=%s\n", buf->sequence, ino, name);
+ #endif
+ 	if (buf->sequence == 2) {
+ 		buf->dirino = ino;
+@@ -310,7 +336,7 @@ printk("filldir_one: seq=%d, ino=%ld, na
+ 	if (dirent->ino == ino) {
+ 		dirent->len = len;
+ 		memcpy(dirent->name, name, len);
+-		dirent->name[len] = 0;
++		dirent->name[len] = '\0';
+ 		buf->found = 1;
+ 		result = -1;
+ 	}
+@@ -520,7 +546,8 @@ static void expire_fhe(struct fh_entry *
+ 	struct dentry *dentry = empty->dentry;
+ 
+ #ifdef NFSD_DEBUG_VERBOSE
+-printk("expire_fhe: expiring %s/%s, d_count=%d, ino=%ld\n",
++printk("expire_fhe: expiring %s %s/%s, d_count=%d, ino=%lu\n",
++(cache == NFSD_FILE_CACHE) ? "file" : "dir",
+ dentry->d_parent->d_name.name, dentry->d_name.name, dentry->d_count,empty->ino);
+ #endif
+ 	empty->dentry = NULL;	/* no dentry */
+@@ -575,11 +602,10 @@ out:
+  */
+ static void expire_old(int cache, int age)
+ {
+-	struct list_head *tmp;
+ 	struct fh_entry *fhe;
+ 	int i;
+ 
+-#ifdef NFSD_DEBUG_VERBOSE
++#ifdef NFSD_DEBUG_VERY_VERBOSE
+ printk("expire_old: expiring %s older than %d\n",
+ (cache == NFSD_FILE_CACHE) ? "file" : "dir", age);
+ #endif
+@@ -592,12 +618,12 @@ printk("expire_old: expiring %s older th
+ 	}
+ 
+ 	/*
+-	 * Remove old entries from the patch-up cache.
++	 * Trim the fixup cache ...
+ 	 */
+-	while ((tmp = fixup_head.prev) != &fixup_head) {
++	while (nfsd_nr_fixups > NFSD_MAX_FIXUPS) {
+ 		struct nfsd_fixup *fp;
+-		fp = list_entry(tmp, struct nfsd_fixup, lru);
+-		if ((jiffies - fp->reftime) < NFSD_MAX_FIXUPAGE)
++		fp = list_entry(fixup_head.prev, struct nfsd_fixup, lru);
++		if ((jiffies - fp->reftime) < NFSD_MAX_FIXUP_AGE)
+ 			break;
+ 		free_fixup_entry(fp);
+ 	}
+@@ -756,6 +782,8 @@ out:
+  */
+ static struct dentry *find_dentry_in_fhcache(struct knfs_fh *fh)
+ {
++/* FIXME: this must use the dev/ino/dir_ino triple. */ 
++#if 0
+ 	struct fh_entry * fhe;
+ 
+ 	fhe = find_fhe(fh->fh_dcookie, NFSD_FILE_CACHE, NULL);
+@@ -793,6 +821,7 @@ dentry->d_parent->d_name.name, dentry->d
+ 		return dentry;
+ 	}
+ out:
++#endif
+ 	return NULL;
+ }
+ 
+@@ -841,13 +870,12 @@ no_entry:
+ 	dentry = NULL;
+ out:
+ 	return dentry;
+-
+ }
+ 
+ /*
+  * Search the fix-up list for a dentry from a prior lookup.
+  */
+-static struct dentry *nfsd_cached_lookup(struct knfs_fh *fh)
++static ino_t nfsd_cached_lookup(struct knfs_fh *fh)
+ {
+ 	struct nfsd_fixup *fp;
+ 
+@@ -855,8 +883,8 @@ static struct dentry *nfsd_cached_lookup
+ 				u32_to_ino_t(fh->fh_dirino),
+ 				u32_to_ino_t(fh->fh_ino));
+ 	if (fp)
+-		return fp->dentry;
+-	return NULL;
++		return fp->new_dirino;
++	return 0;
+ }
+ 
+ void
+@@ -915,8 +943,12 @@ expire_by_dentry(struct dentry *dentry)
+ static struct dentry *
+ find_fh_dentry(struct knfs_fh *fh)
+ {
++	struct super_block *sb;
+ 	struct dentry *dentry, *parent;
++	struct inode * inode;
++	struct list_head *lst;
+ 	int looked_up = 0, retry = 0;
++	ino_t dirino;
+ 
+ 	/*
+ 	 * Stage 1: Look for the dentry in the short-term fhcache.
+@@ -926,50 +958,67 @@ find_fh_dentry(struct knfs_fh *fh)
+ 		nfsdstats.fh_cached++;
+ 		goto out;
+ 	}
+-
+ 	/*
+-	 * Stage 2: Attempt to validate the dentry in the file handle.
++	 * Stage 2: Attempt to find the inode.
+ 	 */
+-	dentry = fh->fh_dcookie;
++	sb = get_super(fh->fh_dev);
++	if (NULL == sb) {
++		printk("find_fh_dentry: No SuperBlock for device %s.",
++		       kdevname(fh->fh_dev));
++		dentry = NULL;
++		goto out;
++	}
++
++	dirino = u32_to_ino_t(fh->fh_dirino);
++	inode = iget(sb, fh->fh_ino);
+ recheck:
+-	if (nfsd_d_validate(dentry)) {
+-		struct inode * dir = dentry->d_parent->d_inode;
++	if (!inode) {
++		dprintk(": No inode found.\n");
++		goto out_three;
++	}
++	for (lst = inode->i_dentry.next;
++	     lst != &inode->i_dentry;
++	     lst = lst->next) {
++		dentry = list_entry(lst, struct dentry, d_alias);
++
++/* if we are looking up a directory then we don't need the parent! */
++		if (!dentry ||
++		    !dentry->d_parent ||
++		    !dentry->d_parent->d_inode) {
++printk("find_fh_dentry: Found a useless inode %lu\n", inode->i_ino);
++			continue;
++		}
++		if (dentry->d_parent->d_inode->i_ino != dirino)
++			continue;
+ 
+-		if (dir->i_ino == u32_to_ino_t(fh->fh_dirino) && 
+-		    dir->i_dev == u32_to_kdev_t(fh->fh_dev)) {
+-			struct inode * inode = dentry->d_inode;
+-			/*
+-			 * NFS file handles must always have an inode,
+-			 * so we won't accept a negative dentry.
+-			 */
+-			if (inode && inode->i_ino == u32_to_ino_t(fh->fh_ino)) {
+-				dget(dentry);
+-#ifdef NFSD_DEBUG_VERBOSE
+-printk("find_fh_dentry: validated %s/%s, ino=%ld\n",
+-dentry->d_parent->d_name.name, dentry->d_name.name, inode->i_ino);
+-#endif
+-				if (!retry)
+-					nfsdstats.fh_valid++;
+-				else {
+-					nfsdstats.fh_fixup++;
++		dget(dentry);
++		iput(inode);
+ #ifdef NFSD_DEBUG_VERBOSE
+-printk("find_fh_dentry: retried validation successful\n");
++		printk("find_fh_dentry: Found%s %s/%s filehandle dirino = %lu, %lu\n",
++		       retry ? " Renamed" : "",
++		       dentry->d_parent->d_name.name,
++		       dentry->d_name.name,
++		       dentry->d_parent->d_inode->i_ino,
++		       dirino);
+ #endif
+-				}
+-				goto out;
+-			}
+-		}
+-	}
++		goto out;
++	} /* for inode->i_dentry */
+ 
+ 	/*
+-	 * Before proceeding to a lookup, check whether we cached a
+-	 * prior lookup. If so, try to validate that dentry ...
++	 * Before proceeding to a lookup, check for a rename
+ 	 */
+-	if (!retry && (dentry = nfsd_cached_lookup(fh)) != NULL) {
++	if (!retry && (dirino = nfsd_cached_lookup(fh))) {
++		dprintk("find_fh_dentry: retry with %lu\n", dirino);
+ 		retry = 1;
+ 		goto recheck;
+ 	}
+ 
++	iput(inode);
++
++	dprintk("find_fh_dentry: dirino not found %lu\n", dirino);
++
++out_three:
++
+ 	/*
+ 	 * Stage 3: Look up the dentry based on the inode and parent inode
+ 	 * numbers. This should work for all Unix-like filesystems.
+@@ -982,7 +1031,7 @@ printk("find_fh_dentry: retried validati
+ 		struct inode * inode = dentry->d_inode;
+ #ifdef NFSD_DEBUG_VERBOSE
+ printk("find_fh_dentry: looked up %s/%s\n",
+-dentry->d_parent->d_name.name, dentry->d_name.name);
++       dentry->d_parent->d_name.name, dentry->d_name.name);
+ #endif
+ 		if (inode && inode->i_ino == u32_to_ino_t(fh->fh_ino)) {
+ 			nfsdstats.fh_lookup++;
+@@ -990,7 +1039,7 @@ dentry->d_parent->d_name.name, dentry->d
+ 		}
+ #ifdef NFSD_PARANOIA
+ printk("find_fh_dentry: %s/%s lookup mismatch!\n",
+-dentry->d_parent->d_name.name, dentry->d_name.name);
++       dentry->d_parent->d_name.name, dentry->d_name.name);
+ #endif
+ 		dput(dentry);
+ 	}
+@@ -1011,22 +1060,17 @@ dentry->d_parent->d_name.name, dentry->d
+ 	}
+ 
+ 	/*
+-	 * Stage 5: Search the whole volume.
++	 * Stage 5: Search the whole volume, Yea Right.
+ 	 */
+ #ifdef NFSD_PARANOIA
+-printk("find_fh_dentry: %s, %u/%u not found -- need full search!\n",
+-kdevname(u32_to_kdev_t(fh->fh_dev)), fh->fh_dirino, fh->fh_ino);
++printk("find_fh_dentry: %s/%u dir/%u not found!\n",
++       kdevname(u32_to_kdev_t(fh->fh_dev)), fh->fh_ino, fh->fh_dirino);
+ #endif
+ 	dentry = NULL;
+ 	nfsdstats.fh_stale++;
+ 	
+ out:
+-	if (looked_up && dentry) {
+-		add_to_lookup_cache(dentry, fh);
+-	}
+-
+ 	expire_all();
+-
+ 	return dentry;
+ }
+ 
+@@ -1045,8 +1089,12 @@ fh_verify(struct svc_rqst *rqstp, struct
+ 	struct inode	*inode;
+ 	u32		error = 0;
+ 
+-	dprintk("nfsd: fh_verify(exp %x/%u cookie %p)\n",
+-		fh->fh_xdev, fh->fh_xino, fh->fh_dcookie);
++	dprintk("nfsd: fh_verify(exp %s/%u file (%s/%u dir %u)\n",
++		kdevname(fh->fh_xdev),
++		fh->fh_xino,
++		kdevname(fh->fh_dev),
++		fh->fh_ino,
++		fh->fh_dirino);
+ 
+ 	if (fhp->fh_dverified)
+ 		goto check_type;
+@@ -1055,8 +1103,8 @@ fh_verify(struct svc_rqst *rqstp, struct
+ 	 */
+ 	error = nfserr_stale;
+ 	exp = exp_get(rqstp->rq_client,
+-			u32_to_kdev_t(fh->fh_xdev),
+-			u32_to_ino_t(fh->fh_xino));
++		      u32_to_kdev_t(fh->fh_xdev),
++		      u32_to_ino_t(fh->fh_xino));
+ 	if (!exp) /* export entry revoked */
+ 		goto out;
+ 
+@@ -1078,8 +1126,13 @@ fh_verify(struct svc_rqst *rqstp, struct
+ 	 */
+ 	error = nfserr_noent;
+ 	dentry = find_fh_dentry(fh);
+-	if (!dentry)
++	if (!dentry) {
+ 		goto out;
++	}
++	if (IS_ERR(dentry)) {
++		error = nfserrno(-PTR_ERR(dentry));
++		goto out;
++	}
+ 
+ 	/*
+ 	 * Note:  it's possible the returned dentry won't be the one in the
+@@ -1101,6 +1154,21 @@ fh_verify(struct svc_rqst *rqstp, struct
+ check_type:
+ 	dentry = fhp->fh_dentry;
+ 	inode = dentry->d_inode;
++	error = nfserr_stale;
++/* is to keep from breaking the nfs filehandles until june */
++
++#define FIXME_IN_JUNE_1999 1
++
++	if (inode->i_generation != fh->fh_generation) {
++		dprintk("fh_verify: Bad version %u %u %u\n",
++			inode->i_ino,
++			inode->i_generation,
++			fh->fh_generation);
++#ifdef  FIXME_IN_JUNE_1999
++	if (fh->fh_dcookie == 0xfeebbaca)
++#endif
++		goto out;
++	}
+ 	exp = fhp->fh_export;
+ 	if (type > 0 && (inode->i_mode & S_IFMT) != type) {
+ 		error = (type == S_IFDIR)? nfserr_notdir : nfserr_isdir;
+@@ -1116,8 +1184,8 @@ check_type:
+ 	 */
+ 	error = 0;
+ 	if (fh->fh_dev != fh->fh_xdev) {
+-		printk("fh_verify: Security: export on other device"
+-		       " (%d, %d).\n", fh->fh_dev, fh->fh_xdev);
++		printk("fh_verify: Security: export on other device (%s, %s).\n",
++		       kdevname(fh->fh_dev), kdevname(fh->fh_xdev));
+ 		error = nfserr_stale;
+ 	} else if (exp->ex_dentry != dentry) {
+ 		struct dentry *tdentry = dentry;
+@@ -1127,13 +1195,13 @@ check_type:
+ 			if (exp->ex_dentry == tdentry)
+ 				break;
+ 			/* executable only by root and we can't be root */
+-			if (current->fsuid &&
+-			    !(tdentry->d_inode->i_uid  &&
+-			        (tdentry->d_inode->i_mode & S_IXUSR)) &&
+-			    !(tdentry->d_inode->i_gid &&
+-			        (tdentry->d_inode->i_mode & S_IXGRP)) &&
+-			    !(tdentry->d_inode->i_mode & S_IXOTH) && 
+-			    (exp->ex_flags & NFSEXP_ROOTSQUASH)) {
++			if (current->fsuid
++			    && !(tdentry->d_inode->i_uid
++			         && (tdentry->d_inode->i_mode & S_IXUSR))
++			    && !(tdentry->d_inode->i_gid
++				 && (tdentry->d_inode->i_mode & S_IXGRP))
++			    && !(tdentry->d_inode->i_mode & S_IXOTH)
++			    && (exp->ex_flags & NFSEXP_ROOTSQUASH)) {
+ 				error = nfserr_stale;
+ dprintk("fh_verify: no root_squashed access.\n");
+ 			}
+@@ -1189,9 +1257,10 @@ fh_compose(struct svc_fh *fhp, struct sv
+ 	}
+ 	fh_init(fhp);
+ 
+-	fhp->fh_handle.fh_dcookie = dentry;
++	fhp->fh_handle.fh_dcookie = (struct dentry *)0xfeebbaca;
+ 	if (inode) {
+ 		fhp->fh_handle.fh_ino = ino_t_to_u32(inode->i_ino);
++		fhp->fh_handle.fh_generation = inode->i_generation;
+ 	}
+ 	fhp->fh_handle.fh_dirino = ino_t_to_u32(parent->d_inode->i_ino);
+ 	fhp->fh_handle.fh_dev	 = kdev_t_to_u32(parent->d_inode->i_dev);
+@@ -1223,6 +1292,7 @@ fh_update(struct svc_fh *fhp)
+ 	if (!inode)
+ 		goto out_negative;
+ 	fhp->fh_handle.fh_ino = ino_t_to_u32(inode->i_ino);
++	fhp->fh_handle.fh_generation = inode->i_generation;
+ out:
+ 	return;
+ 
+@@ -1262,51 +1332,6 @@ out_bad:
+ }
+ 
+ /*
+- * Verify that the FH dentry is still a valid dentry pointer.
+- * After making some preliminary checks, we ask VFS to verify
+- * that it is indeed a dentry.
+- */
+-static int nfsd_d_validate(struct dentry *dentry)
+-{
+-	unsigned long dent_addr = (unsigned long) dentry;
+-	unsigned long min_addr = PAGE_OFFSET;
+-	unsigned long max_addr = min_addr + (max_mapnr << PAGE_SHIFT);
+-	unsigned long align_mask = 0x0F;
+-	unsigned int len;
+-	int valid = 0;
+-
+-	if (dent_addr < min_addr)
+-		goto bad_addr;
+-	if (dent_addr > max_addr - sizeof(struct dentry))
+-		goto bad_addr;
+-	if ((dent_addr & ~align_mask) != dent_addr)
+-		goto bad_align;
+-	if (!kern_addr_valid(dent_addr))
+-		goto bad_addr;
+-	/*
+-	 * Looks safe enough to dereference ...
+-	 */
+-	len = dentry->d_name.len;
+-	if (len > NFS_MAXNAMLEN)
+-		goto out;
+-	/*
+-	 * Note: d_validate doesn't dereference the parent pointer ...
+-	 * just combines it with the name hash to find the hash chain.
+-	 */
+-	valid = d_validate(dentry, dentry->d_parent, dentry->d_name.hash, len);
+-
+-out:
+-	return valid;
+-
+-bad_addr:
+-	printk(KERN_DEBUG "nfsd_d_validate: invalid address %lx\n", dent_addr);
+-	goto out;
+-bad_align:
+-	printk(KERN_DEBUG "nfsd_d_validate: unaligned address %lx\n", dent_addr);
+-	goto out;
+-}
+-
+-/*
+  * Flush any cached dentries for the specified device
+  * or for all devices.
+  *
+@@ -1335,7 +1360,7 @@ void nfsd_fh_flush(kdev_t dev)
+ }
+ 
+ /*
+- * Free the dentry and path caches.
++ * Free the rename and path caches.
+  */
+ void nfsd_fh_free(void)
+ {
+Index: fs/nfsd/nfssvc.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/nfsd/nfssvc.c,v
+retrieving revision 1.1.1.9
+retrieving revision 1.8
+diff -u -p -r1.1.1.9 -r1.8
+--- fs/nfsd/nfssvc.c	1999/03/23 22:56:42	1.1.1.9
++++ fs/nfsd/nfssvc.c	1999/03/15 17:47:05	1.8
+@@ -5,7 +5,7 @@
+  *
+  * Authors:	Olaf Kirch (okir@monad.swb.de)
+  *
+- * Copyright (C) 1995, 1996, 1997 Olaf Kirch <okir@monad.swb.de>
++ * Copyright (C) 1995-1999 Olaf Kirch <okir@monad.swb.de>
+  */
+ 
+ #define __NO_VERSION__
+@@ -72,15 +72,16 @@ nfsd_svc(unsigned short port, int nrserv
+ 	if (serv == NULL)
+ 		goto out;
+ 
+-	error = svc_makesock(serv, IPPROTO_UDP, port);
+-	if (error < 0)
+-		goto failure;
+-
+ #if 0	/* Don't even pretend that TCP works. It doesn't. */
+ 	error = svc_makesock(serv, IPPROTO_TCP, port);
+ 	if (error < 0)
+ 		goto failure;
+ #endif
++
++	error = svc_makesock(serv, IPPROTO_UDP, port);
++	if (error < 0)
++		goto failure;
++
+ 
+ 	while (nrservs--) {
+ 		error = svc_create_thread(nfsd, serv);
+Index: fs/nfsd/vfs.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/nfsd/vfs.c,v
+retrieving revision 1.1.1.26
+retrieving revision 1.12
+diff -u -p -r1.1.1.26 -r1.12
+--- fs/nfsd/vfs.c	1999/03/23 22:56:42	1.1.1.26
++++ fs/nfsd/vfs.c	1999/03/29 17:40:21	1.12
+@@ -21,7 +21,6 @@
+ #include <linux/locks.h>
+ #include <linux/fs.h>
+ #include <linux/major.h>
+-#include <linux/ext2_fs.h>
+ #include <linux/proc_fs.h>
+ #include <linux/stat.h>
+ #include <linux/fcntl.h>
+@@ -554,7 +553,7 @@ nfsd_write(struct svc_rqst *rqstp, struc
+ 	/* clear setuid/setgid flag after write */
+ 	if (err >= 0 && (inode->i_mode & (S_ISUID | S_ISGID))) {
+ 		struct iattr	ia;
+-		kernel_cap_t	saved_cap;
++		kernel_cap_t	saved_cap = 0;
+ 
+ 		ia.ia_valid = ATTR_MODE;
+ 		ia.ia_mode  = inode->i_mode & ~(S_ISUID | S_ISGID);
+@@ -658,10 +657,6 @@ nfsd_create(struct svc_rqst *rqstp, stru
+ 		if (IS_ERR(dchild))
+ 			goto out_nfserr;
+ 		fh_compose(resfhp, fhp->fh_export, dchild);
+-		/* Lock the parent and check for errors ... */
+-		err = fh_lock_parent(fhp, dchild);
+-		if (err)
+-			goto out;
+ 	} else {
+ 		dchild = resfhp->fh_dentry;
+ 		if (!fhp->fh_locked)
+@@ -670,6 +665,15 @@ nfsd_create(struct svc_rqst *rqstp, stru
+ 				dentry->d_parent->d_name.name,
+ 				dentry->d_name.name);
+ 	}
++	err = nfserr_exist;
++	if (dchild->d_inode)
++		goto out;
++	if (!fhp->fh_locked) {
++		/* Lock the parent and check for errors ... */
++		err = fh_lock_parent(fhp, dchild);
++		if (err)
++			goto out;
++	}
+ 	/*
+ 	 * Make sure the child dentry is still negative ...
+ 	 */
+@@ -695,8 +699,7 @@ nfsd_create(struct svc_rqst *rqstp, stru
+ 	case S_IFCHR:
+ 	case S_IFBLK:
+ 		/* The client is _NOT_ required to do security enforcement */
+-		if(!capable(CAP_SYS_ADMIN))
+-		{
++		if(!capable(CAP_SYS_ADMIN)) {
+ 			err = -EPERM;
+ 			goto out;
+ 		}
+@@ -759,7 +762,7 @@ nfsd_truncate(struct svc_rqst *rqstp, st
+ 	struct inode	*inode;
+ 	struct iattr	newattrs;
+ 	int		err;
+-	kernel_cap_t	saved_cap;
++	kernel_cap_t	saved_cap = 0;
+ 
+ 	err = fh_verify(rqstp, fhp, S_IFREG, MAY_WRITE | MAY_TRUNC);
+ 	if (err)
+@@ -899,6 +902,7 @@ nfsd_symlink(struct svc_rqst *rqstp, str
+ 	/* Compose the fh so the dentry will be freed ... */
+ out_compose:
+ 	fh_compose(resfhp, fhp->fh_export, dnew);
++
+ out:
+ 	return err;
+ 
+@@ -1091,6 +1095,15 @@ nfsd_rename(struct svc_rqst *rqstp, stru
+ 	DQUOT_DROP(tdir);
+ 
+ 	nfsd_double_up(&tdir->i_sem, &fdir->i_sem);
++
++	if (!err && odentry->d_inode) {
++		add_to_rename_cache(tdir->i_ino,
++				    odentry->d_inode->i_dev,
++				    fdir->i_ino,
++				    odentry->d_inode->i_ino);
++	} else {
++		printk(": no inode in rename or err: %d.\n", err);
++	}
+ 	dput(ndentry);
+ 
+ out_dput_old:
+@@ -1132,7 +1145,6 @@ nfsd_unlink(struct svc_rqst *rqstp, stru
+ 	err = PTR_ERR(rdentry);
+ 	if (IS_ERR(rdentry))
+ 		goto out_nfserr;
+-
+ 	if (!rdentry->d_inode) {
+ 		dput(rdentry);
+ 		err = nfserr_noent;
+@@ -1154,7 +1166,7 @@ nfsd_unlink(struct svc_rqst *rqstp, stru
+ 		fh_unlock(fhp);
+ 
+ 		dput(rdentry);
+-
++		expire_by_dentry(rdentry);
+ 	} else {
+ 		/* It's RMDIR */
+ 		/* See comments in fs/namei.c:do_rmdir */
+@@ -1183,6 +1195,7 @@ nfsd_unlink(struct svc_rqst *rqstp, stru
+ 		goto out_nfserr;
+ 	if (EX_ISSYNC(fhp->fh_export))
+ 		write_inode_now(dirp);
++
+ out:
+ 	return err;
+ 
+@@ -1314,7 +1327,7 @@ nfsd_permission(struct svc_export *exp, 
+ {
+ 	struct inode	*inode = dentry->d_inode;
+ 	int		err;
+-	kernel_cap_t	saved_cap;
++	kernel_cap_t	saved_cap = 0;
+ 
+ 	if (acc == MAY_NOP)
+ 		return 0;
+@@ -1334,7 +1347,7 @@ nfsd_permission(struct svc_export *exp, 
+ 		inode->i_uid, inode->i_gid, current->fsuid, current->fsgid);
+ #endif
+ #ifndef CONFIG_NFSD_SUN
+-        if (dentry->d_mounts != dentry) {
++	if (dentry->d_mounts != dentry) {
+ 		return nfserr_perm;
+ 	}
+ #endif
+Index: include/linux/fs.h
+===================================================================
+RCS file: /local/work/cvs/linux/linux/include/linux/fs.h,v
+retrieving revision 1.1.1.36
+retrieving revision 1.3
+diff -u -p -r1.1.1.36 -r1.3
+--- include/linux/fs.h	1999/03/23 22:56:50	1.1.1.36
++++ include/linux/fs.h	1999/03/29 17:40:22	1.3
+@@ -886,6 +886,8 @@ extern void inode_setattr(struct inode *
+ #include <linux/minix_fs.h>
+ #include <linux/minix_fs_sb.h>
+ 
++extern __u32 inode_generation_count;
++
+ #endif /* __KERNEL__ */
+ 
+ #endif
+Index: include/linux/nfsd/nfsfh.h
+===================================================================
+RCS file: /local/work/cvs/linux/linux/include/linux/nfsd/nfsfh.h,v
+retrieving revision 1.1.1.11
+retrieving revision 1.14
+diff -u -p -r1.1.1.11 -r1.14
+--- include/linux/nfsd/nfsfh.h	1999/03/29 17:23:55	1.1.1.11
++++ include/linux/nfsd/nfsfh.h	1999/03/29 17:40:22	1.14
+@@ -33,6 +33,7 @@ struct nfs_fhbase {
+ 	__u32		fb_dev;		/* our device */
+ 	__u32		fb_xdev;
+ 	__u32		fb_xino;
++	__u32		fb_generation;
+ };
+ 
+ #define NFS_FH_PADDING		(NFS_FHSIZE - sizeof(struct nfs_fhbase))
+@@ -47,6 +48,7 @@ struct knfs_fh {
+ #define fh_dev			fh_base.fb_dev
+ #define fh_xdev			fh_base.fb_xdev
+ #define fh_xino			fh_base.fb_xino
++#define fh_generation		fh_base.fb_generation
+ 
+ #ifdef __KERNEL__
+ 
+@@ -181,32 +183,9 @@ fh_unlock(struct svc_fh *fhp)
+ }
+ 
+ /*
+- * Release an inode
++ * This is a long term cache to help find renamed files.
+  */
+-#if 0
+-#define fh_put(fhp)	__fh_put(fhp, __FILE__, __LINE__)
+-
+-static inline void
+-__fh_put(struct svc_fh *fhp, char *file, int line)
+-{
+-	struct dentry	*dentry;
+-
+-	if (!fhp->fh_dverified)
+-		return;
+-
+-	dentry = fhp->fh_dentry;
+-	if (!dentry->d_count) {
+-		printk("nfsd: trying to free free dentry in %s:%d\n"
+-		       "      file %s/%s\n",
+-		       file, line,
+-		       dentry->d_parent->d_name.name, dentry->d_name.name);
+-	} else {
+-		fh_unlock(fhp);
+-		fhp->fh_dverified = 0;
+-		dput(dentry);
+-	}
+-}
+-#endif
++void add_to_rename_cache(ino_t new_dirino, kdev_t dev, ino_t dirino, ino_t ino);
+ 
+ #endif /* __KERNEL__ */
+ 

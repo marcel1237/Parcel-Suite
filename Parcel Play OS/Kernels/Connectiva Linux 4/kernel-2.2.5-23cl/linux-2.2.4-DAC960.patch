@@ -1,0 +1,465 @@
+--- linux/init/main.c.patch4	Wed Feb 24 19:27:54 1999
++++ linux/init/main.c	Wed Mar 24 16:15:29 1999
+@@ -429,6 +429,24 @@
+ 	{ "sdo",     0x08e0 },
+ 	{ "sdp",     0x08f0 },
+ #endif
++#ifdef CONFIG_BLK_DEV_DAC960
++	{ "rd/c0d0p",0x3000 },
++	{ "rd/c0d1p",0x3008 },
++	{ "rd/c0d2p",0x3010 },
++	{ "rd/c0d3p",0x3018 },
++	{ "rd/c0d4p",0x3020 },
++	{ "rd/c0d5p",0x3028 },
++	{ "rd/c0d6p",0x3030 },
++	{ "rd/c0d7p",0x3038 },
++	{ "rd/c0d8p",0x3040 },
++	{ "rd/c0d9p",0x3048 },
++	{ "rd/c0d10p",0x3050 },
++	{ "rd/c0d11p",0x3058 },
++	{ "rd/c0d12p",0x3060 },
++	{ "rd/c0d13p",0x3068 },
++	{ "rd/c0d14p",0x3070 },
++	{ "rd/c0d15p",0x3078 },
++#endif
+ #ifdef CONFIG_ATARI_ACSI
+ 	{ "ada",     0x1c00 },
+ 	{ "adb",     0x1c10 },
+--- linux/kernel/ksyms.c.patch4	Mon Mar 22 13:03:32 1999
++++ linux/kernel/ksyms.c	Wed Mar 24 16:15:29 1999
+@@ -222,6 +222,7 @@
+ EXPORT_SYMBOL(find_buffer);
+ EXPORT_SYMBOL(init_buffer);
+ EXPORT_SYMBOL(max_sectors);
++EXPORT_SYMBOL(max_segments);
+ EXPORT_SYMBOL(max_readahead);
+ 
+ /* tty routines */
+--- linux/include/linux/pci.h.patch4	Tue Mar 23 16:54:14 1999
++++ linux/include/linux/pci.h	Wed Mar 24 16:15:29 1999
+@@ -365,6 +365,8 @@
+ #define PCI_DEVICE_ID_DEC_21150		0x0022
+ #define PCI_DEVICE_ID_DEC_21152		0x0024
+ #define PCI_DEVICE_ID_DEC_21153		0x0025
++#define PCI_DEVICE_ID_DEC_21154		0x0026
++#define PCI_DEVICE_ID_DEC_21285		0x1065
+ 
+ #define PCI_VENDOR_ID_CIRRUS		0x1013
+ #define PCI_DEVICE_ID_CIRRUS_7548	0x0038
+@@ -541,6 +543,12 @@
+ #define PCI_DEVICE_ID_PICOP_PT86C52X	0x0001
+ #define PCI_DEVICE_ID_PICOP_PT80C524	0x8002
+ 
++#define PCI_VENDOR_ID_MYLEX		0x1069
++#define PCI_DEVICE_ID_MYLEX_DAC960P_V2	0x0001
++#define PCI_DEVICE_ID_MYLEX_DAC960P_V3	0x0002
++#define PCI_DEVICE_ID_MYLEX_DAC960P_V4	0x0010
++#define PCI_DEVICE_ID_MYLEX_DAC960P_V5	0x0020
++
+ #define PCI_VENDOR_ID_APPLE		0x106b
+ #define PCI_DEVICE_ID_APPLE_BANDIT	0x0001
+ #define PCI_DEVICE_ID_APPLE_GC		0x0002
+@@ -1014,6 +1022,7 @@
+ #define PCI_DEVICE_ID_INTEL_82378	0x0484
+ #define PCI_DEVICE_ID_INTEL_82430	0x0486
+ #define PCI_DEVICE_ID_INTEL_82434	0x04a3
++#define PCI_DEVICE_ID_INTEL_I960	0x0960
+ #define PCI_DEVICE_ID_INTEL_82092AA_0	0x1221
+ #define PCI_DEVICE_ID_INTEL_82092AA_1	0x1222
+ #define PCI_DEVICE_ID_INTEL_7116	0x1223
+--- linux/include/linux/blkdev.h.patch4	Tue Mar 23 16:54:52 1999
++++ linux/include/linux/blkdev.h	Wed Mar 24 16:15:29 1999
+@@ -25,6 +25,7 @@
+ 	int errors;
+ 	unsigned long sector;
+ 	unsigned long nr_sectors;
++	unsigned long nr_segments;
+ 	unsigned long current_nr_sectors;
+ 	char * buffer;
+ 	struct semaphore * sem;
+@@ -75,7 +76,11 @@
+ 
+ extern int * max_sectors[MAX_BLKDEV];
+ 
++extern int * max_segments[MAX_BLKDEV];
++
+ #define MAX_SECTORS 244 /* 254 ? */
++
++#define MAX_SEGMENTS MAX_SECTORS
+ 
+ #define PageAlignSize(size) (((size) + PAGE_SIZE -1) & PAGE_MASK)
+ #if 0  /* small readahead */
+--- linux/include/linux/major.h.patch4	Wed Oct 14 14:43:14 1998
++++ linux/include/linux/major.h	Wed Mar 24 16:15:29 1999
+@@ -74,6 +74,7 @@
+ #define DDV_MAJOR       39   /* AP1000 DDV block device */
+ #define NBD_MAJOR	43   /* Network block device	*/
+ #define RISCOM8_NORMAL_MAJOR 48
++#define DAC960_MAJOR	48	/* 48..55 */
+ #define RISCOM8_CALLOUT_MAJOR 49
+ #define MKISS_MAJOR	55
+ #define DSP56K_MAJOR    55   /* DSP56001 processor device */
+--- linux/drivers/block/ll_rw_blk.c.patch4	Fri Mar 12 02:20:14 1999
++++ linux/drivers/block/ll_rw_blk.c	Wed Mar 24 16:15:29 1999
+@@ -108,6 +108,11 @@
+  */
+ int * max_sectors[MAX_BLKDEV] = { NULL, NULL, };
+ 
++/*
++ * Max number of segments per request
++ */
++int * max_segments[MAX_BLKDEV] = { NULL, NULL, };
++
+ static inline int get_max_sectors(kdev_t dev)
+ {
+ 	if (!max_sectors[MAJOR(dev)])
+@@ -115,6 +120,13 @@
+ 	return max_sectors[MAJOR(dev)][MINOR(dev)];
+ }
+ 
++static inline int get_max_segments(kdev_t dev)
++{
++	if (!max_segments[MAJOR(dev)])
++		return MAX_SEGMENTS;
++	return max_segments[MAJOR(dev)][MINOR(dev)];
++}
++
+ /*
+  * Is called with the request spinlock aquired.
+  * NOTE: the device-specific queue() functions
+@@ -291,24 +303,31 @@
+ 
+ void add_request(struct blk_dev_struct * dev, struct request * req)
+ {
++	int major = MAJOR(req->rq_dev);
++	int minor = MINOR(req->rq_dev);
+ 	struct request * tmp, **current_request;
+ 	short		 disk_index;
+ 	unsigned long flags;
+ 	int queue_new_request = 0;
+ 
+-	switch (MAJOR(req->rq_dev)) {
++	switch (major) {
++		case DAC960_MAJOR+0:
++			disk_index = (minor & 0x00f8) >> 3;
++			if (disk_index < 4)
++				drive_stat_acct(req->cmd, req->nr_sectors, disk_index);
++			break;
+ 		case SCSI_DISK0_MAJOR:
+-			disk_index = (MINOR(req->rq_dev) & 0x00f0) >> 4;
++			disk_index = (minor & 0x00f0) >> 4;
+ 			if (disk_index < 4)
+ 				drive_stat_acct(req->cmd, req->nr_sectors, disk_index);
+ 			break;
+ 		case IDE0_MAJOR:	/* same as HD_MAJOR */
+ 		case XT_DISK_MAJOR:
+-			disk_index = (MINOR(req->rq_dev) & 0x0040) >> 6;
++			disk_index = (minor & 0x0040) >> 6;
+ 			drive_stat_acct(req->cmd, req->nr_sectors, disk_index);
+ 			break;
+ 		case IDE1_MAJOR:
+-			disk_index = ((MINOR(req->rq_dev) & 0x0040) >> 6) + 2;
++			disk_index = ((minor & 0x0040) >> 6) + 2;
+ 			drive_stat_acct(req->cmd, req->nr_sectors, disk_index);
+ 		default:
+ 			break;
+@@ -346,8 +365,11 @@
+ 	tmp->next = req;
+ 
+ /* for SCSI devices, call request_fn unconditionally */
+-	if (scsi_blk_major(MAJOR(req->rq_dev)))
++	if (scsi_blk_major(major))
++		queue_new_request = 1;
++	if (major >= DAC960_MAJOR+0 && major <= DAC960_MAJOR+7)
+ 		queue_new_request = 1;
++
+ out:
+ 	if (queue_new_request)
+ 		(dev->request_fn)();
+@@ -357,19 +379,29 @@
+ /*
+  * Has to be called with the request spinlock aquired
+  */
+-static inline void attempt_merge (struct request *req, int max_sectors)
++static inline void attempt_merge (struct request *req,
++				  int max_sectors,
++				  int max_segments)
+ {
+ 	struct request *next = req->next;
++	int total_segments;
+ 
+ 	if (!next)
+ 		return;
+ 	if (req->sector + req->nr_sectors != next->sector)
+ 		return;
+-	if (next->sem || req->cmd != next->cmd || req->rq_dev != next->rq_dev || req->nr_sectors + next->nr_sectors > max_sectors)
++	if (next->sem || req->cmd != next->cmd || req->rq_dev != next->rq_dev ||
++	    req->nr_sectors + next->nr_sectors > max_sectors)
++		return;
++	total_segments = req->nr_segments + next->nr_segments;
++	if (req->bhtail->b_data + req->bhtail->b_size == next->bh->b_data)
++		total_segments--;
++	if (total_segments > max_segments)
+ 		return;
+ 	req->bhtail->b_reqnext = next->bh;
+ 	req->bhtail = next->bhtail;
+ 	req->nr_sectors += next->nr_sectors;
++	req->nr_segments = total_segments;
+ 	next->rq_status = RQ_INACTIVE;
+ 	req->next = next->next;
+ 	wake_up (&wait_for_request);
+@@ -379,7 +411,7 @@
+ {
+ 	unsigned int sector, count;
+ 	struct request * req;
+-	int rw_ahead, max_req, max_sectors;
++	int rw_ahead, max_req, max_sectors, max_segments;
+ 	unsigned long flags;
+ 
+ 	count = bh->b_size >> 9;
+@@ -451,6 +483,7 @@
+ 	 * Try to coalesce the new request with old requests
+ 	 */
+ 	max_sectors = get_max_sectors(bh->b_rdev);
++	max_segments = get_max_segments(bh->b_rdev);
+ 
+ 	/*
+ 	 * Now we acquire the request spinlock, we have to be mega careful
+@@ -497,7 +530,14 @@
+ 	     case SCSI_DISK6_MAJOR:
+ 	     case SCSI_DISK7_MAJOR:
+ 	     case SCSI_CDROM_MAJOR:
+-
++	     case DAC960_MAJOR+0:
++	     case DAC960_MAJOR+1:
++	     case DAC960_MAJOR+2:
++	     case DAC960_MAJOR+3:
++	     case DAC960_MAJOR+4:
++	     case DAC960_MAJOR+5:
++	     case DAC960_MAJOR+6:
++	     case DAC960_MAJOR+7:
+ 		do {
+ 			if (req->sem)
+ 				continue;
+@@ -509,13 +549,25 @@
+ 				continue;
+ 			/* Can we add it to the end of this request? */
+ 			if (req->sector + req->nr_sectors == sector) {
++				if (req->bhtail->b_data + req->bhtail->b_size
++				    != bh->b_data) {
++					if (req->nr_segments < max_segments)
++						req->nr_segments++;
++					else continue;
++				}
+ 				req->bhtail->b_reqnext = bh;
+ 				req->bhtail = bh;
+ 			    	req->nr_sectors += count;
+ 				/* Can we now merge this req with the next? */
+-				attempt_merge(req, max_sectors);
++				attempt_merge(req, max_sectors, max_segments);
+ 			/* or to the beginning? */
+ 			} else if (req->sector - count == sector) {
++				if (bh->b_data + bh->b_size
++				    != req->bh->b_data) {
++					if (req->nr_segments < max_segments)
++						req->nr_segments++;
++					else continue;
++				}
+ 			    	bh->b_reqnext = req->bh;
+ 			    	req->bh = bh;
+ 			    	req->buffer = bh->b_data;
+@@ -549,6 +601,7 @@
+ 	req->errors = 0;
+ 	req->sector = sector;
+ 	req->nr_sectors = count;
++	req->nr_segments = 1;
+ 	req->current_nr_sectors = count;
+ 	req->buffer = bh->b_data;
+ 	req->sem = NULL;
+--- linux/drivers/block/Config.in.patch4	Tue Dec 29 14:21:49 1998
++++ linux/drivers/block/Config.in	Wed Mar 24 16:15:29 1999
+@@ -112,6 +112,9 @@
+   bool '   Initial RAM disk (initrd) support' CONFIG_BLK_DEV_INITRD
+ fi
+ tristate 'XT hard disk support' CONFIG_BLK_DEV_XD
++if [ "$CONFIG_PCI" = "y" ]; then
++  tristate 'Mylex DAC960/DAC1100 PCI RAID Controller support' CONFIG_BLK_DEV_DAC960
++fi
+ 
+ # PARIDE doesn't need PARPORT, but if PARPORT is configured as a module,
+ # PARIDE must also be a module.  The bogus CONFIG_PARIDE_PARPORT option
+--- linux/drivers/block/Makefile.patch4	Wed Sep 16 16:25:56 1998
++++ linux/drivers/block/Makefile	Wed Mar 24 16:15:29 1999
+@@ -230,6 +230,14 @@
+   endif
+ endif
+ 
++ifeq ($(CONFIG_BLK_DEV_DAC960),y)
++L_OBJS += DAC960.o
++else
++  ifeq ($(CONFIG_BLK_DEV_DAC960),m)
++  M_OBJS += DAC960.o
++  endif
++endif
++
+ ifeq ($(CONFIG_BLK_DEV_MD),y)
+ LX_OBJS += md.o
+ 
+--- linux/drivers/block/genhd.c.patch4	Sun Mar 21 23:52:44 1999
++++ linux/drivers/block/genhd.c	Wed Mar 24 16:15:29 1999
+@@ -58,6 +58,9 @@
+ 
+ extern int chr_dev_init(void);
+ extern int blk_dev_init(void);
++#ifdef CONFIG_BLK_DEV_DAC960
++extern void DAC960_Initialize(void);
++#endif
+ extern int scsi_dev_init(void);
+ extern int net_dev_init(void);
+ 
+@@ -97,6 +100,17 @@
+ 			maj = "hd";
+ 			break;
+ 	}
++	if (hd->major >= DAC960_MAJOR+0 && hd->major <= DAC960_MAJOR+7)
++	  {
++	    int controller = hd->major - DAC960_MAJOR;
++	    int partition = minor & ((1 << hd->minor_shift) - 1);
++	    if (partition == 0)
++	      sprintf(buf, "%s/c%dd%d",
++		      maj, controller, minor >> hd->minor_shift);
++	    else sprintf(buf, "%s/c%dd%dp%d",
++			 maj, controller, minor >> hd->minor_shift, partition);
++	    return buf;
++	  }
+ 	part = minor & ((1 << hd->minor_shift) - 1);
+ 	if (hd->major >= SCSI_DISK1_MAJOR && hd->major <= SCSI_DISK7_MAJOR) {
+ 		unit = unit + (hd->major - SCSI_DISK1_MAJOR + 1) * 16;
+@@ -117,10 +131,13 @@
+ 
+ static void add_partition (struct gendisk *hd, int minor, int start, int size)
+ {
+-	char buf[8];
++	char buf[40];
+ 	hd->part[minor].start_sect = start;
+ 	hd->part[minor].nr_sects   = size;
+-	printk(" %s", disk_name(hd, minor, buf));
++	if (hd->major >= DAC960_MAJOR+0 && hd->major <= DAC960_MAJOR+7)
++		printk(" p%d", (minor & ((1 << hd->minor_shift) - 1)));
++	else
++		printk(" %s", disk_name(hd, minor, buf));
+ }
+ 
+ static inline int is_extended_partition(struct partition *p)
+@@ -1211,7 +1228,7 @@
+ {
+ 	static int first_time = 1;
+ 	unsigned long first_sector;
+-	char buf[8];
++	char buf[40];
+ 
+ 	if (first_time)
+ 		printk("Partition check:\n");
+@@ -1332,6 +1349,9 @@
+ 	chr_dev_init();
+ 	blk_dev_init();
+ 	sti();
++#ifdef CONFIG_BLK_DEV_DAC960
++	DAC960_Initialize();
++#endif
+ #ifdef CONFIG_FC4_SOC
+ 	/* This has to be done before scsi_dev_init */
+ 	soc_probe();
+--- linux/drivers/pci/oldproc.c.patch4	Sun Mar 21 12:28:24 1999
++++ linux/drivers/pci/oldproc.c	Wed Mar 24 16:30:04 1999
+@@ -102,6 +102,8 @@
+ 	DEVICE( DEC,		DEC_21150,	"DC21150"),
+ 	DEVICE( DEC,		DEC_21152,	"DC21152"),
+ 	DEVICE( DEC,		DEC_21153,	"DC21153"),
++	DEVICE( DEC,		DEC_21154,	"DC21154"),
++	DEVICE( DEC,		DEC_21285,	"DC21285 Footbridge"),
+ 	DEVICE( CIRRUS,		CIRRUS_7548,	"GD 7548"),
+ 	DEVICE( CIRRUS,		CIRRUS_5430,	"GD 5430"),
+ 	DEVICE( CIRRUS,		CIRRUS_5434_4,	"GD 5434"),
+@@ -219,6 +221,9 @@
+ 	DEVICE( X,		X_AGX016,	"ITT AGX016"),
+ 	DEVICE( PICOP,		PICOP_PT86C52X,	"PT86C52x Vesuvius"),
+ 	DEVICE( PICOP,		PICOP_PT80C524,	"PT80C524 Nile"),
++	DEVICE( MYLEX,		MYLEX_DAC960P_V2,"DAC960P V2"),
++	DEVICE( MYLEX,		MYLEX_DAC960P_V3,"DAC960P V3"),
++	DEVICE( MYLEX,		MYLEX_DAC960P_V4,"DAC960P V4"),
+ 	DEVICE( APPLE,		APPLE_BANDIT,	"Bandit"),
+ 	DEVICE( APPLE,		APPLE_GC,	"Grand Central"),
+ 	DEVICE( APPLE,		APPLE_HYDRA,	"Hydra"),
+@@ -494,6 +499,7 @@
+ 	DEVICE( INTEL,		INTEL_82378,	"82378IB"),
+ 	DEVICE( INTEL,		INTEL_82430,	"82430ZX Aries"),
+ 	DEVICE( INTEL,		INTEL_82434,	"82434LX Mercury/Neptune"),
++	DEVICE( INTEL,		INTEL_I960,	"i960"),
+ 	DEVICE( INTEL,		INTEL_82092AA_0,"82092AA PCMCIA bridge"),
+ 	DEVICE( INTEL,		INTEL_82092AA_1,"82092AA EIDE"),
+ 	DEVICE( INTEL,		INTEL_7116,	"SAA7116"),
+@@ -603,8 +609,8 @@
+ 	      case PCI_CLASS_STORAGE_SCSI:		return "SCSI storage controller";
+ 	      case PCI_CLASS_STORAGE_IDE:		return "IDE interface";
+ 	      case PCI_CLASS_STORAGE_FLOPPY:		return "Floppy disk controller";
+-	      case PCI_CLASS_STORAGE_IPI:		return "IPI bus controller";
+-	      case PCI_CLASS_STORAGE_RAID:		return "RAID bus controller";
++	      case PCI_CLASS_STORAGE_IPI:		return "IPI storage controller";
++	      case PCI_CLASS_STORAGE_RAID:		return "RAID storage controller";
+ 	      case PCI_CLASS_STORAGE_OTHER:		return "Unknown mass storage controller";
+ 
+ 	      case PCI_CLASS_NETWORK_ETHERNET:		return "Ethernet controller";
+@@ -709,6 +715,7 @@
+ 	      case PCI_VENDOR_ID_N9:		return "Number Nine";
+ 	      case PCI_VENDOR_ID_UMC:		return "UMC";
+ 	      case PCI_VENDOR_ID_X:		return "X TECHNOLOGY";
++	      case PCI_VENDOR_ID_MYLEX:		return "Mylex";
+ 	      case PCI_VENDOR_ID_PICOP:		return "PicoPower";
+ 	      case PCI_VENDOR_ID_APPLE:		return "Apple";
+ 	      case PCI_VENDOR_ID_NEXGEN:	return "Nexgen";
+--- linux/Documentation/Configure.help.patch4	Sun Mar 21 10:22:00 1999
++++ linux/Documentation/Configure.help	Wed Mar 24 16:15:29 1999
+@@ -669,6 +669,17 @@
+ 
+   It's pretty unlikely that you have one of these: say N.
+ 
++Mylex DAC960/DAC1100 PCI RAID Controller support
++CONFIG_BLK_DEV_DAC960
++  This driver adds support for the Mylex DAC960, AcceleRAID, and
++  eXtremeRAID PCI RAID controllers.  See README.DAC960 for further
++  information about this driver.
++
++  If you want to compile the driver as a module ( = code which can be
++  inserted in and removed from the running kernel whenever you want),
++  say M here and read Documentation/modules.txt.  The module will be
++  called DAC960.o. 
++
+ Parallel port IDE device support
+ CONFIG_PARIDE
+   There are many external CD-ROM and disk devices that connect through
+--- linux/CREDITS.patch4	Mon Mar 22 14:18:17 1999
++++ linux/CREDITS	Wed Mar 24 16:15:29 1999
+@@ -2228,6 +2228,7 @@
+ E: lnz@dandelion.com
+ W: http://www.dandelion.com/Linux/
+ D: BusLogic SCSI driver
++D: Mylex DAC960 PCI RAID driver
+ D: Miscellaneous kernel fixes
+ S: 3078 Sulphur Spring Court
+ S: San Jose, California 95148
+--- linux/MAINTAINERS.patch4	Mon Mar 22 14:18:17 1999
++++ linux/MAINTAINERS	Wed Mar 24 16:15:29 1999
+@@ -258,6 +258,12 @@
+ L:	linux-eata@i-connect.net, linux-scsi@vger.rutgers.edu
+ S:	Maintained
+ 
++DAC960 RAID DRIVER
++P:	Leonard N. Zubkoff
++M:	Leonard N. Zubkoff <lnz@dandelion.com>
++L:	linux-raid@vger.rutgers.edu
++S:	Maintained
++
+ EATA ISA/EISA/PCI SCSI DRIVER
+ P:	Dario Ballabio
+ M:	dario@milano.europe.dg.com

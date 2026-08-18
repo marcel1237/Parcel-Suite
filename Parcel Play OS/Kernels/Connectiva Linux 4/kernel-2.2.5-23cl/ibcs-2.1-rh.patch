@@ -1,0 +1,66 @@
+--- ibcs/CONFIG.i386.rh	Wed Jan 27 13:51:42 1999
++++ ibcs/CONFIG.i386	Wed Jan 27 14:02:16 1999
+@@ -11,7 +11,7 @@
+ # source tree of the kernel you are running (or intend to load
+ # it in). More specifically it must be built against the include
+ # and config files belonging to the relevant kernel.
+-KERNEL=/usr/src/linux
++KERNEL=
+ 
+ # If you intend to run on a multiprocessor SMP system you will need
+ # this enabled. You need to set this correctly. An SMP iBCS module
+@@ -22,7 +22,7 @@
+ # will not load. Coincidentally the 2.1 Linux kernel also defaults
+ # to SMP so those who don't read the docs will probably get something
+ # that works.
+-SMP=yes
++SMP=
+ 
+ # If you want to use versioned symbol names in an attempt to allow the
+ # iBCS module to load against other, compatible kernel versions enable
+@@ -32,7 +32,7 @@
+ # *same* kernel version. I don't know why. I don't recommend you use
+ # this option if you build several slightly different kernels for
+ # different machines/purposes.
+-USE_VERSIONS=no
++USE_VERSIONS=yes
+ 
+ # SOCKSYS_MAJOR is the major number to use for the /dev/socksys socket
+ # interface to streams based TCP/IP (i.e. Lachman as used by many SVR3s).
+--- ibcs/CONFIG.sparc.rh	Wed Jan 27 14:02:21 1999
++++ ibcs/CONFIG.sparc	Wed Jan 27 14:02:50 1999
+@@ -11,7 +11,7 @@
+ # source tree of the kernel you are running (or intend to load
+ # it in). More specifically it must be built against the include
+ # and config files belonging to the relevant kernel.
+-KERNEL=/usr/src/linux
++KERNEL=
+ 
+ # If you want to use versioned symbol names in an attempt to allow the
+ # iBCS module to load against other, compatible kernel versions enable
+@@ -21,7 +21,7 @@
+ # *same* kernel version. I don't know why. I don't recommend you use
+ # this option if you build several slightly different kernels for
+ # different machines/purposes.
+-USE_VERSIONS=no
++USE_VERSIONS=yes
+ 
+ 
+ # SOCKSYS_MAJOR is the major number to use for the /dev/socksys socket
+@@ -167,4 +167,4 @@
+ XOUT_DEBUG	= yes
+ 
+ ARCH_FLAGS = 
+-ARCH_LIBS  = /usr/lib/libc.a /usr/lib/libgcc.a
++ARCH_LIBS  =
+--- ibcs/Makefile.rh	Wed Jan 27 14:04:17 1999
++++ ibcs/Makefile	Wed Jan 27 14:04:26 1999
+@@ -9,7 +9,7 @@
+ 
+ include CONFIG
+ 
+-SUBDIRS=	iBCSemul Tools
++SUBDIRS=	iBCSemul
+ 
+ ifeq ($(EMU_X286),yes)
+ SUBDIRS	:= $(SUBDIRS) x286emul

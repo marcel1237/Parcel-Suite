@@ -1,0 +1,58 @@
+Index: fs/nfsd/nfs3proc.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/nfsd/nfs3proc.c,v
+retrieving revision 1.1.1.3
+diff -u -p -r1.1.1.3 nfs3proc.c
+--- fs/nfsd/nfs3proc.c	1997/10/25 04:25:40	1.1.1.3
++++ fs/nfsd/nfs3proc.c	1999/04/07 16:18:09
+@@ -339,8 +339,11 @@ nfsd3_proc_symlink(struct svc_rqst *rqst
+ 	nfserr = nfsd_symlink(rqstp, &argp->ffh, argp->fname, argp->flen,
+ 						 argp->tname, argp->tlen,
+ 						 &newfh);
+-	if (nfserr)
++	if (!nfserr) {
++		/* Clear the bogus bit. */
++		argp->attrs.ia_valid &= ~ATTR_SIZE;
+ 		nfserr = nfsd_setattr(rqstp, &newfh, &argp->attrs);
++	}
+ 
+ 	fh_put(&argp->ffh);
+ 	fh_put(&newfh);
+@@ -362,6 +365,8 @@ nfsd3_proc_mkdir(struct svc_rqst *rqstp,
+ 				SVCFH_INO(&argp->fh),
+ 				argp->name);
+ 
++	/* Clear the bogus bit. */
++	argp->attrs.ia_valid &= ~ATTR_SIZE;
+ 	nfserr = nfsd_create(rqstp, &argp->fh, argp->name, argp->len,
+ 				    &argp->attrs, S_IFDIR, 0, &resp->fh);
+ 	fh_put(&argp->fh);
+Index: fs/nfsd/nfsproc.c
+===================================================================
+RCS file: /local/work/cvs/linux/linux/fs/nfsd/nfsproc.c,v
+retrieving revision 1.1.1.9
+diff -u -p -r1.1.1.9 nfsproc.c
+--- fs/nfsd/nfsproc.c	1999/02/24 00:01:23	1.1.1.9
++++ fs/nfsd/nfsproc.c	1999/04/06 21:51:15
+@@ -382,8 +382,11 @@ nfsd_proc_symlink(struct svc_rqst *rqstp
+ 	nfserr = nfsd_symlink(rqstp, &argp->ffh, argp->fname, argp->flen,
+ 						 argp->tname, argp->tlen,
+ 						 &newfh);
+-	if (!nfserr)
++	if (!nfserr) {
++		/* Clear the bogus bit. */
++		argp->attrs.ia_valid &= ~ATTR_SIZE;
+ 		nfserr = nfsd_setattr(rqstp, &newfh, &argp->attrs);
++	}
+ 
+ 	fh_put(&argp->ffh);
+ 	fh_put(&newfh);
+@@ -407,6 +410,8 @@ nfsd_proc_mkdir(struct svc_rqst *rqstp, 
+ 			"nfsd_proc_mkdir: response already verified??\n");
+ 	}
+ 
++	/* Clear the bogus bit. */
++	argp->attrs.ia_valid &= ~ATTR_SIZE;
+ 	nfserr = nfsd_create(rqstp, &argp->fh, argp->name, argp->len,
+ 				    &argp->attrs, S_IFDIR, 0, &resp->fh);
+ 	fh_put(&argp->fh);

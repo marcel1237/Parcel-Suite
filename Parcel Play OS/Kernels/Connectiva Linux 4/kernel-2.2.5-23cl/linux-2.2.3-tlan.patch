@@ -1,0 +1,10 @@
+--- linux/drivers/net/tlan.c.wanger	Tue Mar 23 10:47:18 1999
++++ linux/drivers/net/tlan.c	Tue Mar 23 10:38:58 1999
+@@ -1877,6 +1877,7 @@
+ 	u8		data8;
+ 
+ 	priv->tlanFullDuplex = FALSE;
++	priv->phyOnline=0;
+ /*  1.	Assert reset bit. */
+ 
+ 	data = inl(dev->base_addr + TLAN_HOST_CMD);

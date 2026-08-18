@@ -265,8 +265,31 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Ação**: Atualização de todos os documentos para os **10 Sabores do NitroCore** e seletor de instalação expandido.
 - **Ação**: Criação da `ARQUITETURA_BOOT.md` detalhando o menu GRUB do Live CD com os 10 kernels e a transição via `kexec`.
 - **Ação**: Configuração do sabor **Debian** como a opção padrão (default) no menu de boot do Live CD.
-- **Ação**: Início da **Fase de Compilação Real**: O usuário clonou o código-fonte do kernel Ubuntu em `~/Parcel Suite/resolute` e iniciou a instalação das dependências de build.
+- **Ação**: Início da **Fase de Compilação Real**: O usuário clonou o código-fonte do kernel Ubuntu em `~/Parcel Suite/resolute`.
+- **Ação**: Auditoria profunda da pasta `Kernels/` dentro do projeto, identificando fontes do **Linux 7.1.8**, **Ubuntu 26**, **Connectiva 4**, **FreeBSD 15** e **16**.
+- **Ação**: Consolidação do "Laboratório de Kernels" como a base para a criação do NitroCore Híbrido.
+- **Ação**: Criação do arquivo `LABORATORIO_KERNELS.md` detalhando as descobertas sobre Kconfigs e o legado da Connectiva.
+- **Ação**: Identificação precisa da anatomia do kernel Ubuntu: Confirmado que ele é uma base Debian com a pasta `ubuntu/` como diferencial de drivers e patches.
+- **Ação**: Criação do arquivo `ANATOMIA_DEBIAN_UBUNTU.md` detalhando as diferenças de filosofia e conteúdo entre o Debian 13 e o Ubuntu 26.
+- **Ação**: Criação da pasta `nitrocore/` com o documento `nitrocore.md` definindo os 4 pilares técnicos.
+- **Ação**: Definição da estratégia "Future-Proof" (Ubuntu 27+) e inclusão de **Arch/SteamOS** e **Fedora** como referências de performance gamer e workstation.
+- **Ação**: Criação do arquivo `REFERENCIAS_GAMING.md` detalhando tecnologias como BORE (Arch), EPP Boost (SteamOS) e NTSYNC (Fedora).
+- **Ação**: Implementação dos primeiros protótipos em C: `nitro_sched.c` (Escalonador de Resposta) e `omnilock.c` (Gestão de Memória).
+- **Ação**: Pesquisa profunda sobre a arquitetura do **SteamOS 3.5/3.8** e criação do documento `STEAMOS_INTEGRATION.md` com as lições da Valve.
+- **Ação**: Implementação do protótipo de segurança `nitro_hardened.c` (W^X Protection) e dos arquivos de build `Kconfig` e `Makefile` para a pasta `nitrocore/`.
+- **Ação**: Criação do documento `KDE_GAMESCOPE_INTEGRATION.md` detalhando como o KDE Plasma 6 rodará sob o Gamescope para latência zero.
+- **Ação**: Início da **Aprendizagem Supervisionada** do código FreeBSD (v15/16), criando o documento mestre `APRENDIZAGEM_FREEBSD.md` com referências à arquitetura Sony PlayStation (Orbis OS).
+- **Ação**: Implementação do protótipo de rede `nitro_net.c` inspirado na eficiência de rede do FreeBSD.
+- **Ação**: Criação da "Trindade da Performance" no documento `ORBIS_FREEBSD_STEAMOS.md`.
+- **Ação**: Integração técnica do **Gamescope** com o **OmniLock**, permitindo o travamento de texturas na RAM física.
+- **Ação**: Análise do ZFS ARC e VFS Read-ahead do FreeBSD para otimização de carregamento de jogos.
+- **Ação**: Configuração do `.gitignore` para excluir os diretórios gigantes de fontes de kernel.
+- **Ação**: Criação do documento `SONY_PLAYSTATION_FREEBSD.md` detalhando como a Sony adaptou o FreeBSD para os consoles PS4 e PS5.
+- **Ação**: Início da análise técnica de `bpf_zerocopy.c` (FreeBSD 15) no âmbito da aprendizagem supervisionada.
+- **Ação**: Análise profunda de `vm_page.c` (FreeBSD 15), identificando a lógica de "wiring" de páginas para o aprimoramento do OmniLock.
+- **Ação**: Implementação técnica do protótipo `nitro_net.c` utilizando lógica de **AF_XDP** para processamento de pacotes com zero-copy.
+- **Ação**: Desenvolvimento do protótipo `scripts/hybrid_build.sh` para orquestrar o merge entre o Linux 7.1.8 e o Ubuntu 26.
 
 ## Status Atual
-- **Fase**: Construção do Protótipo do Kernel (NitroCore).
-- **Próximo Objetivo**: Configurar o `.config` do kernel com as otimizações do Decágono e realizar a compilação.
+- **Fase**: Análise de DNA e Engenharia de Kernel Híbrido.
+- **Próximo Objetivo**: Realizar o merge conceitual entre a base purista 7.1.8 e os drivers do Ubuntu 26.

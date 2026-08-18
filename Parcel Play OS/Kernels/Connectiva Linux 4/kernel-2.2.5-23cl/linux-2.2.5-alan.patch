@@ -1,0 +1,156 @@
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/Documentation/sound/PCM1-pro linux.ac/Documentation/sound/PCM1-pro
+--- linux.vanilla/Documentation/sound/PCM1-pro	Thu Jan  1 01:00:00 1970
++++ linux.ac/Documentation/sound/PCM1-pro	Mon Apr  5 13:44:36 1999
+@@ -0,0 +1,17 @@
++In Documentation/sound/README.OSS was a remark saying noone was sure the
++mixer on the PCM1-pro worked with the ACI driver. Well, it does.
++I've been using the drivers for the MAD16 and the driver for the mixer
++since kernel 2.0.32 with a MiroSound PCM1-pro and it works great.
++
++I've got it working with the following configuration:
++
++MAD16 audio I/O base = 530
++MAD16  audio IRQ = 7
++MAD16 Audio DMA = 1
++MAD16 MIDI I/O = 330
++MAD16 MIDI IRQ = 9
++
++And I've enabled the ACI mixer (miro PCM12) .
++
++
++Bas van der Linden.
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/Documentation/sound/mwave linux.ac/Documentation/sound/mwave
+--- linux.vanilla/Documentation/sound/mwave	Sun Nov  8 15:08:50 1998
++++ linux.ac/Documentation/sound/mwave	Mon Apr  5 13:43:53 1999
+@@ -1,14 +1,8 @@
+ 	How to try to survive an IBM Mwave under Linux SB drivers
+ 
+ 
+-* IBM refuses to provide documentation. If anyone can ever find out what
+-  MWD50430.EXE actually does to load firmware then this comedy could go
+-  away.
+-
+-* If you'd like to ask IBM why they don't release Mwave information.
+-  phone IBM (425-556-8822) and ask them why they still haven't 
+-  released any documentation.
+-  [http://204.200.238.31/cgi-bin/link.pl?co=i&cl=/ts/ibm/contact.html]
+++	IBM have now released documentation of sorts and Torsten is busy
++	trying to make the Mwave work. This is not however a trivial task.
+ 
+ ----------------------------------------------------------------------------
+ 
+
+The SJ cd driver didnt set block sizes. Which makes a mess
+
+
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/drivers/cdrom/sjcd.c linux.ac/drivers/cdrom/sjcd.c
+--- linux.vanilla/drivers/cdrom/sjcd.c	Tue Dec 22 23:19:37 1998
++++ linux.ac/drivers/cdrom/sjcd.c	Mon Apr  5 13:02:07 1999
+@@ -45,11 +45,14 @@
+  *      Allow only to set io base address on command line: sjcd=<io_base>
+  *      Changes to Documentation/cdrom/sjcd
+  *      Added cleanup after any error in the initialisation.
++ *  1.7 Added code to set the sector size tables to prevent the bug present in 
++ *      the previous version of this driver.  Coded added by Anthony Barbachan 
++ *      from bugfix tip originally suggested by Alan Cox.
+  *
+  */
+ 
+ #define SJCD_VERSION_MAJOR 1
+-#define SJCD_VERSION_MINOR 6
++#define SJCD_VERSION_MINOR 7
+ 
+ #ifdef MODULE
+ #include <linux/module.h>
+@@ -1437,6 +1440,9 @@
+   NULL                /* revalidate */
+ };
+ 
++static int blksize = 2048;
++static int secsize = 2048;
++
+ /*
+  * Following stuff is intended for initialization of the cdrom. It
+  * first looks for presence of device. If the device is present, it
+@@ -1460,6 +1466,9 @@
+ #if defined( SJCD_TRACE )
+   printk("SJCD: sjcd=0x%x: ", sjcd_base);
+ #endif  
++
++	hardsect_size[MAJOR_NR] = &secsize;
++	blksize_size[MAJOR_NR] = &blksize;
+ 
+   if( register_blkdev( MAJOR_NR, "sjcd", &sjcd_fops ) != 0 ){
+     printk( "SJCD: Unable to get major %d for Sanyo CD-ROM\n", MAJOR_NR );
+
+
+**
+** Vendor supplied update for the PixelTV card
+**
+
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/drivers/char/bttv.c linux.ac/drivers/char/bttv.c
+--- linux.vanilla/drivers/char/bttv.c	Mon Mar 29 10:25:55 1999
++++ linux.ac/drivers/char/bttv.c	Mon Apr  5 13:03:38 1999
+@@ -541,6 +541,8 @@
+         { 3, 1, 0, 2, 7, { 2, 3, 1, 1}, { 0, 1, 2, 3, 4}},
+         /* Zoltrix TV-Max */
+         { 3, 1, 0, 2,15, { 2, 3, 1, 1}, { 0, 0, 0, 0, 0}},
++        /* Pixelview PlayTV (bt878) */
++        { 3, 4, 0, 2, 0x01e000, { 2, 0, 1, 1}, {0x01c000, 0, 0x018000, 0x014000, 0x002000, 0 }},
+ };
+ #define TVCARDS (sizeof(tvcards)/sizeof(tvcard))
+ 
+@@ -2388,7 +2390,7 @@
+   
+ 	btv->user--;
+ 	btv->radio = 0;
+-	audio(btv, AUDIO_MUTE);
++	/*audio(btv, AUDIO_MUTE);*/
+ 	MOD_DEC_USE_COUNT;  
+ }
+ 
+@@ -2927,6 +2929,12 @@
+ 			btv->pll.pll_crystal=BT848_IFORM_XT0;
+ 		}
+         }
++
++        if (btv->type == BTTV_PIXVIEWPLAYTV) {
++		btv->pll.pll_ifreq=28636363;
++		btv->pll.pll_crystal=BT848_IFORM_XT0;
++        }
++
+         if(btv->type==BTTV_AVERMEDIA98)
+         {
+         	btv->pll.pll_ifreq=28636363;
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/drivers/char/bttv.h linux.ac/drivers/char/bttv.h
+--- linux.vanilla/drivers/char/bttv.h	Tue Feb 23 14:21:33 1999
++++ linux.ac/drivers/char/bttv.h	Mon Apr  5 13:03:44 1999
+@@ -208,6 +208,7 @@
+ #define BTTV_AVERMEDIA98   0x0d
+ #define BTTV_VHX           0x0e
+ #define BTTV_ZOLTRIX       0x0f
++#define BTTV_PIXVIEWPLAYTV 0x10
+ 
+ #define AUDIO_TUNER        0x00
+ #define AUDIO_RADIO        0x01
+
+**
+** Fix access()
+**
+
+diff -u --new-file --recursive --exclude-from ../exclude linux.vanilla/fs/open.c linux.ac/fs/open.c
+--- linux.vanilla/fs/open.c	Wed Mar 24 10:55:24 1999
++++ linux.ac/fs/open.c	Mon Apr  5 13:19:48 1999
+@@ -294,7 +294,9 @@
+ 	/* Clear the capabilities if we switch to a non-root user */
+ 	if (current->uid)
+ 		cap_clear(current->cap_effective);
+-
++	else
++		current->cap_effective = current->cap_permitted;
++		
+ 	dentry = namei(filename);
+ 	res = PTR_ERR(dentry);
+ 	if (!IS_ERR(dentry)) {
+
+

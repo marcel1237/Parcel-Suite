@@ -1,0 +1,46 @@
+#
+# NitroCore Performance Engine Configuration
+#
+
+menu "NitroCore Performance Engine"
+
+config NITROCORE
+	bool "Enable NitroCore Performance Matrix"
+	default y
+	help
+	  Say Y here to enable the high-performance kernel optimizations
+	  of the Parcel Play OS, including the Nitro Scheduler and OmniLock.
+
+config NITRO_SCHED
+	bool "Nitro Interactive Burst Scheduler"
+	depends on NITROCORE
+	default y
+	help
+	  An interactive scheduler inspired by BORE and LAVD.
+	  Optimized for ultra-low input latency in gaming and 3D workloads.
+
+config NITRO_OMNILOCK
+	bool "OmniLock Memory Matrix (HugePages)"
+	depends on NITROCORE
+	default y
+	help
+	  Locks critical system memory into physical RAM using HugePages.
+	  Eliminates disk I/O stalls and swap latency for optimized processes.
+
+config NITRO_HARDENED
+	bool "Proactive Hardening (OpenBSD Style)"
+	depends on NITROCORE
+	default y
+	help
+	  Enforces W^X memory protection and syscall sandboxing
+	  with zero performance overhead.
+
+config NITRO_NET_XDP
+	bool "Nitro Network Acceleration (XDP/eBPF)"
+	depends on NITROCORE
+	default n
+	help
+	  Bypass standard Linux networking for high-speed packet processing.
+	  Inspired by FreeBSD's network stack.
+
+endmenu
