@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Parcel Play OS (KDE Full + Gamescope)
+Comment=Experiência de alta performance com micro-compositor Valve Gamescope
+Exec=/usr/bin/parcel-gamescope-session
+Type=Application
+DesktopNames=KDE
+Icon=speedometer

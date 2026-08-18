@@ -23,7 +23,12 @@ A Sessão Full (KDE) é otimizada para extrair o máximo do hardware gráfico:
 - **Zero-Copy Textures (UDMABUF)**: Implementação de passagem direta de buffers de memória entre a CPU e GPU, reduzindo o uso de processador durante animações e scroll.
 - **QML Pre-Compilation**: Todos os componentes da interface são pré-compilados durante a instalação para garantir abertura instantânea dos menus.
 
-## 5. Segurança e Hardening
+## 5. Nitro-Warp Storage (I/O)
+Implementação de carregamento ultra-rápido baseado em tecnologia de console:
+- **P2P DMA**: Os dados fluem diretamente do SSD NVMe para a memória da GPU através do barramento PCIe, ignorando o gargalo da RAM principal e da CPU.
+- **io_uring Passthrough**: Utiliza a interface mais moderna do Linux para submissão de comandos I/O sem latência de syscall.
+
+## 6. Segurança e Hardening
 Apesar do foco em performance, a segurança é mantida:
 - **Capability-Based Access**: As otimizações privilegiadas do Thunder só são ativadas se o processo possuir as permissões necessárias (`CAP_SYS_NICE`, `CAP_IPC_LOCK`).
 - **Verificação de Integridade**: O OS valida as assinaturas digitais dos módulos do Thunder durante o carregamento.

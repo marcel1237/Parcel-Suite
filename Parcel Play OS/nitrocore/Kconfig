@@ -35,6 +35,46 @@ config NITRO_HARDENED
 	  Enforces W^X memory protection and syscall sandboxing
 	  with zero performance overhead.
 
+config NITRO_JAIL
+	bool "Nitro-Jail Process Isolation (FreeBSD Style)"
+	depends on NITROCORE
+	default y
+	help
+	  Enable deep process isolation based on Linux Namespaces.
+	  Inspired by FreeBSD Jails and Sony Orbis OS.
+
+config NITRO_CFI
+	bool "Control Flow Integrity & Syscall Pinning"
+	depends on NITROCORE
+	default y
+	help
+	  Enforce fine-grained CFI and pin syscalls to the libc range.
+	  Inspired by OpenBSD pinsyscalls and Linux KCFI.
+
+config NITRO_NTSYNC
+	bool "Nitro NTSYNC Emulation (Fedora 44 Style)"
+	depends on NITROCORE
+	default y
+	help
+	  Implement Windows NT synchronization primitives in the kernel.
+	  Crucial for gaming performance in Wine/Proton.
+
+config NITRO_AUDIO
+	bool "Nitro Audio Resonance (FreeBSD Style)"
+	depends on NITROCORE
+	default y
+	help
+	  Enable low-latency audio IRQ prioritization.
+	  Inspired by FreeBSD's OSS and Sony PlayStation audio architecture.
+
+config NITRO_STORAGE
+	bool "Nitro Warp Storage (Direct Storage)"
+	depends on NITROCORE
+	default y
+	help
+	  Enable Zero-Copy disk-to-GPU path for ultra-fast loading.
+	  Inspired by PS5 Orbis I/O and Linux P2PDMA.
+
 config NITRO_NET_XDP
 	bool "Nitro Network Acceleration (XDP/eBPF)"
 	depends on NITROCORE

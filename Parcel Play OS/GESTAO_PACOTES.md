@@ -3,9 +3,10 @@
 O **Parcel Software Center** é a interface unificada de gerenciamento de software do Parcel Play OS, projetada para oferecer compatibilidade universal sem sacrificar a performance.
 
 ## 1. Motores de Pacotes Integrados
-O sistema utiliza uma arquitetura híbrida que permite a coexistência de múltiplos formatos:
-- **APT (Advanced Package Tool)**: Baseado no **Ubuntu 26**, fornecendo a base estável e os drivers do sistema.
-- **Snap**: Integrado nativamente para aplicativos que exigem isolamento total e atualizações automáticas (ex: navegadores, ferramentas de dev).
+O sistema utiliza uma arquitetura híbrida e **imutável** que permite a coexistência de múltiplos formatos:
+- **APT (Advanced Package Tool)**: Baseado no **Ubuntu 26**, fornecendo a base estável, imutável e os drivers do sistema.
+- **Pacman (Arch Linux)**: Integrado via **Zona de Agilidade** (Nitro-Arch), permitindo acesso ao **AUR** sem comprometer a estabilidade do host.
+- **Snap**: Integrado nativamente para aplicativos que exigem isolamento total.
 - **Flatpak**: Cidadão de primeira classe, ideal para aplicativos de interface gráfica e jogos.
 - **AppImage**: Suporte nativo via `appimaged` para execução direta.
 

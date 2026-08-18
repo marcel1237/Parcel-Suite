@@ -1,6 +1,6 @@
 /build/
-Kernels/kernel linux-7.1.8/
-Kernels/ubuntu 26 resolute kernel/
+# Kernel Reference Folders (Large Binaries/Sources)
 kernel linux-7.1.8/
 ubuntu 26 resolute kernel/
-
+Kernels/kernel linux-7.1.8/
+Kernels/ubuntu 26 resolute kernel/

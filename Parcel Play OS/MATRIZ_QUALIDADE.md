@@ -16,6 +16,7 @@ Este documento detalha como o kernel **NitroCore** absorve e adapta as melhores 
 | **Fedora** | Vanguarda Tecnológica | Suporte nativo a **BTF**, **Maple Tree** e últimas APIs Linux. |
 | **Debian** | Estabilidade | Patches de segurança **LTS** validados pela comunidade. |
 | **openSUSE** | Configuração Modular | Ferramentas de build reproduzíveis e **Kconfig** granular. |
+| **Oracle Linux** | I/O Enterprise | Otimização massiva de **io_uring** e suporte a **Direct Storage**. |
 
 ## 2. A "Super-Pilha" de Segurança e Integridade
 Inspirado no trio OpenBSD, Debian e CentOS:

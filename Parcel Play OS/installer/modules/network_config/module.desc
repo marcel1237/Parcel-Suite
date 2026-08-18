@@ -1,0 +1,5 @@
+---
+type:       "viewqml"
+name:       "network_config"
+interface:  "view"
+load:       "View.qml"

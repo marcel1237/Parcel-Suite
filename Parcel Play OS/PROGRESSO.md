@@ -288,6 +288,55 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Ação**: Início da análise técnica de `bpf_zerocopy.c` (FreeBSD 15) no âmbito da aprendizagem supervisionada.
 - **Ação**: Análise profunda de `vm_page.c` (FreeBSD 15), identificando a lógica de "wiring" de páginas para o aprimoramento do OmniLock.
 - **Ação**: Implementação técnica do protótipo `nitro_net.c` utilizando lógica de **AF_XDP** para processamento de pacotes com zero-copy.
+- **Ação**: Análise técnica de `kern_jail.c` (FreeBSD 15) para a criação do motor de isolamento **Nitro-Jail**.
+- **Ação**: Criação do módulo de instalador `agility_zone` para automação da infraestrutura Arch/Pacman via Distrobox.
+- **Ação**: Desenvolvimento do script `nitro-optimize-build.sh` para detecção automática de microarquitetura x86-64-v3/v4.
+- **Ação**: Criação da **ZFS Gaming Zone**, integrando a tecnologia do FreeBSD e Oracle para carregamento ultra-rápido de jogos e cache persistente.
+- **Ação**: Implementação do **Nitro Build System**, detalhando o uso de Clang 19, ThinLTO e AutoFDO para performance de vanguarda.
+- **Ação**: Refinamento do script de otimização com as flags `-Ofast` e `-fno-plt` (Sony Style).
+- **Ação**: Implementação do **Nitro-Linker** (`nitro-linker.sh`), emulando a segurança **KARL** do OpenBSD através da randomização da ordem de linkagem de objetos.
+- **Ação**: Criação da sessão **Parcel-Gamescope** (`parcel-gamescope-session.sh` e `.desktop`), permitindo que o KDE rode nativamente dentro do micro-compositor da Valve.
+- **Ação**: Criação dos dossiês técnicos finais do Decágono: `NETBSD_TECH.md` (Portabilidade/Anykernel) e `OPENBSD_TECH.md` (Segurança Proativa).
+- **Ação**: Design e criação do mockup QML do **Nitro-Control Center**, a central de comando unificada inspirada no YaST do openSUSE.
+- **Ação**: Consolidação da documentação completa para todos os 10 sistemas de referência do Parcel Play OS.
+- **Ação**: Criação do documento mestre de união `UBUNTU_STEAMOS_PARCEL_UNION.md`.
+- **Ação**: Design do Boot Splash (Plymouth) no documento `BOOT_SPLASH_DESIGN.md`, integrando a identidade visual Breeze Dark.
+- **Ação**: Implementação do script `generate-uki.sh` para criação de Unified Kernel Images, aumentando a segurança do boot.
+- **Ação**: Início da Fase 5 da Aprendizagem Supervisionada do FreeBSD, focando na camada de drivers de áudio (`sys/dev`).
+- **Ação**: Criação do documento `ORBIS_FREEBSD_STEAMOS_INTEGRATION.md` unificando as lições de isolamento (Sony) e imutabilidade (Valve).
+- **Ação**: Análise do código de Jails do FreeBSD (`kern_jail.c`) para a criação da camada de isolamento **Nitro-Jail**.
+- **Ação**: Implementação do código C do **Nitro-Prefetcher** (`nitro_prefetcher.c`) focado em aceleração de I/O para jogos.
+- **Ação**: Criação da **Gestão Híbrida (APT + Pacman)**: Desenvolvimento do conceito de Zona de Estabilidade (Ubuntu) e Zona de Agilidade (Arch via Distrobox).
+- **Ação**: Implementação do código C do **Nitro-Jail** (`nitro_jail.c`), integrando isolamento por Namespaces inspirado no PlayStation (FreeBSD Jails).
+- **Ação**: Criação da estratégia de isolamento de Glibc e dependências híbridas no arquivo `HYBRID_GLIBC_STRATEGY.md`.
+- **Ação**: Implementação técnica do protótipo **NTSYNC** (`nitro_ntsync.c`) para aceleração de jogos Windows (inspirado no Fedora 44).
+- **Ação**: Desenvolvimento do plano de suporte universal para **DNF (Fedora)** e **openSUSE** no arquivo `GESTAO_RPM_DNF.md`.
+- **Ação**: Pesquisa e documentação das otimizações da Valve no Arch Linux (`VALVE_ARCH_OPTIMIZATIONS.md`).
+- **Ação**: Design da interface do **Parcel Software Center** unificando 4 fontes de pacotes (`SOFTWARE_CENTER_DESIGN.md`).
+- **Ação**: Implementação técnica do protótipo de áudio de baixa latência `nitro_audio.c` inspirado no FreeBSD/Sony.
+- **Ação**: Criação do Mockup QML oficial para o **Parcel Software Center**, unificando visualmente AUR, APT, COPR e Flathub.
+- **Ação**: Desenvolvimento do código C para o **Nitro-Warp Storage** (`nitro_storage.c`), implementando a tecnologia Direct Storage (P2PDMA) inspirada no PlayStation 5.
+- **Ação**: Criação do dossiê técnico `ORBIS_OS.md` detalhando a arquitetura de syscalls, gráficos (GNM/AGC) e I/O de ultra-velocidade do PlayStation 4 e 5.
+- **Ação**: Criação do dossiê técnico `FEDORA_TECH.md` detalhando as inovações do Fedora 44 (NTSYNC, EEVDF, DNF5) e como elas alimentam o NitroCore.
+- **Ação**: Criação do dossiê técnico `ARCH_LINUX_TECH.md` detalhando os diferenciais do Arch (Zen Kernel, BORE, Pacman 7.0, AUR) e sua integração ao NitroCore.
+- **Ação**: Consolidação do "Quarteto de Elite" no documento `UBUNTU_FREEBSD_ORBIS_STEAMOS.md`.
+- **Ação**: Início da **Aprendizagem Supervisionada** do código FreeBSD (v15/16), criando o documento mestre `APRENDIZAGEM_FREEBSD.md`.
+- **Ação**: Implementação dos protocolos NitroCore no Kernel: `nitro_sched.c`, `omnilock.c`, `nitro_hardened.c`, `nitro_net.c`, `nitro_prefetcher.c`, `nitro_ntsync.c`, `nitro_audio.c` e `nitro_storage.c`.
+- **Ação**: Atualização da `MATRIZ_QUALIDADE.md` e `ARQUITETURA_PERFORMANCE.md` para incluir a aceleração de I/O.
+- **Ação**: Atualização do `Kconfig` e `Makefile` do NitroCore para incluir as novas proteções e motores.
+- **Ação**: Desenvolvimento do mockup QML do **Thunder Browser** nativo com suporte a **HDR Brightness Mapping**.
+- **Ação**: Implementação técnica do protótipo **Nitro-CFI** (`nitro_cfi.c`), integrando segurança de integridade de fluxo estilo OpenBSD.
+- **Ação**: Análise de mercado e convergência tecnológica, criando o documento `CONVERGENCIA_MERCADO.md` comparando o Parcel Play OS com Bazzite, Vanilla OS, blendOS e CachyOS.
+- **Ação**: Início da Fase 6 da Aprendizagem Supervisionada do FreeBSD, analisando o escalonador **ULE** para aprimorar a responsividade multi-core do NitroCore.
+- **Ação**: Criação da tela de **Configuração de Rede Nitro-Net** no instalador, permitindo habilitar Zero-Copy e algoritmos de vanguarda (BBR).
+- **Ação**: Criação do dossiê técnico `MACOS_TECH.md` detalhando a arquitetura híbrida Mach + FreeBSD.
+- **Ação**: Design do widget **Nitro-Switcher** para o KDE Plasma, integrando com o `grub-reboot` para troca de kernels.
+- **Ação**: Implementação do **Nitro-Container Engine (Nitro-APX)**, unificando a gestão de pacotes de múltiplas distros.
+- **Ação**: Criação do script unificado `nitro-pkg.sh` para automação de instalações híbridas.
+- **Ação**: Implementação completa do widget **Nitro-Switcher** (QML) e seu backend (`nitro-switcher-apply.sh`) para troca dinâmica de sabores do Decágono.
+- **Ação**: Auditoria final de consistência em todos os documentos estratégicos do Parcel Play OS.
+- **Ação**: Criação do documento `RANKING_ARQUITETURA.md`, estabelecendo o enquadramento do sistema e o rank de influência dos 10 pilares.
+- **Ação**: Configuração rigorosa do `.gitignore` para excluir os diretórios de fontes de kernel em todas as localizações.
 - **Ação**: Desenvolvimento do protótipo `scripts/hybrid_build.sh` para orquestrar o merge entre o Linux 7.1.8 e o Ubuntu 26.
 
 ## Status Atual

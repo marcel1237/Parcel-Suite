@@ -10,15 +10,14 @@
 /*
  * nitro_update_task_priority:
  * Dynamically adjusts task priority based on interactivity "bursts".
- * If a task is rendering 3D frames or receiving mouse input,
- * it gets a Nitro-Boost.
+ * Inspired by FreeBSD ULE (Independent Run Queues).
  */
 void nitro_update_task_priority(struct task_struct *p) {
     /*
-     * Logic Placeholder:
-     * 1. Detect if task is part of a 3D/Graphics group.
-     * 2. Check if task has high burst activity but low average CPU usage.
-     * 3. Apply a virtual deadline bonus (Nitro Boost).
+     * Logic:
+     * 1. Check CPU affinity and last execution tick (ULE style).
+     * 2. If task is interactive, assign to the primary "High-Priority Queue".
+     * 3. Apply BORE-style virtual deadline bonus.
      */
 }
 

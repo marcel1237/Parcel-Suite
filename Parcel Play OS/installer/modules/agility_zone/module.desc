@@ -1,0 +1,5 @@
+---
+type:       "job"
+name:       "agility_zone"
+interface:  "python"
+script:     "main.py"

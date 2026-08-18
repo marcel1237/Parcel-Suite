@@ -13,27 +13,38 @@ A Sony utilizou o FreeBSD como base para o PS4 e PS5 devido ao controle total (l
 ## 2. Status da Aprendizagem Supervisionada
 
 ### [Fase 1] - Arquitetura de Rede (`sys/net`)
-- **Foco**: Extrair a lógica de processamento de pacotes de alta performance do FreeBSD para portar para o **NitroCore-Net** via XDP.
 - **Análise: `bpf_zerocopy.c`**:
     - **Mecanismo**: O FreeBSD utiliza buffers compartilhados entre o kernel e o user-space para evitar a operação de `copyout`.
-    - **Lição**: O uso de `vm_page` e mapeamento direto de memória é o segredo por trás do "Zero-Copy". Implementaremos uma lógica similar no `nitro_net.c` usando **AF_XDP**, que é o equivalente moderno no Linux para o que o `bpf_zerocopy` faz no BSD.
-- **Diferencial**: O stack TCP/IP do FreeBSD é historicamente superior em latência sob carga pesada.
+    - **Lição**: O uso de `vm_page` e mapeamento direto de memória é o segredo por trás do "Zero-Copy". Implementaremos uma lógica similar no `nitro_net.c` usando **AF_XDP**.
 
 ### [Fase 2] - Gestão de Memória e I/O (`sys/kern` & `sys/vm`)
-- **Foco**: Estudar como o FreeBSD gerencia grandes volumes de dados sem fragmentação, visando aprimorar o **OmniLock**.
 - **Análise: `vm_page_wire` (vm_page.c)**:
-    - **Mecanismo**: O FreeBSD usa o conceito de "wiring" para travar páginas na memória física. Ele utiliza um contador atômico (`ref_count`) e uma flag de controle (`PGA_DEQUEUE`).
-    - **Lição**: Quando uma página é marcada como "wired", ela é removida das filas do "page daemon" (o serviço que libera memória). Isso garante que o tempo de acesso a essa página seja constante, sem risco de swap.
-    - **Aplicação no OmniLock**: Implementaremos uma lógica similar de "desenfileiramento" (de-queuing) para as HugePages no NitroCore, garantindo que o kernel Linux não tente mover essas páginas sob pressão de memória.
+    - **Mecanismo**: O FreeBSD usa o conceito de "wiring" para travar páginas na memória física.
+    - **Lição**: Quando uma página é marcada como "wired", ela é removida das filas do "page daemon". Isso garante que o tempo de acesso seja constante.
+    - **Aplicação no OmniLock**: Implementaremos uma lógica similar de "desenfileiramento" para as HugePages no NitroCore.
 
 ### [Fase 3] - Sistemas de Arquivos e I/O (`sys/fs` & `sys/contrib/openzfs`)
-- **Foco**: Otimizar o carregamento de grandes ativos (jogos e texturas).
 - **Análise: ZFS ARC (`arc.c`)**:
-    - **Mecanismo**: O ZFS utiliza o ARC (Adaptive Replacement Cache) para gerenciar o que fica na memória. Ele possui uma lógica de "blocos não-evitáveis" (un-evictable) que estão com referências ativas.
-    - **Lição**: Podemos forçar o NitroCore a tratar arquivos de ativos de jogos como "Pinned ARC Blocks", garantindo que eles nunca saiam da RAM enquanto o jogo estiver aberto.
-- **Análise: VFS Read-ahead (`vfs.read_max`)**:
-    - **Mecanismo**: O FreeBSD permite ajustar agressivamente o quanto o sistema lê à frente no disco quando detecta um padrão sequencial.
-    - **Aplicação no NitroCore**: Implementaremos um "Nitro-Prefetcher" que, ao detectar a abertura de um executável de jogo, aumenta o read-ahead para 1MB+ (estilo `MAXPHYS` do FreeBSD), reduzindo o tempo de carregamento em até 40%.
+    - **Mecanismo**: O ZFS utiliza o ARC para gerenciar cache de RAM de forma adaptativa.
+    - **Lição**: Podemos forçar o NitroCore a tratar ativos de jogos como blocos de cache não-evitáveis.
+
+### [Fase 4] - Segurança e Isolamento (`sys/kern/kern_jail.c`)
+- **Análise: `prison0` e Estrutura de Jails**:
+    - **Mecanismo**: O FreeBSD define a `prison0` como o estado "real" do sistema. Todas as outras jails são derivadas desta raiz, restringindo visibilidade de PIDs e rede.
+    - **Lição**: O NitroCore implementará o **Nitro-Jail** definindo uma "Raiz de Confiança" (Nitro-Root) e derivando namespaces filhos onde os processos são "desenfileirados" da visibilidade global.
+
+### [Fase 5] - Drivers e Camada de Abstração (`sys/dev`)
+- **Foco**: Estudar o suporte a hardware específico do PlayStation (Sony).
+- **Análise: `dev/sound`**:
+    - **Mecanismo**: O FreeBSD possui uma arquitetura de drivers de som modular.
+    - **Aplicação**: Extrairemos a lógica de priorização de buffer de áudio para o nosso `nitro_audio.c`, garantindo que o tempo de resposta do som no Parcel Play OS seja idêntico ao de um console de mesa.
+
+### [Fase 6] - Escalonamento de Processos (`sys/kern/sched_ule.c`)
+- **Foco**: Otimizar a interatividade em sistemas multi-core.
+- **Análise: ULE Scheduler**:
+    - **Mecanismo**: O ULE utiliza filas de execução independentes por CPU e bloqueio de grão fino. Ele mantém a afinidade do processador usando carimbos de tempo (`ts_rltick`).
+    - **Lição**: A separação das filas reduz a contenção entre os núcleos, permitindo que a interface do usuário (KDE/Gnome) permaneça responsiva mesmo quando o sistema está sob carga pesada (ex: compilando o kernel).
+    - **Aplicação no NitroCore**: O `nitro_sched.c` evoluirá para suportar **Independent Run-Queues**, garantindo que o "Nitro-Boost" da interface não seja prejudicado por processos de background em outros núcleos.
 
 ---
 *Este processo é contínuo e nunca deve ser interrompido.*
