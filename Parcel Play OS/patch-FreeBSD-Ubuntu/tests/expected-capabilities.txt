@@ -1,0 +1,12 @@
+# capability|production policy|laboratory policy
+BOOT_CONFIG|enabled|enabled
+FTRACE|enabled|enabled
+KPROBES|enabled|enabled
+BPF_SYSCALL|enabled|enabled
+TLS|module or built-in|module or built-in
+SECURITY_LANDLOCK|enabled|enabled
+SECCOMP_FILTER|enabled|enabled
+FAULT_INJECTION|disabled|enabled
+KASAN|disabled|separate build
+KCSAN|disabled|separate build
+KCOV|disabled|separate build

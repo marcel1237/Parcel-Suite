@@ -1,0 +1,190 @@
+From 42b2fb5100c588d35cf0563dd1f33ea2af700003 Mon Sep 17 00:00:00 2001
+From: Parcel Play OS <kernel@parcel.invalid>
+Date: Tue, 18 Aug 2026 00:02:00 -0300
+Subject: [PATCH 3/3] selftests: add Parcel translation smoke tests
+
+Add a correctness test for the sendfile path and a non-destructive capability
+inventory used by the FreeBSD-to-Linux comparison.  Performance is deliberately
+not a pass/fail condition.
+
+Signed-off-by: Parcel Play OS <kernel@parcel.invalid>
+---
+ tools/testing/selftests/Makefile               |  1 +
+ tools/testing/selftests/parcel_freebsd/Makefile |  7 +++
+ .../parcel_freebsd/parcel_features.sh          | 51 +++++++++++++++++++
+ .../parcel_freebsd/parcel_sendfile.c           | 82 ++++++++++++++++++++++++++
+ 4 files changed, 141 insertions(+)
+ create mode 100644 tools/testing/selftests/parcel_freebsd/Makefile
+ create mode 100755 tools/testing/selftests/parcel_freebsd/parcel_features.sh
+ create mode 100644 tools/testing/selftests/parcel_freebsd/parcel_sendfile.c
+
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index e1504833654d..0fe80da2d963 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -75,4 +75,5 @@ TARGETS += ptrace
+ TARGETS += openat2
++TARGETS += parcel_freebsd
+ TARGETS += resctrl
+ TARGETS += riscv
+ TARGETS += rlimits
+diff --git a/tools/testing/selftests/parcel_freebsd/Makefile b/tools/testing/selftests/parcel_freebsd/Makefile
+new file mode 100644
+index 000000000000..d3ceeff25c10
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/Makefile
+@@ -0,0 +1,7 @@
++# SPDX-License-Identifier: GPL-2.0
++CFLAGS += -O2 -g -Wall -Wextra -Werror
++
++TEST_GEN_PROGS := parcel_sendfile
++TEST_PROGS := parcel_features.sh
++
++include ../lib.mk
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_features.sh b/tools/testing/selftests/parcel_freebsd/parcel_features.sh
+new file mode 100755
+index 000000000000..4c43a2153267
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_features.sh
+@@ -0,0 +1,51 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++
++ksft_skip=4
++config=/boot/config-$(uname -r)
++
++echo "TAP version 13"
++echo "1..6"
++
++if [ -r "$config" ]; then
++        echo "ok 1 - running kernel configuration is readable"
++else
++        echo "ok 1 - running kernel configuration unavailable # SKIP"
++fi
++
++if [ -d /sys/kernel/tracing ]; then
++        echo "ok 2 - tracefs is available"
++elif [ -d /sys/kernel/debug/tracing ]; then
++        echo "ok 2 - tracing is available through debugfs"
++else
++        echo "ok 2 - tracing filesystem is not mounted # SKIP"
++fi
++
++if [ -r /proc/cgroups ]; then
++        echo "ok 3 - cgroup interface is available"
++else
++        echo "not ok 3 - cgroup interface is unavailable"
++fi
++
++if [ -e /proc/self/ns/user ] && [ -e /proc/self/ns/net ]; then
++        echo "ok 4 - user and network namespace handles are available"
++else
++        echo "not ok 4 - required namespace handles are unavailable"
++fi
++
++if [ -r /proc/sys/kernel/unprivileged_bpf_disabled ]; then
++        value=$(cat /proc/sys/kernel/unprivileged_bpf_disabled)
++        echo "ok 5 - unprivileged BPF policy is visible ($value)"
++else
++        echo "ok 5 - unprivileged BPF policy is unavailable # SKIP"
++fi
++
++if [ -d /sys/kernel/debug/fail_function ] || \
++   [ -d /sys/kernel/debug/failslab ] || \
++   [ -d /sys/kernel/debug/fail_page_alloc ]; then
++        echo "ok 6 - fault injection interface is present"
++else
++        echo "ok 6 - fault injection interface absent # SKIP lab-only"
++fi
++
++exit 0
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_sendfile.c b/tools/testing/selftests/parcel_freebsd/parcel_sendfile.c
+new file mode 100644
+index 000000000000..9bd1c505ef14
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_sendfile.c
+@@ -0,0 +1,82 @@
++// SPDX-License-Identifier: GPL-2.0
++#define _GNU_SOURCE
++#include <errno.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/sendfile.h>
++#include <sys/socket.h>
++#include <unistd.h>
++
++#define TEST_SIZE 16384
++
++static int fail(const char *operation)
++{
++        fprintf(stderr, "not ok 1 - %s: %s\n", operation, strerror(errno));
++        return 1;
++}
++
++int main(void)
++{
++        unsigned char source[TEST_SIZE];
++        unsigned char received[TEST_SIZE];
++        char path[] = "/tmp/parcel-sendfile-XXXXXX";
++        size_t done = 0;
++        off_t offset = 0;
++        int sockets[2] = { -1, -1 };
++        int file = -1;
++        ssize_t ret;
++        size_t i;
++
++        puts("TAP version 13");
++        puts("1..1");
++
++        for (i = 0; i < TEST_SIZE; i++)
++                source[i] = (unsigned char)((i * 31U + 7U) & 0xffU);
++
++        file = mkstemp(path);
++        if (file < 0)
++                return fail("mkstemp");
++        unlink(path);
++
++        ret = write(file, source, sizeof(source));
++        if (ret != (ssize_t)sizeof(source)) {
++                close(file);
++                return fail("write source");
++        }
++        if (socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) < 0) {
++                close(file);
++                return fail("socketpair");
++        }
++
++        ret = sendfile(sockets[0], file, &offset, sizeof(source));
++        if (ret != (ssize_t)sizeof(source)) {
++                close(sockets[0]);
++                close(sockets[1]);
++                close(file);
++                return fail("sendfile");
++        }
++
++        while (done < sizeof(received)) {
++                ret = read(sockets[1], received + done,
++                           sizeof(received) - done);
++                if (ret <= 0) {
++                        close(sockets[0]);
++                        close(sockets[1]);
++                        close(file);
++                        return fail("read socket");
++                }
++                done += (size_t)ret;
++        }
++
++        close(sockets[0]);
++        close(sockets[1]);
++        close(file);
++        if (memcmp(source, received, sizeof(source)) != 0) {
++                errno = EIO;
++                return fail("data comparison");
++        }
++
++        puts("ok 1 - sendfile preserves data over an AF_UNIX socket");
++        return 0;
++}
+-- 
+2.43.0

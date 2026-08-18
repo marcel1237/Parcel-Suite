@@ -1,0 +1,31 @@
+From 7affb6733785393a9cdd25fb213086d1af700002 Mon Sep 17 00:00:00 2001
+From: Parcel Play OS <kernel@parcel.invalid>
+Date: Tue, 18 Aug 2026 00:01:00 -0300
+Subject: [PATCH 2/3] bootconfig: add Parcel initcall trace sample
+
+Add an opt-in bootconfig sample for measuring initcalls and process exec
+events.  Merely installing the sample does not enable tracing.
+
+Signed-off-by: Parcel Play OS <kernel@parcel.invalid>
+---
+ .../samples/parcel-initcall-trace.bconf        | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 tools/bootconfig/samples/parcel-initcall-trace.bconf
+
+diff --git a/tools/bootconfig/samples/parcel-initcall-trace.bconf b/tools/bootconfig/samples/parcel-initcall-trace.bconf
+new file mode 100644
+index 000000000000..1e465a5eae11
+--- /dev/null
++++ b/tools/bootconfig/samples/parcel-initcall-trace.bconf
+@@ -0,0 +1,9 @@
++# Opt-in Parcel laboratory boot trace.  Attach this bootconfig to a test
++# initramfs and add the bootconfig kernel parameter; it is inert otherwise.
++ftrace.instance.parcel_boot {
++        tracing_on = 1
++        buffer_size = 4096KB
++        events.initcall.initcall_start.enable = 1
++        events.initcall.initcall_finish.enable = 1
++        events.sched.sched_process_exec.enable = 1
++}
+-- 
+2.43.0

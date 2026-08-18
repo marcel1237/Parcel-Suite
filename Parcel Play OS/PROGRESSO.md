@@ -2,6 +2,32 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-08-18] - Preparação do Patchset FreeBSD para Ubuntu Resolute
+- **Diretório Criado**: Toda a preparação foi concentrada em `patch-FreeBSD-Ubuntu/`, sem modificar a árvore do kernel.
+- **Série Ativa**: Criados três patches ordenados: documentação da tradução FreeBSD/Linux, amostra opt-in de bootconfig para initcalls e selftests Parcel de sendfile/capacidades.
+- **Automação**: Adicionados scripts para identificar e validar o alvo, checar a série, aplicar explicitamente e reverter antes de commits.
+- **Proteções**: A aplicação recusa árvore suja, clone raso, changelog não Resolute e caminho com espaços/dois-pontos. A compatibilidade com a árvore Noble local exige modo explicitamente não Resolute e não permite aplicação automática.
+- **Fault Injection**: Preparado `config/parcel-lab.config`, mantido fora da série para impedir ativação no kernel generic. KASAN, KCSAN e KCOV permanecem builds separados.
+- **Propostas Bloqueadas**: Scheduler ULE, alterações kTLS/VFS, algoritmos no kernel e equivalentes de Jail permanecem fora da série até baseline correto, consumidor e evidência.
+- **Validação Estática**: Scripts passaram em `bash -n`; os três patches passaram em `git apply --check --whitespace=error-all` contra a árvore local 6.8.
+- **Validação Funcional**: Em cópia temporária, a série foi aplicada, o selftest sendfile compilou com `-Wall -Wextra -Werror` e passou; o inventário de recursos passou.
+- **Bootconfig**: A ferramenta oficial compilou, seus 55 testes passaram e o perfil Parcel foi analisado corretamente.
+- **Limites**: Não houve build/boot de kernel, aplicação em Resolute verdadeiro, fault injection, pacote Debian, Secure Boot ou teste em QEMU/hardware.
+- **Rastreabilidade**: Manifesto, hashes SHA-256 e relatório de validação estão em `patch-FreeBSD-Ubuntu/`.
+
+## [2026-08-18] - Relatório de Aplicação FreeBSD no Ubuntu Resolute
+- **Escopo**: A árvore `Kernels/ubuntu 26 resolute kernel/` foi confrontada com os estudos do `Kernels/FreeBSD 15/sys/kern/` e com os resultados A–E.
+- **Identidade Crítica**: Embora o remote aponte para o repositório oficial Resolute, a cópia local está no commit raso `74134bfb6b720ca18a73931662cbcc8170ef1bed`, declara Linux 6.8.4 e contém changelog Noble 6.8.0-30.30 de abril de 2024. Ela não deve ser tratada como baseline Resolute atual.
+- **Build**: A árvore está limpa, mas sem `.config`, `debian/build` ou `debian/control` gerado. `make -s kernelversion` confirmou que Kbuild rejeita o caminho atual por conter espaços; o clone/worktree de build deve ficar em caminho integral sem espaços ou dois-pontos. Nenhum kernel foi compilado ou instalado.
+- **Aplicação Recomendada**: Usar bootconfig/ftrace para boottrace; flavour de laboratório para fault injection; scheduler padrão como baseline; `sched_ext` somente em árvore compatível; sendfile/kTLS Linux existentes; namespaces, cgroup v2, seccomp, Landlock e AppArmor para conceitos de Jail/Capsicum.
+- **Configuração**: Confirmados BPF, ftrace, kprobes, bootconfig, debugfs, UBSan, TLS, namespaces, cgroups, seccomp, Landlock, IMA e fs-verity na política Ubuntu. O framework geral `CONFIG_FAULT_INJECTION` está desabilitado no generic, apesar de `CONFIG_FUNCTION_ERROR_INJECTION=y`.
+- **Scheduler**: A cópia Linux 6.8 não contém `sched_ext`; não há justificativa experimental para portar ULE ou substituir o scheduler Linux.
+- **Portabilidade**: Rejeitada a cópia direta de arquivos FreeBSD. Conceitos devem ser traduzidos para APIs Linux e algoritmos pequenos precisam de consumidor real, implementação independente e KUnit.
+- **Arquitetura**: Recomendados kernel Ubuntu oficial como fallback, flavour Parcel generic para produção e flavour Parcel lab separado para diagnóstico destrutivo.
+- **Segurança**: Fault injection, KASAN, KCSAN e KCOV devem ser usados somente em builds/VMs dedicados, nunca ativados indiscriminadamente na imagem gamer.
+- **Alterações**: Nenhum arquivo da árvore do kernel foi modificado. A etapa produziu apenas análise e documentação.
+- **Documento Técnico**: Plano completo, pontos de integração, fases de build, matriz de testes, gates e rollback registrados em `APLICACAO_FREEBSD15_NO_UBUNTU_RESOLUTE_2026-08-18.md`.
+
 ## [2026-08-18] - Execução dos Cinco Estudos FreeBSD `sys/kern`
 - **Suíte Criada**: Implementada estrutura reproduzível em `studies/freebsd15_sys_kern/` para boottrace, fault injection, scheduler, rede/arquivos e algoritmos isolados.
 - **Segurança**: Nenhum teste alterou kernel, sysctl, tracefs, debugfs, módulos, GRUB, scheduler global ou discos. Fault injection real foi bloqueada fora de VM descartável.
