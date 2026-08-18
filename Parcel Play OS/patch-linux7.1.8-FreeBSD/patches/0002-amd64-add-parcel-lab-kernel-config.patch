@@ -1,0 +1,32 @@
+From b150000000000000000000000000000000000002 Mon Sep 17 00:00:00 2001
+From: Parcel Play OS <kernel@parcel.invalid>
+Date: Tue, 18 Aug 2026 02:01:00 -0300
+Subject: [PATCH 2/3] amd64: add PARCEL-LAB diagnostic kernel configuration
+
+Add an opt-in amd64 laboratory configuration combining GENERIC-DEBUG with
+boot timing and coverage. It is not intended for production.
+
+Signed-off-by: Parcel Play OS <kernel@parcel.invalid>
+---
+ sys/amd64/conf/PARCEL-LAB | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+ create mode 100644 sys/amd64/conf/PARCEL-LAB
+
+diff --git a/sys/amd64/conf/PARCEL-LAB b/sys/amd64/conf/PARCEL-LAB
+new file mode 100644
+index 000000000000..b15000000003
+--- /dev/null
++++ b/sys/amd64/conf/PARCEL-LAB
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: BSD-2-Clause
++# Diagnostic kernel for Parcel experiments.  Do not deploy in production.
++include GENERIC-DEBUG
++
++ident		PARCEL-LAB
++
++options 	TSLOG
++options 	TSLOGSIZE=262144
++options 	COVERAGE
++options 	KCOV
+-- 
+2.43.0

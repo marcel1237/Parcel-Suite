@@ -1,0 +1,137 @@
+From b150000000000000000000000000000000000003 Mon Sep 17 00:00:00 2001
+From: Parcel Play OS <kernel@parcel.invalid>
+Date: Tue, 18 Aug 2026 02:02:00 -0300
+Subject: [PATCH 3/3] tests: add Linux comparison baseline checks
+
+Add non-destructive ATF checks for native facilities used in Linux comparison
+work. Missing optional facilities are reported as skips.
+
+Signed-off-by: Parcel Play OS <kernel@parcel.invalid>
+---
+ tests/sys/kern/Makefile                   |  1 +
+ tests/sys/kern/parcel_linux_baseline.sh   | 103 ++++++++++++++++++++++++++++++++
+ 2 files changed, 104 insertions(+)
+ create mode 100755 tests/sys/kern/parcel_linux_baseline.sh
+
+diff --git a/tests/sys/kern/Makefile b/tests/sys/kern/Makefile
+index 901497e079b2..b15000000004 100644
+--- a/tests/sys/kern/Makefile
++++ b/tests/sys/kern/Makefile
+@@ -76,5 +76,6 @@ ATF_TESTS_SH+=	coredump_phnum_test
+ ATF_TESTS_SH+=	logsigexit_test
+ ATF_TESTS_SH+=	jailmeta
++ATF_TESTS_SH+=	parcel_linux_baseline
+ ATF_TESTS_SH+=	sonewconn_overflow
+ TEST_METADATA.sonewconn_overflow+=	required_programs="python"
+ TEST_METADATA.sonewconn_overflow+=	required_user="root"
+diff --git a/tests/sys/kern/parcel_linux_baseline.sh b/tests/sys/kern/parcel_linux_baseline.sh
+new file mode 100755
+index 000000000000..b15000000005
+--- /dev/null
++++ b/tests/sys/kern/parcel_linux_baseline.sh
+@@ -0,0 +1,103 @@
++#!/usr/libexec/atf-sh
++# SPDX-License-Identifier: BSD-2-Clause
++#
++# Copyright (c) 2026 Parcel Play OS
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions
++# are met:
++# 1. Redistributions of source code must retain the above copyright
++#    notice, this list of conditions and the following disclaimer.
++# 2. Redistributions in binary form must reproduce the above copyright
++#    notice, this list of conditions and the following disclaimer in the
++#    documentation and/or other materials provided with the distribution.
++#
++# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
++# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
++# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++# SUCH DAMAGE.
++
++atf_test_case scheduler
++scheduler_head()
++{
++	atf_set descr "Report the selected native scheduler"
++}
++scheduler_body()
++{
++	atf_check -s exit:0 -o match:'^(ULE|4BSD)$' \
++	    sysctl -n kern.sched.name
++	atf_check -s exit:0 -o not-empty sysctl -n kern.sched.schedulers
++}
++
++atf_test_case isolation
++isolation_head()
++{
++	atf_set descr "Check native isolation and resource-control features"
++}
++isolation_body()
++{
++	atf_check -s exit:0 -o match:'1' \
++	    sysctl -n kern.features.security_capability_mode
++	atf_check -s exit:0 -o match:'1' \
++	    sysctl -n kern.features.security_capabilities
++	if ! sysctl -N kern.features.vimage >/dev/null 2>&1; then
++		atf_skip "kernel was built without VIMAGE"
++	fi
++	atf_check -s exit:0 -o match:'1' sysctl -n kern.features.vimage
++}
++
++atf_test_case observability
++observability_head()
++{
++	atf_set descr "Check boottrace and failpoint control interfaces"
++}
++observability_body()
++{
++	atf_check -s exit:0 -o ignore sysctl -N kern.boottrace.enabled
++	atf_check -s exit:0 -o ignore \
++	    sysctl -N debug.fail_point.test_trigger_fail_point
++}
++
++atf_test_case io_paths
++io_paths_head()
++{
++	atf_set descr "Check sendfile statistics and optional kTLS controls"
++}
++io_paths_body()
++{
++	atf_check -s exit:0 -o ignore sysctl -N kern.ipc.sfstat
++	if ! sysctl -N kern.ipc.tls.enable >/dev/null 2>&1; then
++		atf_skip "kernel was built without kTLS"
++	fi
++	atf_check -s exit:0 -o match:'[01]' sysctl -n kern.ipc.tls.enable
++}
++
++atf_test_case diagnostic_kernel
++diagnostic_kernel_head()
++{
++	atf_set descr "Report optional Parcel laboratory interfaces"
++}
++diagnostic_kernel_body()
++{
++	if ! sysctl -N kern.boottrace.table_size >/dev/null 2>&1; then
++		atf_skip "boottrace controls unavailable"
++	fi
++	atf_check -s exit:0 -o match:'^[0-9]+$' \
++	    sysctl -n kern.boottrace.table_size
++}
++
++atf_init_test_cases()
++{
++	atf_add_test_case scheduler
++	atf_add_test_case isolation
++	atf_add_test_case observability
++	atf_add_test_case io_paths
++	atf_add_test_case diagnostic_kernel
++}
+-- 
+2.43.0

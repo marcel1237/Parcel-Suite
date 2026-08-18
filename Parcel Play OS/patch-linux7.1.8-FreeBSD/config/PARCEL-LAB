@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# Diagnostic kernel for Parcel experiments.  Do not deploy in production.
+include GENERIC-DEBUG
+
+ident		PARCEL-LAB
+
+options 	TSLOG
+options 	TSLOGSIZE=262144
+options 	COVERAGE
+options 	KCOV

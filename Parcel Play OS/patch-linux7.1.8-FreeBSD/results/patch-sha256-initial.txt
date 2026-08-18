@@ -1,0 +1,3 @@
+a8752d1dfe512f6fa2d797c90b57c583b0e2dba5402f84234733e0732bdc1186  patches/0001-doc-linux-study-for-freebsd.patch
+b1c7f55456da6b6ba6601d30aa4485bf526923346178b9ddc27010b404fff590  patches/0002-amd64-add-parcel-lab-kernel-config.patch
+d2ebba6ee9e3469e5fa57670c9a4db24ed53b456c61b53f01badc4786cf10cad  patches/0003-tests-add-parcel-linux-baseline.patch

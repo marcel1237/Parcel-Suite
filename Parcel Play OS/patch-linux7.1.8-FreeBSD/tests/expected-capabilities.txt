@@ -1,0 +1,12 @@
+epoch-smr|required
+ule-scheduler|required-baseline
+racct-rctl|required-when-configured
+jails-vnet|required
+capsicum|required
+failpoints|required-lab
+sendfile|required
+ktls|required-when-configured
+kasan-kcsan-kmsan-kcov|separate-builds
+dtrace-hwpmc|required-observability
+witness-invariants|required-lab
+tslog|required-parcel-lab

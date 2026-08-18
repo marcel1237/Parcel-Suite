@@ -2,6 +2,46 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-08-18] - Inventário Completo do FreeBSD 15.1-p2
+- **Escopo**: Inventariada a árvore completa externa do FreeBSD, incluindo kernel, módulos, arquiteturas, userland, boot, instalador, release, segurança, rede, storage, virtualização e testes.
+- **Identidade**: Confirmados FreeBSD 15.1-RELEASE-p2, tag `release/15.1.0-p2`, commit `aadd58dddcbc78f4d5594827b46b5633552b15ce`, remote oficial e árvore limpa.
+- **Dimensão**: Aproximadamente 2,2 GiB, 108.960 arquivos totais, 33.186 em `sys/`, 470 diretórios de módulos e 2.386 arquivos de testes.
+- **Kernel**: Confirmados ULE/4BSD, SMP/NUMA, VIMAGE, RACCT/RCTL, Capsicum, MAC, audit, epoch/SMR, UMA, OpenCrypto, sendfile/kTLS e extensa cobertura de drivers.
+- **Storage**: Confirmados OpenZFS, UFS/FFS, GEOM, NVMe, CAM/SCSI, AHCI, iSCSI, NFS e diversos filesystems. OpenZFS inclui aproximadamente 2.355 arquivos de teste.
+- **Rede**: Confirmados IPv4/IPv6, PF, IPFW, IPFilter, Netgraph, netlink, BPF, IPsec, TCP offload/blackbox/Fast Open, SCTP, Wi-Fi e VNET.
+- **Virtualização**: Confirmados bhyve/vmm, virtio, Hyper-V, Xen, Linuxulator e compatibilidade FreeBSD32/ABIs antigas.
+- **Diagnóstico**: Confirmados DTrace, HWPMC, KTR, TSLOG, boottrace, failpoints, WITNESS, INVARIANTS, KASAN, KCSAN, KMSAN, KCOV, KTest e ATF/Kyua.
+- **Instalador/Live**: Confirmados código completo do bsdinstall, particionamento, ZFS boot, rede/Wi-Fi, hardening, pkgbase, criação de ISO/memstick e imagens Azure/EC2/GCE/OCI/OpenStack/Vagrant/Firecracker.
+- **Lacunas Diretas**: Não identificados equivalentes diretos completos para sched_ext, NTSYNC, PSI, io_uring, Landlock, seccomp-BPF, cgroup v2, IMA/fs-verity e kernel Rust; vários objetivos possuem soluções BSD diferentes.
+- **Validação**: Análise estática. Não houve buildworld, buildkernel, boot, ISO, ATF/Kyua ou teste de hardware; fonte externa permaneceu limpa.
+- **Documento Técnico**: Inventário detalhado registrado em `patch-linux7.1.8-FreeBSD/INVENTARIO_FREEBSD_15.1_P2.md`.
+
+## [2026-08-18] - Patchset Invertido Linux 7.1.8 para FreeBSD 15.1-p2
+- **Diretório Criado**: Trabalho concentrado em `patch-linux7.1.8-FreeBSD/`, sem modificar a fonte externa FreeBSD.
+- **Fonte FreeBSD**: Confirmada árvore completa FreeBSD 15.1-RELEASE-p2, tag `release/15.1.0-p2`, commit `aadd58dddcbc78f4d5594827b46b5633552b15ce` e remote oficial. Checkout limpo, raso e destacado.
+- **Comparação**: Linux 7.1.8 confrontado com epoch/SMR, ULE, RACCT/RCTL, Jails/VNET, Capsicum/MAC, sendfile/kTLS, failpoints, sanitizers, DTrace/HWPMC, TSLOG, WITNESS e LinuxKPI do FreeBSD.
+- **Licença**: Proibida cópia de código GPL do kernel Linux. Patches são implementação/documentação independente BSD-2-Clause.
+- **Série Inicial**: Três patches criados: manual de tradução, configuração amd64 `PARCEL-LAB` e testes ATF de baseline.
+- **PARCEL-LAB**: Herda GENERIC-DEBUG e acrescenta TSLOG, COVERAGE e KCOV. É somente laboratório; KASAN/KCSAN/KMSAN permanecem variantes separadas.
+- **Testes ATF**: Preparadas verificações não destrutivas de scheduler, Capsicum/VIMAGE, boottrace/failpoints e sendfile/kTLS.
+- **Oportunidades**: PSI nativo, NTSYNC clean-room, scheduler experimental com fallback, evolução de AIO e integridade MAC/veriexec foram documentados como propostas, não implementação.
+- **Validação**: Scripts, whitespace e `git apply --check` passaram. A série aplicou em cópia temporária e o ATF shell passou em análise sintática.
+- **Bloqueios**: Host Linux sem bmake, config FreeBSD, mandoc, Kyua ou ATF; não houve buildworld, buildkernel, boot ou execução dos testes.
+- **Documento Técnico**: Análise detalhada e resultados em `patch-linux7.1.8-FreeBSD/`.
+
+## [2026-08-18] - Patchset FreeBSD para Linux Vanilla 7.1.8
+- **Diretório Criado**: Preparação concentrada em `patch-FreeBSD-Kernel-7.1.8/`, sem modificar a árvore vanilla.
+- **Reanálise FreeBSD**: Revisitados os 248 arquivos de `FreeBSD 15/sys/kern`, especialmente boottrace, fault injection, ULE, sendfile, kTLS, Jail, VFS cache, PID, filtros, relógio e estatísticas. Dependências FreeBSD confirmam que não há arquivo completo seguro para cópia direta.
+- **Árvore Vanilla**: Confirmada versão declarada 7.1.8, cerca de 93.616 arquivos e 1,8 GiB. A cópia não possui Git próprio, origem/tag/commit verificáveis ou `.config`, e está em caminho rejeitado pelo Kbuild por conter espaços.
+- **Diferença Positiva**: Ao contrário da árvore Ubuntu 6.8 auditada, o vanilla 7.1.8 contém `sched_ext`, selftests `sched_ext`, NTSYNC oficial, bootconfig, fault injection, sendfile/splice, kTLS, BPF e Landlock.
+- **Série Inicial**: Criados três patches para documentação da tradução, boottrace opt-in e selftests de sendfile/capacidades.
+- **Config Lab**: Preparado fragmento separado com `sched_ext`, NTSYNC módulo, kTLS e fault injection. Sanitizers continuam em builds separados e o fragmento não faz parte da aplicação automática.
+- **Automação**: Scripts identificam o alvo, exigem 7.1.8, validam fonte Git oficial no modo de aplicação, checam whitespace, aplicam ao índice e revertem a série.
+- **Validação**: Série passou em `git apply --check --no-index --whitespace=error-all`; em cópia temporária, selftest compilou e passou.
+- **Bootconfig**: Ferramenta oficial compilou, seus 75 testes passaram e o perfil Parcel foi analisado corretamente.
+- **Limites**: Inventário funcional rodou no kernel do host, não em 7.1.8 compilado. Não houve build completo, boot, fault injection, NTSYNC, kTLS em NIC ou benchmark `sched_ext`.
+- **Documento Técnico**: Manifesto e validação registrados dentro de `patch-FreeBSD-Kernel-7.1.8/`.
+
 ## [2026-08-18] - Preparação do Patchset FreeBSD para Ubuntu Resolute
 - **Diretório Criado**: Toda a preparação foi concentrada em `patch-FreeBSD-Ubuntu/`, sem modificar a árvore do kernel.
 - **Série Ativa**: Criados três patches ordenados: documentação da tradução FreeBSD/Linux, amostra opt-in de bootconfig para initcalls e selftests Parcel de sendfile/capacidades.

@@ -1,0 +1,3 @@
+patches/0001-doc-linux-study-for-freebsd.patch
+patches/0002-amd64-add-parcel-lab-kernel-config.patch
+patches/0003-tests-add-parcel-linux-baseline.patch

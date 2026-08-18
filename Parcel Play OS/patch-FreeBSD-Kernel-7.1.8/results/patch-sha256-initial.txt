@@ -1,0 +1,3 @@
+acd5444308fc1b1be668022c41920fd89e528d6e4c786107e75d582e161f841a  patches/0001-doc-parcel-freebsd-study.patch
+1a1e6a73c4fd8f7169a2cbb1f37027671e572fc60b5981fbd9a2ad1ad76c61c6  patches/0002-bootconfig-parcel-initcall-sample.patch
+a474ed3ed40cda92e217e4230a088e11563614169bb00da69ec6d1eaaf68cd40  patches/0003-selftests-parcel-freebsd-smoke.patch

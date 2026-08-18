@@ -1,0 +1,137 @@
+From b150000000000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: Parcel Play OS <kernel@parcel.invalid>
+Date: Tue, 18 Aug 2026 02:00:00 -0300
+Subject: [PATCH 1/3] share: document Linux study rules for FreeBSD
+
+Document how Linux mechanisms are evaluated without importing GPL kernel code
+or duplicating native FreeBSD facilities.
+
+Signed-off-by: Parcel Play OS <kernel@parcel.invalid>
+---
+ share/man/man7/Makefile             |  1 +
+ share/man/man7/linux_compat_study.7 | 102 +++++++++++++++++++++++++++++
+ 2 files changed, 103 insertions(+)
+ create mode 100644 share/man/man7/linux_compat_study.7
+
+diff --git a/share/man/man7/Makefile b/share/man/man7/Makefile
+index 4dde9d5820d0..b15000000001 100644
+--- a/share/man/man7/Makefile
++++ b/share/man/man7/Makefile
+@@ -19,6 +19,7 @@ MAN=	arch.7 \
+ 	hier.7 \
+ 	hostname.7 \
+ 	intro.7 \
++	linux_compat_study.7 \
+ 	maclabel.7 \
+ 	mitigations.7 \
+ 	named_attribute.7 \
+diff --git a/share/man/man7/linux_compat_study.7 b/share/man/man7/linux_compat_study.7
+new file mode 100644
+index 000000000000..b15000000002
+--- /dev/null
++++ b/share/man/man7/linux_compat_study.7
+@@ -0,0 +1,102 @@
++.\"
++.\" SPDX-License-Identifier: BSD-2-Clause
++.\"
++.\" Copyright (c) 2026 Parcel Play OS
++.\"
++.\" Redistribution and use in source and binary forms, with or without
++.\" modification, are permitted provided that the following conditions
++.\" are met:
++.\" 1. Redistributions of source code must retain the above copyright
++.\"    notice, this list of conditions and the following disclaimer.
++.\" 2. Redistributions in binary form must reproduce the above copyright
++.\"    notice, this list of conditions and the following disclaimer in the
++.\"    documentation and/or other materials provided with the distribution.
++.\"
++.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++.\" SUCH DAMAGE.
++.\"
++.Dd August 18, 2026
++.Dt LINUX_COMPAT_STUDY 7
++.Os
++.Sh NAME
++.Nm linux_compat_study
++.Nd rules for evaluating Linux kernel mechanisms in FreeBSD
++.Sh DESCRIPTION
++Linux may be used as a source of requirements, test cases, and architectural
++comparisons.
++Linux kernel source licensed under GPL must not be copied into the
++.Fx
++kernel.
++Implementations must use native interfaces and a licence suitable for the
++.Fx
++source tree.
++.Pp
++Before adding code, identify the existing native facility.
++Important mappings include:
++.Bl -tag -width "Linux cgroup v2"
++.It Linux RCU
++.Xr epoch 9
++and SMR.
++.It Linux cgroup v2 and namespaces
++RACCT, RCTL,
++.Xr jail 8 ,
++and VNET.
++.It Linux seccomp and Landlock
++Capsicum and the MAC Framework.
++.It Linux lockdep
++WITNESS and INVARIANTS.
++.It Linux ftrace and bootconfig
++DTrace, KTR, TSLOG, and boottrace.
++.It Linux fault injection
++.Xr fail 9 .
++.It Linux sendfile and kTLS
++The native
++.Xr sendfile 2
++and kernel TLS implementations.
++.It Linux sanitizers
++KASAN, KCSAN, KMSAN, and KCOV kernel configurations.
++.El
++.Sh DEVELOPMENT RULES
++A functional change requires a reproducible FreeBSD problem, a fixed source
++revision, tests, and measurements.
++Differences in design alone are not evidence that a port is useful.
++.Pp
++Prefer changes in this order:
++.Bl -enum
++.It
++Tests and observability using existing facilities.
++.It
++Userspace policy built on stable FreeBSD interfaces.
++.It
++Small native probes or counters with a demonstrated consumer.
++.It
++New kernel ABI or subsystem only after alternatives are exhausted.
++.El
++.Sh LABORATORY KERNELS
++Fault injection, coverage, sanitizers, TSLOG, WITNESS, and INVARIANTS may have
++security or performance cost.
++Destructive testing must use a separate kernel in a disposable virtual
++machine.
++A known-good GENERIC kernel must remain available for boot fallback.
++.Sh ACCEPTANCE
++A production patch must pass relevant ATF and KTest suites, buildworld,
++buildkernel, virtual-machine boot, security review, and before/after
++measurements.
++Rollback and licence provenance must be documented.
++.Sh SEE ALSO
++.Xr capsicum 4 ,
++.Xr dtrace 1 ,
++.Xr fail 9 ,
++.Xr jail 8 ,
++.Xr rctl 8 ,
++.Xr sendfile 2 ,
++.Xr tuning 7
+-- 
+2.43.0

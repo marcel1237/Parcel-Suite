@@ -1,0 +1,3 @@
+patches/0001-doc-parcel-freebsd-study.patch
+patches/0002-bootconfig-parcel-initcall-sample.patch
+patches/0003-selftests-parcel-freebsd-smoke.patch

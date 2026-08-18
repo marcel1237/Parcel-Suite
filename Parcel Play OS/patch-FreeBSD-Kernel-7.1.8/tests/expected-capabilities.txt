@@ -1,0 +1,13 @@
+SCHED_CLASS_EXT|required-for-scheduler-study
+NTSYNC|required-use-official-driver
+BOOT_CONFIG|required
+FTRACE|required
+KPROBES|required
+BPF_SYSCALL|required-for-sched-ext
+TLS|required-module-or-built-in
+SECURITY_LANDLOCK|required
+SECCOMP_FILTER|required
+FAULT_INJECTION|lab-only
+KASAN|separate-build
+KCSAN|separate-build
+KCOV|separate-build
