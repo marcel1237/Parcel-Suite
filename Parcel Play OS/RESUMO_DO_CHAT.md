@@ -97,7 +97,10 @@ A estratégia adotada é a "Modernização de Legado", utilizando o modelo de co
 - **Nitro-APX**: Criamos o motor de contêineres e o wrapper `nitro-pkg`.
 - **Interface Finalizada**: Implementamos o **Nitro-Switcher** em QML e seu script de backend, permitindo a alternância real entre os 10 núcleos do sistema de forma visual.
 - **Auditoria Final**: Revisamos e consolidamos todos os 40+ documentos do projeto.
-- **Ranking de Influência**: Criamos o `RANKING_ARQUITETURA.md`, identificando o **Ubuntu** como a fundação de apps, o **SteamOS/Arch** como a alma gamer e a dupla **Sony/FreeBSD** como o diferencial de engenharia de console.
+- **Ranking de Influência**: Criamos o `RANKING_ARQUITETURA.md`.
+- **Handoff & Simbiose**: Detalhamos como a base estável do Ubuntu e o AUR do Arch conversam através de **Namespaces Híbridos**. Implementamos o script `nitro-hybrid-handoff.sh` (Bubblewrap) para isolar a `glibc` de vanguarda de forma segura.
+- **ZFS Gaming Zone**: Implementamos o suporte a partições ZFS otimizadas para jogos. Criamos o script `setup-z-gaming.sh` que automatiza a criação do dataset com recordsize de 1M e insensibilidade a maiúsculas/minúsculas para jogos Windows.
+- **Dominação Windows**: Consolidamos a **Ponte Fedora-Windows**, integrando a tecnologia **NTSYNC** para que o Parcel Play OS supere o Windows nativo em benchmarks de jogos.
 - **ZFS Gaming Zone**: Implementamos o suporte a partições ZFS otimizadas para jogos, com cache L2ARC persistente e compressão ZSTD-3, trazendo a tecnologia do FreeBSD para o núcleo do sistema.
 - **Nitro Build System**: Estabelecemos o pipeline de compilação de vanguarda, utilizando detecção automática de microarquitetura (v3/v4) e otimizações agressivas do Clang para extrair o máximo do hardware.
 - **Laboratório de Kernels**: Analisamos a pasta `Kernels/` e identificamos ativos cruciais: Linux Vanilla 7.1.8 (Vanguarda), Ubuntu 26 (Compatibilidade), Connectiva 4 (Legado Brasileiro) e FreeBSD 15/16 (Rede).

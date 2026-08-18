@@ -16,9 +16,10 @@ O Parcel Play OS utiliza parte do seu SSD mais rápido como um cache de leitura 
 - **Persistência**: Diferente do Linux padrão, o cache do NitroCore sobrevive a reinicializações. Ao ligar o PC, seu jogo favorito já está pronto na velocidade da luz.
 
 ## 3. Implementação no Instalador
-O **Parcel Setup Engine** oferecerá a opção "Criar ZFS Gaming Zone":
-1.  **Ação**: Cria o pool `z-gaming` no espaço livre do disco.
-2.  **Otimização**: Configura o `atime=off` para que o sistema não perca tempo gravando a "hora do último acesso" toda vez que o jogo ler uma textura.
+A criação da zona é automatizada pelo script `scripts/setup-z-gaming.sh`, que executa:
+1.  **Criação do Dataset**: Com `recordsize=1M` e `compression=zstd-3`.
+2.  **Case Insensitivity**: Configurado para `insensitive` para garantir que jogos Windows funcionem perfeitamente via Wine/Proton.
+3.  **Metadata Boost**: Uso de `xattr=sa` para acelerar a verificação de arquivos da Steam.
 
 ## 4. Matriz de Benefícios
 

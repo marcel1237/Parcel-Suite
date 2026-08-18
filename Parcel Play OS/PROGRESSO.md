@@ -311,6 +311,8 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Ação**: Criação da estratégia de isolamento de Glibc e dependências híbridas no arquivo `HYBRID_GLIBC_STRATEGY.md`.
 - **Ação**: Implementação técnica do protótipo **NTSYNC** (`nitro_ntsync.c`) para aceleração de jogos Windows (inspirado no Fedora 44).
 - **Ação**: Desenvolvimento do plano de suporte universal para **DNF (Fedora)** e **openSUSE** no arquivo `GESTAO_RPM_DNF.md`.
+- **Ação**: Implementação do script `nitro-hybrid-handoff.sh` utilizando lógica de Bubblewrap para isolamento de bibliotecas entre Ubuntu e Arch.
+- **Ação**: Criação do script de automação `setup-z-gaming.sh` para configuração da **ZFS Gaming Zone** otimizada para 2026.
 - **Ação**: Pesquisa e documentação das otimizações da Valve no Arch Linux (`VALVE_ARCH_OPTIMIZATIONS.md`).
 - **Ação**: Design da interface do **Parcel Software Center** unificando 4 fontes de pacotes (`SOFTWARE_CENTER_DESIGN.md`).
 - **Ação**: Implementação técnica do protótipo de áudio de baixa latência `nitro_audio.c` inspirado no FreeBSD/Sony.
@@ -336,6 +338,8 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Ação**: Implementação completa do widget **Nitro-Switcher** (QML) e seu backend (`nitro-switcher-apply.sh`) para troca dinâmica de sabores do Decágono.
 - **Ação**: Auditoria final de consistência em todos os documentos estratégicos do Parcel Play OS.
 - **Ação**: Criação do documento `RANKING_ARQUITETURA.md`, estabelecendo o enquadramento do sistema e o rank de influência dos 10 pilares.
+- **Ação**: Implementação técnica da **Ponte Windows-Fedora** (`PONTE_WINDOWS_FEDORA.md`), detalhando o uso automático do NTSYNC para performance nativa.
+- **Ação**: Desenvolvimento do **Plano de Handoff Ubuntu-Arch** (`HANDOFF_UBUNTU_ARCH.md`), unindo a estabilidade imutável com a agilidade do AUR via Namespaces.
 - **Ação**: Configuração rigorosa do `.gitignore` para excluir os diretórios de fontes de kernel em todas as localizações.
 - **Ação**: Desenvolvimento do protótipo `scripts/hybrid_build.sh` para orquestrar o merge entre o Linux 7.1.8 e o Ubuntu 26.
 
