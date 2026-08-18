@@ -1,0 +1,29 @@
+From 63a77230409425ff8863668d0cf55d51be001003 Mon Sep 17 00:00:00 2001
+From: PlayOS Kernel Lab <kernel@playos.invalid>
+Date: Tue, 18 Aug 2026 01:03:00 -0300
+Subject: [PATCH] r8169: clarify ASPM safety condition precedence
+
+Parenthesize the register test and its conjunction explicitly.  This preserves
+the existing logic and avoids -Wparentheses failures with the current compiler.
+
+Signed-off-by: PlayOS Kernel Lab <kernel@playos.invalid>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index acf80a7e2199..2b0e32db8325 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5243,8 +5243,8 @@ static bool rtl_aspm_is_safe(struct rtl8169_private *tp)
+ 	 * 4-7: Reserved
+ 	 */
+-	if (tp->mac_version >= RTL_GIGA_MAC_VER_61 &&
+-		r8168_mac_ocp_read(tp, 0xc0b2) & 0xf ||
++	if ((tp->mac_version >= RTL_GIGA_MAC_VER_61 &&
++	     (r8168_mac_ocp_read(tp, 0xc0b2) & 0xf)) ||
+ 		rtl_aspm_dell_workaround(tp))
+ 		return true;
+ 
+-- 
+2.43.0

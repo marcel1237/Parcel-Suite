@@ -1,0 +1,11 @@
+# requirement	primary	fallback	status
+freebsd-native	native	build-port	preferred
+linux-userspace	linux-jail	bhyve-linux	candidate
+linux-kernel-api	bhyve-linux	remote	virtualized
+windows-user-api	wine	bhyve-windows	candidate
+windows-kernel-anticheat	bhyve-windows	remote	vendor-dependent
+android-binder	bhyve-linux	remote	virtualized
+oci-freebsd	freebsd-container	jail	preferred
+oci-linux	bhyve-linux	linux-jail	kernel-dependent
+gpu-linux-driver	bhyve-linux	remote	passthrough-dependent
+gpu-windows-driver	bhyve-windows	remote	passthrough-dependent

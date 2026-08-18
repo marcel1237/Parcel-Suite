@@ -1,0 +1,114 @@
+From 50177b433c39393c711672256da76710be001000 Mon Sep 17 00:00:00 2001
+From: PlayOS Kernel Lab <kernel@playos.invalid>
+Date: Tue, 18 Aug 2026 01:00:00 -0300
+Subject: [PATCH] selftests: add PlayOS isolation baseline
+
+Extend the FreeBSD policy study with non-destructive checks for Linux
+facilities used to express Jail, RACCT/RCTL and Capsicum-like policies.
+
+Signed-off-by: PlayOS Kernel Lab <kernel@playos.invalid>
+---
+ tools/testing/selftests/parcel_freebsd/Makefile             |  4 ++--
+ tools/testing/selftests/parcel_freebsd/parcel_isolation.sh  | 38 +++++++++++++++++++++++++++++++
+ tools/testing/selftests/parcel_freebsd/parcel_landlock.c    | 33 +++++++++++++++++++++++++++
+ 3 files changed, 73 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/parcel_freebsd/Makefile b/tools/testing/selftests/parcel_freebsd/Makefile
+index d3ceeff25c10..ef2ebffb5d47 100644
+--- a/tools/testing/selftests/parcel_freebsd/Makefile
++++ b/tools/testing/selftests/parcel_freebsd/Makefile
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ CFLAGS += -O2 -g -Wall -Wextra -Werror
+ 
+-TEST_GEN_PROGS := parcel_sendfile
+-TEST_PROGS := parcel_features.sh
++TEST_GEN_PROGS := parcel_sendfile parcel_landlock
++TEST_PROGS := parcel_features.sh parcel_isolation.sh
+ 
+ include ../lib.mk
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_isolation.sh b/tools/testing/selftests/parcel_freebsd/parcel_isolation.sh
+new file mode 100755
+index 000000000000..ef6412adb4af
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_isolation.sh
+@@ -0,0 +1,38 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++
++echo "TAP version 13"
++echo "1..5"
++
++if [ -f /sys/fs/cgroup/cgroup.controllers ]; then
++        controllers=$(tr '\n' ' ' < /sys/fs/cgroup/cgroup.controllers)
++        echo "ok 1 - cgroup v2 controllers are visible ($controllers)"
++else
++        echo "not ok 1 - cgroup v2 unified hierarchy is unavailable"
++fi
++
++if [ -e /proc/self/ns/user ] && [ -e /proc/self/ns/pid ] &&
++   [ -e /proc/self/ns/net ] && [ -e /proc/self/ns/mnt ]; then
++        echo "ok 2 - user, PID, network and mount namespaces are available"
++else
++        echo "not ok 2 - namespace handles required by Play Sandbox are missing"
++fi
++
++seccomp=$(awk '/^Seccomp:/ { print $2 }' /proc/self/status 2>/dev/null)
++case "$seccomp" in
++0|1|2) echo "ok 3 - seccomp process state is visible (mode $seccomp)" ;;
++*) echo "not ok 3 - seccomp process state is unavailable" ;;
++esac
++
++if [ -r /proc/pressure/cpu ] && [ -r /proc/pressure/memory ] &&
++   [ -r /proc/pressure/io ]; then
++        echo "ok 4 - PSI exposes CPU, memory and I/O pressure"
++else
++        echo "ok 4 - complete PSI interface unavailable # SKIP"
++fi
++
++if [ -d /sys/module/apparmor ]; then
++        echo "ok 5 - AppArmor kernel module is present"
++else
++        echo "ok 5 - AppArmor module is absent # SKIP"
++fi
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_landlock.c b/tools/testing/selftests/parcel_freebsd/parcel_landlock.c
+new file mode 100644
+index 000000000000..2a493c1d9b58
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_landlock.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <errno.h>
++#include <linux/landlock.h>
++#include <stdio.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++
++int main(void)
++{
++        long abi;
++
++        puts("TAP version 13");
++        puts("1..1");
++
++#ifndef __NR_landlock_create_ruleset
++        puts("ok 1 - Landlock syscall number unavailable # SKIP");
++        return 4;
++#else
++        errno = 0;
++        abi = syscall(__NR_landlock_create_ruleset, NULL, 0,
++                      LANDLOCK_CREATE_RULESET_VERSION);
++        if (abi >= 1) {
++                printf("ok 1 - Landlock ABI is available (version %ld)\n", abi);
++                return 0;
++        }
++        if (errno == ENOSYS || errno == EOPNOTSUPP) {
++                puts("ok 1 - Landlock is unavailable # SKIP");
++                return 4;
++        }
++        printf("not ok 1 - Landlock ABI query failed (errno %d)\n", errno);
++        return 1;
++#endif
++}
+-- 
+2.43.0

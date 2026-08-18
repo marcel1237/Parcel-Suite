@@ -36,6 +36,11 @@ O resultado dos estudos já executados não justifica substituir o scheduler Lin
 
 ## 2. Estado real da pasta chamada Ubuntu Resolute
 
+O Ubuntu 26.04 LTS Resolute final usa oficialmente Linux 7.0. Essa identidade
+foi confirmada pelo anúncio da Equipe de Kernel da Canonical e pelo changelog
+do pacote `linux` no Launchpad. Consulte
+`VERIFICACAO_KERNEL_UBUNTU_RESOLUTE_2026-08-18.md`.
+
 ### 2.1 Identidade encontrada
 
 A pasta auditada possui:
@@ -69,7 +74,7 @@ O nome da pasta e a URL do remote não bastam para provar que o conteúdo é Res
 - hash da configuração `amd64/generic`;
 - hash dos patches Parcel aplicados.
 
-Aplicar mudanças agora produziria patches sobre Noble 6.8 e poderia gerar falsas alegações de compatibilidade com Resolute.
+Aplicar mudanças agora produziria patches sobre Noble 6.8 e poderia gerar falsas alegações de compatibilidade com o Resolute Linux 7.0.
 
 ### 2.3 Estado de build
 

@@ -1,0 +1,7 @@
+patches/0100-selftests-add-playos-isolation-baseline.patch
+patches/0101-security-make-lsm-key-alloc-static.patch
+patches/0102-apparmor-make-file-helpers-static.patch
+patches/0103-r8169-clarify-aspm-condition.patch
+patches/0104-cpufreq-check-empty-driver-name.patch
+patches/0105-efi-libstub-build-x86-as-gnu11.patch
+patches/0106-x86-compressed-build-as-gnu11.patch

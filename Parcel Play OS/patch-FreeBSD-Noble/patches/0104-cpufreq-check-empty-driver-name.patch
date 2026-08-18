@@ -1,0 +1,28 @@
+From 0cbe971ca352596083699daf08803744be001004 Mon Sep 17 00:00:00 2001
+From: PlayOS Kernel Lab <kernel@playos.invalid>
+Date: Tue, 18 Aug 2026 01:04:00 -0300
+Subject: [PATCH] cpufreq: check for an empty driver name
+
+cpufreq_driver.name is an embedded character array and its address cannot be
+NULL.  Check its first byte when validating the optional driver selection.
+
+Signed-off-by: PlayOS Kernel Lab <kernel@playos.invalid>
+---
+ drivers/cpufreq/cpufreq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 55bbc96945dd..65adf4742241 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -2900,7 +2900,7 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data)
+ 		driver_data->name, cpufreq_driver_name);
+ 
+ 	if (cpufreq_driver_name[0])
+-		if (!driver_data->name ||
++		if (!driver_data->name[0] ||
+ 			strcmp(cpufreq_driver_name, driver_data->name))
+ 				return -EINVAL;
+ 
+-- 
+2.43.0

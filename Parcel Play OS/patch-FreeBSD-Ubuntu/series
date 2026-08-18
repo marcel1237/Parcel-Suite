@@ -1,3 +1,4 @@
 patches/0001-doc-parcel-freebsd-translation.patch
 patches/0002-bootconfig-parcel-initcall-sample.patch
 patches/0003-selftests-parcel-freebsd-smoke.patch
+patches/0004-localversion-playos-freebsd-lab.patch

@@ -1,0 +1,23 @@
+From 88d6eb928836ac7198657a058f36fd34af700004 Mon Sep 17 00:00:00 2001
+From: PlayOS Kernel Lab <kernel@playos.invalid>
+Date: Tue, 18 Aug 2026 00:03:00 -0300
+Subject: [PATCH 4/4] localversion: identify the PlayOS FreeBSD study kernel
+
+Give the laboratory kernel a distinct release suffix so that it can coexist
+with, and never be mistaken for, the distribution kernel.
+
+Signed-off-by: PlayOS Kernel Lab <kernel@playos.invalid>
+---
+ localversion-playos | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 localversion-playos
+
+diff --git a/localversion-playos b/localversion-playos
+new file mode 100644
+index 000000000000..73ff284c983b
+--- /dev/null
++++ b/localversion-playos
+@@ -0,0 +1 @@
++-playos-freebsd-lab1
+-- 
+2.43.0

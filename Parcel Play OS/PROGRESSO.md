@@ -2,6 +2,83 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-08-18] - Primeiro Build do Kernel PlayOS FreeBSD Lab
+- **Resultado**: Compilado com sucesso `6.8.4-playos-freebsd-lab1-g74134bfb6b72-dirty`; `bzImage` x86 bootável com 14.050.304 bytes.
+- **Worktree**: Build concluído em `/home/marcel/kernel-work/playos-noble`, após `/tmp` ficar sem espaço no link final.
+- **Configuração**: `x86_64_defconfig` + fragmentos PlayOS de produção/lab; namespaces, cgroup, seccomp, Landlock, AppArmor, kTLS, PSI, bootconfig, tracing, BPF e fault injection confirmados.
+- **Selftests**: Quatro testes kselftest passaram: sendfile, Landlock ABI 8, inventário e isolamento com cgroup v2/namespaces/seccomp/PSI/AppArmor.
+- **Correções de Build**: Adicionados patches mínimos para linkage LSM/AppArmor, warning r8169, array cpufreq e padrão GNU11 no EFI stub/kernel comprimido sob GCC 15.
+- **Artefatos**: `bzImage`, `.config`, `System.map` e hashes copiados para `build/playos-noble/output/`.
+- **Módulos**: `make modules` e `modules_install` concluídos; nove módulos foram instalados somente no staging isolado em `/home/marcel/kernel-work/playos-noble/stage`, sem alterar o host.
+- **Initramfs**: Dracut 110 gerou uma imagem genérica de 46 MiB; `lsinitrd` confirmou microcode, systemd-initrd, suporte de VM/rootfs e módulos da nova release. Hash registrado em `SHA256SUMS`.
+- **Limites**: Ainda sem pacote Debian, assinatura, GRUB, boot ou testes executados no novo kernel. QEMU/virt-install não estão disponíveis no host. O sufixo `dirty` confirma estado não commitado/laboratorial.
+- **Relatório**: Detalhes em `patch-FreeBSD-Noble/results/BUILD_6.8.4_PLAYOS_FREEBSD_LAB1_2026-08-18.md`.
+
+## [2026-08-18] - Meta Corrigida: Ubuntu Noble Enriquecido com FreeBSD 15.1
+- **Alvo**: Confirmado Ubuntu Noble Linux 6.8.4 no commit `74134bfb6b720ca18a73931662cbcc8170ef1bed`; o nome local Resolute está incorreto e deixa de definir a meta deste patchset.
+- **Fonte**: Confirmado FreeBSD `release/15.1.0-p2`, commit `aadd58dddcbc78f4d5594827b46b5633552b15ce`, remote oficial e checkout limpo em `/home/marcel/Parcel Suite/Operating Systems/freebsd-15.1.0-p2`.
+- **Novo Patchset**: Criado `patch-FreeBSD-Noble/` com manifesto, roadmap, matriz de 16 integrações e configurações separadas de produção/laboratório.
+- **Produção**: Usará mecanismos Linux equivalentes para namespaces/Jails, cgroup/RCTL, seccomp/Landlock/Capsicum, kTLS/sendfile e tracing/boottrace.
+- **Laboratório**: Fault injection separado; sanitizers em variantes próprias. `sched_ext` está ausente no Linux 6.8 e não será fingido nem substituído por cópia do ULE.
+- **Regra**: Código FreeBSD completo permanece somente leitura. Patches Linux serão pequenos, nativos, testados e justificáveis; sem cópia direta de `sys/kern`.
+
+## [2026-08-18] - Início do Kernel PlayOS FreeBSD Study sobre Ubuntu Local
+- **Branch**: Criada `codex/playos-freebsd-syskern-6.8-lab` dentro da árvore `Kernels/ubuntu 26 resolute kernel`, preservando `master` no commit `74134bfb6b720ca18a73931662cbcc8170ef1bed`.
+- **Aplicação**: Três patches existentes foram aplicados ao índice: documentação de tradução, bootconfig opt-in e selftests. Um quarto patch adicionou `localversion-playos` com sufixo `-playos-freebsd-lab1`.
+- **Escopo**: Sete arquivos e 215 inserções; nenhum scheduler, VFS, syscall, lock, mbuf ou subsistema FreeBSD foi copiado para Linux.
+- **Testes**: `git diff --cached --check` e kit passaram; teste sendfile compilou com warnings como erro e preservou dados via AF_UNIX; inventário retornou cinco PASS e um SKIP de fault injection.
+- **Bloqueio**: Kselftest/Kbuild não funcionam na hierarquia atual com espaços. Build integral requer worktree física em caminho limpo.
+- **Identidade**: O novo kernel é laboratório sobre Noble Linux 6.8.4, não Ubuntu Resolute 7.0. Mudanças permanecem staged e não commitadas para revisão.
+- **Relatório**: Resultado registrado em `patch-FreeBSD-Ubuntu/results/APLICACAO_INICIAL_6.8_2026-08-18.md`.
+
+## [2026-08-18] - Análise de Integração do FreeBSD `sys/kern` no Ubuntu
+- **Inventário**: Auditados 248 arquivos no primeiro nível de `Kernels/FreeBSD 15/sys/kern`; 210 incluem `sys/param.h`, 206 `sys/systm.h`, 187 `sys/kernel.h` e 155 `sys/proc.h`.
+- **Conclusão**: `sys/kern` não é biblioteca e não pode ser adicionado ao Kbuild. Estruturas como proc/thread, vnode, mbuf, UMA, VNET, SYSINIT, epoch e locks não possuem ABI compatível com Linux.
+- **Estratégia**: Três camadas: mecanismos Linux existentes sem patch; patches Linux mínimos para lacunas comprovadas; FreeBSD Core KVM para semântica BSD integral.
+- **Mapeamento**: Criado `patch-FreeBSD-Ubuntu/proposals/sys-kern-mapping.tsv` com 16 famílias, alvo Linux, ação e prioridade.
+- **Bloqueios**: ULE, Jails, sendfile, kTLS, VFS, locks e mbufs não devem ser copiados. Scheduler pode ser estudado por política `sched_ext`; isolamento deve usar contrato userspace com backends nativos.
+- **Baseline**: A cópia Ubuntu local continua Noble 6.8.4; qualquer aplicação final depende de árvore oficial Resolute Linux 7.0, build, boot e testes.
+- **Documento**: Relatório completo registrado em `INTEGRACAO_SYS_KERN_FREEBSD_NO_UBUNTU_2026-08-18.md`.
+
+## [2026-08-18] - Nova Direção: PlayOS Unificado Ubuntu + FreeBSD
+- **Mudança**: Substituída a proposta de duas edições por análise de um produto único executando Ubuntu e FreeBSD simultaneamente.
+- **Arquitetura Recomendada**: Ubuntu Resolute Linux 7.0 controla hardware, desktop e jogos; FreeBSD 15.1 funciona como máquina de serviços KVM/libvirt integrada por rede VirtIO privada e API autenticada.
+- **Unificação**: Um instalador, conta, desktop, central de controle e atualização; dois kernels permanecem tecnicamente isolados e com ciclos próprios.
+- **Dados**: Compartilhamento inicial por NFSv4/SMB sobre rede privada; proibido montar filesystem gravável simultaneamente nos dois kernels.
+- **Resiliência**: Desktop não depende do guest, imagens FreeBSD usam atualização A/B e rollback, e falha do FreeBSD Core resulta em modo degradado.
+- **Host Auditado**: Ubuntu `7.0.0-29-generic`, Ryzen 3 7320U com AMD-V, 94 GiB livres e 5,1 GiB RAM; QEMU/libvirt e `/dev/kvm` ainda não disponíveis/confirmados.
+- **Documento**: Arquitetura, comunicação, instalação, segurança, PoC e critérios registrados em `PLAYOS_UNIFICADO_UBUNTU_FREEBSD_2026-08-18.md`.
+
+## [2026-08-18] - Definição da Arquitetura do PlayOS
+- **Nome**: Definido PlayOS como marca futura da família de sistemas; renomeação física permanece pendente e não será feita por substituição global.
+- **Decisão Principal**: PlayOS Gaming/Desktop usará Ubuntu Resolute Linux 7.0; PlayOS BSD/Server usará FreeBSD 15.1 em imagem e userspace próprios.
+- **Kernel**: Rejeitado kernel híbrido ou kernel novo no MVP. Kernels oficiais permanecem produção/fallback; NitroCore e os três patchsets continuam laboratório.
+- **Integração**: UI, catálogo, sandbox, telemetria, atualização e modelo do instalador serão comuns por contratos userspace, com backend específico Linux ou FreeBSD.
+- **Compatibilidade**: Linux prioriza DEB/Flatpak/containers/Proton/Waydroid; FreeBSD prioriza pkg/Ports/Linuxulator/Wine/bhyve.
+- **Entrega**: A ISO Linux será concluída antes da edição FreeBSD; eventual mídia conjunta fará chainload de payloads independentes.
+- **Documento**: Análise, matriz, arquitetura, política de patches, branding, roadmap e critérios de release registrados em `PLAYOS_ARQUITETURA_LINUX_FREEBSD_2026-08-18.md`.
+
+## [2026-08-18] - Arquitetura de Compatibilidade Máxima para FreeBSD
+- **Solução**: Criado `freebsd-compatibility/` com roteamento em camadas: FreeBSD nativo, Linuxulator em Linux jail, Wine, bhyve e streaming como último fallback.
+- **Princípio**: Linux jail compartilha o kernel FreeBSD; cargas dependentes de kernel Linux, NTSYNC, Waydroid, drivers ou anti-cheat devem usar VM, não receber falsa classificação nativa.
+- **Entregas**: README arquitetural, matriz por classe de carga, plano em seis fases, política TSV legível por máquina e auditoria somente leitura do host.
+- **Segurança**: GENERIC e rollback permanecem obrigatórios; o kit não instala pacotes, não carrega módulos e não altera o sistema.
+- **Validação Pendente**: Desktop, GPU, áudio, Wine, Steam, passthrough, suspend/resume e aplicações reais exigem boot do FreeBSD em VM e hardware.
+
+## [2026-08-18] - Correção da versão oficial do kernel Resolute
+- **Confirmação Oficial**: Ubuntu 26.04 LTS Resolute Raccoon foi lançado com Linux 7.0, conforme anúncio da Equipe de Kernel da Canonical e changelog do pacote `linux` no Launchpad.
+- **Correção Local**: `Kernels/ubuntu 26 resolute kernel/` continua identificada como Noble 6.8.4 (`6.8.0-30.30`), apesar do nome e do remote Resolute; não é o baseline oficial.
+- **Impacto**: A validação de `patch-FreeBSD-Ubuntu/` contra 6.8 foi reclassificada explicitamente como compatibilidade sintática, não validação Resolute.
+- **Proteção**: O validador agora exige simultaneamente changelog `resolute` e `VERSION.PATCHLEVEL = 7.0` para aplicação normal.
+- **Documento**: Evidências, comparação e critérios do novo baseline registrados em `VERIFICACAO_KERNEL_UBUNTU_RESOLUTE_2026-08-18.md`.
+
+## [2026-08-18] - Resumo Consolidado do Dia
+- **Consolidação**: Todo o trabalho do dia foi reunido em `RESUMO_DIA_2026-08-18.md`, com ranking de importância de 1 a 10, maturidade e pendências.
+- **Nota Máxima**: Receberam 10/10 a descoberta da identidade incorreta da árvore Resolute, a política de portabilidade sem cópia direta e o patchset FreeBSD para Ubuntu.
+- **Entregas**: Registradas auditorias, cinco estudos, três patchsets, inventário FreeBSD completo, estratégia Live/instalador e transparência de fontes.
+- **Estado Real**: Documentação, patches iniciais e validações estáticas/temporárias concluídos; build, boot, VM, ISO, instalação e hardware permanecem pendentes.
+- **Próximo Marco**: Preparar fontes oficiais em caminhos sem espaços, disponibilizar QEMU/KVM, construir baselines sem patches e então aplicar as séries.
+
 ## [2026-08-18] - Inventário Completo do FreeBSD 15.1-p2
 - **Escopo**: Inventariada a árvore completa externa do FreeBSD, incluindo kernel, módulos, arquiteturas, userland, boot, instalador, release, segurança, rede, storage, virtualização e testes.
 - **Identidade**: Confirmados FreeBSD 15.1-RELEASE-p2, tag `release/15.1.0-p2`, commit `aadd58dddcbc78f4d5594827b46b5633552b15ce`, remote oficial e árvore limpa.

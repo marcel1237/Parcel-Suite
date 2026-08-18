@@ -1,0 +1,4 @@
+822ca57be06354e05acd3eb725f643ad2274438380e5676b356ffbf3ab41a5c6  patches/0001-doc-parcel-freebsd-translation.patch
+eef95e70806c50874328df81705b5abd60b6e3ed8641c989339479835a2d6ef8  patches/0002-bootconfig-parcel-initcall-sample.patch
+4dec063c9325765a518a09acae2cc34287f87fe1699438444b4bb37ded4bcc04  patches/0003-selftests-parcel-freebsd-smoke.patch
+32dbc52c39c2fd84461dc3463b847897ee229115f3dddded71be762d73062863  patches/0004-localversion-playos-freebsd-lab.patch

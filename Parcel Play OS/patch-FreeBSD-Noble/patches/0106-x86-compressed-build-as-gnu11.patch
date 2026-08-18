@@ -1,0 +1,28 @@
+From 08f866dcd80df7e567e633b11ee9e5cebe001006 Mon Sep 17 00:00:00 2001
+From: PlayOS Kernel Lab <kernel@playos.invalid>
+Date: Tue, 18 Aug 2026 01:06:00 -0300
+Subject: [PATCH] x86/boot: build compressed kernel as GNU11
+
+The compressed x86 kernel replaces global KBUILD_CFLAGS.  Preserve Linux 6.8's
+GNU11 language standard so GCC 15 does not compile this early boot code as C23.
+
+Signed-off-by: PlayOS Kernel Lab <kernel@playos.invalid>
+---
+ arch/x86/boot/compressed/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 1dac46b050eb..ae841620e7bc 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -30,7 +30,7 @@ targets := vmlinux vmlinux.bin vmlinux.bin.gz vmlinux.bin.bz2 vmlinux.bin.lzma \
+ # case of cross compiling, as it has the '--target=' flag, which is needed to
+ # avoid errors with '-march=i386', and future flags may depend on the target to
+ # be valid.
+-KBUILD_CFLAGS := -m$(BITS) -O2 $(CLANG_FLAGS)
++KBUILD_CFLAGS := -std=gnu11 -m$(BITS) -O2 $(CLANG_FLAGS)
+ KBUILD_CFLAGS += -fno-strict-aliasing -fPIE
+ KBUILD_CFLAGS += -Wundef
+ KBUILD_CFLAGS += -DDISABLE_BRANCH_PROFILING
+-- 
+2.43.0

@@ -39,6 +39,13 @@ if [[ $compatibility -eq 0 ]] && ! sed -n '1p' "$target/debian.master/changelog"
     exit 1
 fi
 
+version=$(sed -n 's/^VERSION = //p' "$target/Makefile" | head -n1)
+patchlevel=$(sed -n 's/^PATCHLEVEL = //p' "$target/Makefile" | head -n1)
+if [[ $compatibility -eq 0 && "$version.$patchlevel" != "7.0" ]]; then
+    echo "erro: Ubuntu Resolute oficial requer Linux 7.0; alvo declara $version.$patchlevel" >&2
+    exit 1
+fi
+
 if [[ $compatibility -eq 0 && -n $(git -C "$target" status --porcelain=v1) ]]; then
     echo "erro: árvore-alvo possui alterações locais" >&2
     exit 1

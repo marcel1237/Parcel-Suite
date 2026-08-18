@@ -1,0 +1,17 @@
+# freebsd	linux_noble	mode	maturity
+kern_boottrace.c	bootconfig+ftrace	configure	applied-initial
+kern_fail.c	fault-injection	lab-config	prepared
+kern_jail.c	namespaces+cgroup+LSM	userspace-backend	planned
+kern_racct.c	cgroup-v2+PSI	userspace-policy	planned
+kern_rctl.c	cgroup-v2+rlimit	userspace-policy	planned
+sys_capability.c	seccomp+Landlock+LSM	userspace-policy	planned
+kern_sendfile.c	sendfile+splice	benchmark	selftest-applied
+uipc_ktls.c	net/tls	benchmark	planned
+sched_ule.c	Linux-scheduler+uclamp	measure	planned
+sched_ule.c	sched_ext	unavailable-on-6.8	blocked
+subr_epoch.c	RCU/SRCU	native-linux	mapped
+subr_smr.c	RCU/SRCU	native-linux	mapped
+uipc_mbuf.c	sk_buff+page-pool	do-not-port	rejected
+vfs_cache.c	dcache+RCU-walk	benchmark	planned
+vfs_aio.c	AIO+io_uring	native-linux	mapped
+kern_mutex.c	mutex+spinlock+rtmutex	do-not-port	rejected

@@ -6,6 +6,10 @@ Validação estática contra a árvore local Noble 6.8 e validação funcional d
 artefatos em uma cópia temporária. Isso confirma compatibilidade inicial, não
 compatibilidade final com Ubuntu Resolute.
 
+**Correção posterior:** fontes oficiais da Canonical e o changelog do pacote
+confirmam que o Resolute final usa Linux 7.0. Portanto, nenhum resultado abaixo
+constitui validação contra o kernel oficial do Resolute.
+
 ## Identidade do alvo de compatibilidade
 
 - commit: `74134bfb6b720ca18a73931662cbcc8170ef1bed`;
@@ -40,6 +44,7 @@ corretamente como `SKIP lab-only`.
 ## Não executado
 
 - aplicação em Resolute verdadeiro;
+- repetição integral da validação contra Linux 7.0 oficial;
 - build de kernel Ubuntu;
 - criação do flavour `parcel-lab`;
 - boot em QEMU ou hardware;

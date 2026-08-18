@@ -3,7 +3,7 @@
 ## Origem
 
 - referência FreeBSD: `Kernels/FreeBSD 15/sys/kern/`;
-- alvo pretendido: Ubuntu Resolute oficial;
+- alvo pretendido: Ubuntu 26.04 LTS Resolute oficial, Linux 7.0;
 - alvo local auditado: Noble 6.8.4, inadequado como baseline final;
 - relatório: `../APLICACAO_FREEBSD15_NO_UBUNTU_RESOLUTE_2026-08-18.md`;
 - estudos: `../studies/freebsd15_sys_kern/`.

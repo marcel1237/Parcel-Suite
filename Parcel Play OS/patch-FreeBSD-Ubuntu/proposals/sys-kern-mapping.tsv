@@ -1,0 +1,17 @@
+# freebsd_source	linux_target	action	priority
+kern_boottrace.c	kernel/trace+bootconfig	configure-and-test	1
+kern_fail.c	lib/fault-inject.c	configure-lab	1
+kern_sendfile.c	fs/read_write.c+splice	benchmark-existing	1
+uipc_ktls.c	net/tls	benchmark-existing	1
+kern_jail.c	namespaces+cgroup+LSM	userspace-policy	1
+kern_racct.c	cgroup-v2+PSI	userspace-policy	2
+kern_rctl.c	cgroup-v2+rlimit	userspace-policy	2
+sched_ule.c	kernel/sched+sched_ext	research-policy	2
+subr_epoch.c	RCU/SRCU	use-linux-native	3
+subr_smr.c	RCU/SRCU	use-linux-native	3
+vfs_cache.c	VFS+dcache+RCU-walk	benchmark-existing	3
+vfs_aio.c	AIO+io_uring	use-linux-native	3
+uipc_mbuf.c	sk_buff+page_pool	do-not-port	4
+kern_mutex.c	mutex+spinlock+rtmutex	do-not-port	4
+subr_sleepqueue.c	waitqueue+rtmutex	do-not-port	4
+kern_syscalls.c	syscall-layer	do-not-port	4

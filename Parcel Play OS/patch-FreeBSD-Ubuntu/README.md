@@ -3,6 +3,10 @@
 Este diretório é a área exclusiva de preparação dos patches inspirados no
 `Kernels/FreeBSD 15/sys/kern` para o kernel Ubuntu Resolute do Parcel Play OS.
 
+O alvo oficial é Ubuntu 26.04 LTS Resolute com Linux 7.0. A validação já feita
+contra a árvore local Noble 6.8 é somente uma checagem de compatibilidade e não
+valida o patchset para o Resolute real.
+
 O patchset traduz conceitos FreeBSD para APIs Linux. Ele **não copia** os
 subsistemas FreeBSD e não afirma que ULE, Jails, VNET, Capsicum, sendfile ou
 kTLS FreeBSD foram portados.
@@ -14,6 +18,7 @@ kTLS FreeBSD foram portados.
 | 0001 — documentação da tradução | pronto para revisão | produção/lab |
 | 0002 — amostra bootconfig | pronto para revisão | lab |
 | 0003 — selftests Parcel | pronto para revisão | build/teste |
+| 0004 — identidade `-playos-freebsd-lab1` | aplicado no laboratório 6.8 | somente lab |
 | configuração fault injection | fragmento preparado | somente lab/VM |
 | scheduler inspirado no ULE | bloqueado | requer Resolute real com `sched_ext` |
 | alterações kTLS/VFS | bloqueadas | requer benchmark em rede/hardware real |
@@ -42,6 +47,7 @@ patch-FreeBSD-Ubuntu/
 - árvore Git limpa;
 - branch e commit fixados;
 - `debian.master/changelog` declarando `resolute`;
+- `Makefile` declarando Linux `7.0`;
 - espaço para build e VM de teste;
 - kernel Ubuntu oficial mantido como fallback.
 

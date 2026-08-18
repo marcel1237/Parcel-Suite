@@ -1,0 +1,37 @@
+From ae9be5481f4625cae6b3a5ef9902ff80be001002 Mon Sep 17 00:00:00 2001
+From: PlayOS Kernel Lab <kernel@playos.invalid>
+Date: Tue, 18 Aug 2026 01:02:00 -0300
+Subject: [PATCH] apparmor: make file permission helpers static
+
+The two helpers have no callers outside file.c and no public prototypes.  Give
+them internal linkage to satisfy builds with -Wmissing-prototypes.
+
+Signed-off-by: PlayOS Kernel Lab <kernel@playos.invalid>
+---
+ security/apparmor/file.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/security/apparmor/file.c b/security/apparmor/file.c
+index b7e52f95f5ad..90e997002011 100644
+--- a/security/apparmor/file.c
++++ b/security/apparmor/file.c
+@@ -775,14 +775,14 @@ static int aa_mqueue_perm(const char *op, const struct cred *subj_cred,
+ }
+ 
+ /* wrapper fn to indicate semantics of the check */
+-bool __subj_label_is_cached(struct aa_label *subj_label,
+-			    struct aa_label *obj_label)
++static bool __subj_label_is_cached(struct aa_label *subj_label,
++			           struct aa_label *obj_label)
+ {
+ 	return aa_label_is_subset(obj_label, subj_label);
+ }
+ 
+ /* for now separate fn to indicate semantics of the check */
+-bool __file_is_delegated(struct aa_label *obj_label)
++static bool __file_is_delegated(struct aa_label *obj_label)
+ {
+ 	return unconfined(obj_label);
+ }
+-- 
+2.43.0

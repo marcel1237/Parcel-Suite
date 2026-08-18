@@ -1,0 +1,28 @@
+From 6bd29ef72bd6909016772196d05a7202be001001 Mon Sep 17 00:00:00 2001
+From: PlayOS Kernel Lab <kernel@playos.invalid>
+Date: Tue, 18 Aug 2026 01:01:00 -0300
+Subject: [PATCH] security: make lsm_key_alloc local to security.c
+
+lsm_key_alloc has no external caller or public declaration.  Give it internal
+linkage so builds with -Wmissing-prototypes do not fail.
+
+Signed-off-by: PlayOS Kernel Lab <kernel@playos.invalid>
+---
+ security/security.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/security/security.c b/security/security.c
+index 55ff00bb4b3c..8d9e45860838 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -790,7 +790,7 @@ static int lsm_ipc_alloc(struct kern_ipc_perm *kip)
+  *
+  * Returns 0, or -ENOMEM if memory can't be allocated.
+  */
+-int lsm_key_alloc(struct key *key)
++static int lsm_key_alloc(struct key *key)
+ {
+ 	if (blob_sizes.lbs_key == 0) {
+ 		key->security = NULL;
+-- 
+2.43.0
