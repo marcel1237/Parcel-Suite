@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "playos://schema/knowledge-entry",
+  "title": "PlayOS knowledge entry",
+  "type": "object",
+  "required": ["id", "title", "kind", "systems", "summary", "source_ids", "confidence", "status", "verified_at"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^KB-[A-Z0-9-]+$"},
+    "title": {"type": "string", "minLength": 5},
+    "kind": {"enum": ["fact", "inference", "decision", "proposal", "implementation", "result", "unknown"]},
+    "systems": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "summary": {"type": "string", "minLength": 20},
+    "source_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^SRC-[A-Z0-9-]+$"}},
+    "confidence": {"enum": ["high", "medium", "low", "unknown"]},
+    "status": {"enum": ["current", "experimental", "planned", "blocked", "superseded", "rejected"]},
+    "verified_at": {"type": "string", "format": "date"},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "related_ids": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

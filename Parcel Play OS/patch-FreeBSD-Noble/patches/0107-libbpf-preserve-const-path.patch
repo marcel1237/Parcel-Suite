@@ -1,0 +1,12 @@
+From: Parcel Play OS <kernel@parcel.invalid>
+Subject: [PATCH] libbpf: preserve const qualifier while scanning search path
+
+GCC 15 diagnoses assignment of strchr() on a const input to a mutable pointer
+when the Ubuntu Generic BTF tools are built with warnings as errors. The path
+is never modified, so preserve the qualifier.
+
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@
+-			char *next_path;
++			const char *next_path;

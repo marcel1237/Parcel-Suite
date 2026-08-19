@@ -1,0 +1,26 @@
+source_id	type	system	version	path	status	priority	description
+SRC-FBSD-SOURCE	code	FreeBSD	15.1-RELEASE-p2	/home/marcel/Parcel Suite/Operating Systems/freebsd-15.1.0-p2/sys	current	critical	Árvore completa do kernel FreeBSD usada como fonte primária
+SRC-FBSD-INVENTORY	report	FreeBSD	15.1-RELEASE-p2	patch-linux7.1.8-FreeBSD/INVENTARIO_FREEBSD_15.1_P2.md	current	critical	Inventário completo da árvore FreeBSD
+SRC-FBSD-PORTABILITY	report	FreeBSD/Linux	15.1/6.8	PORTABILIDADE_FREEBSD15_SYS_KERN_PARA_UBUNTU.md	current	critical	Auditoria por família de portabilidade sys/kern
+SRC-FBSD-INTEGRATION	report	FreeBSD/Linux	15.1/6.8	INTEGRACAO_SYS_KERN_FREEBSD_NO_UBUNTU_2026-08-18.md	current	critical	Decisão de integração em camadas
+SRC-FBSD-STUDIES	report	FreeBSD/Linux	15.1/host	RESULTADOS_ESTUDOS_FREEBSD15_SYS_KERN_2026-08-18.md	current	high	Resultados de estudos e experimentos executados
+SRC-FBSD-STUDY-KIT	code	FreeBSD/Linux	15.1	studies/freebsd15_sys_kern/README.md	current	high	Índice do kit de estudos reproduzíveis
+SRC-FBSD-LINUX-REVERSE	report	Linux/FreeBSD	7.1.8/15.1	patch-linux7.1.8-FreeBSD/ANALISE_COMPARATIVA.md	current	high	Análise invertida Linux para FreeBSD
+SRC-OPENBSD-FREEBSD	report	OpenBSD/FreeBSD	comparative	COMPARACAO_OPENBSD_FREEBSD.md	current	high	Comparação extensa OpenBSD e FreeBSD
+SRC-OPENBSD-NOTES	note	OpenBSD	unspecified	OPENBSD_TECH.md	experimental	low	Notas conceituais OpenBSD sem árvore auditada
+SRC-NETBSD-NOTES	note	NetBSD	unspecified	NETBSD_TECH.md	experimental	low	Notas conceituais NetBSD sem árvore auditada
+SRC-BSD-TRIAD	note	BSD family	unspecified	INTEGRACAO_TRIADE_BSD.md	experimental	low	Proposta conceitual da tríade BSD
+SRC-PLAYOS-ARCH	report	PlayOS	2026-08-18	PLAYOS_ARQUITETURA_LINUX_FREEBSD_2026-08-18.md	current	critical	Arquitetura e fronteiras Linux/FreeBSD do PlayOS
+SRC-PLAYOS-UNIFIED	report	PlayOS	2026-08-18	PLAYOS_UNIFICADO_UBUNTU_FREEBSD_2026-08-18.md	current	high	Proposta de host Linux e FreeBSD Core virtualizado
+SRC-FBSD-COMPAT	report	FreeBSD	15.x	freebsd-compatibility/README.md	current	high	Arquitetura de compatibilidade em camadas
+SRC-FBSD-COMPAT-MATRIX	matrix	FreeBSD	15.x	freebsd-compatibility/COMPATIBILITY_MATRIX.md	current	high	Matriz de roteamento de cargas
+SRC-FBSD-LIVECD	report	FreeBSD	15.x	LIVE_CD_FREEBSD.md	current	high	Análise Live CD e instaladores
+SRC-KERNEL-TRANSPARENCY	report	Multiple	2026-08-18	TRANSPARENCIA_KERNEL.md	current	medium	Identidade e links de fontes de kernels
+SRC-NOBLE-BUILD	result	Ubuntu Noble	6.8.4	patch-FreeBSD-Noble/results/BUILD_GENERIC_PROD_6.8.4_2026-08-18.md	current	critical	Build Generic completo com patches PlayOS
+SRC-LINUX718-BUILD	result	Linux	7.1.8	patch-FreeBSD-Kernel-7.1.8/results/BUILD_PLAYOS_7.1.8_2026-08-18.md	current	critical	Build vanilla 7.1.8 com adaptações PlayOS
+SRC-NOBLE-MANIFEST	manifest	Ubuntu Noble	6.8.4	patch-FreeBSD-Noble/MANIFEST.md	current	high	Manifesto do patchset Noble
+SRC-LINUX718-MANIFEST	manifest	Linux	7.1.8	patch-FreeBSD-Kernel-7.1.8/MANIFEST.md	current	high	Manifesto do patchset Linux 7.1.8
+SRC-FBSD-PATCH-MANIFEST	manifest	FreeBSD	15.1	patch-linux7.1.8-FreeBSD/MANIFEST.md	current	high	Manifesto do patchset Linux para FreeBSD
+SRC-RESOLUTE-VERIFY	report	Ubuntu Resolute	7.0	VERIFICACAO_KERNEL_UBUNTU_RESOLUTE_2026-08-18.md	current	critical	Correção de identidade Resolute versus Noble local
+SRC-PROJECT-AUDIT	report	PlayOS	2026-08-18	AUDITORIA_COMPLETA_DIRECAO_2026-08-18.md	current	high	Auditoria de direção e propostas
+SRC-PROGRESS	log	PlayOS	continuous	PROGRESSO.md	current	medium	Registro cronológico; não substitui fontes primárias

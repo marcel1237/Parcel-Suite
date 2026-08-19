@@ -1,14 +1,20 @@
 # Aprendizagem Supervisionada: Núcleo FreeBSD (v15 & v16)
 
+> **Estado: nota legada, não canônica.** Este texto mistura fatos, hipóteses e
+> metas antigas. Consulte [INDEX.md](INDEX.md), os catálogos e `knowledge/` antes
+> de responder ou implementar. Afirmações sobre Sony, desempenho e FreeBSD 16
+> não foram verificadas pela base atual.
+
 Este documento registra o processo contínuo de análise e extração de inteligência do código-fonte do FreeBSD para benefício do **Parcel Play OS**.
 
 ## 1. Referência Mestra: Sony PlayStation (Orbis OS)
 A Sony utilizou o FreeBSD como base para o PS4 e PS5 devido ao controle total (licença permissiva) e excelência em I/O e rede.
 
 ### Lições Aprendidas com a Sony:
-- **Customização de Syscalls**: A Sony adicionou ~85 syscalls customizadas para lidar com acesso direto à GPU.
-- **I/O de Ultra-Velocidade**: No PS5, o stack de I/O foi reescrito para ignorar gargalos do VFS tradicional, permitindo que a GPU converse quase diretamente com o NVMe.
-- **Segurança via Hypervisor**: O uso de um Hypervisor customizado para garantir proteções de memória (XOM - Execute Only Memory) é um objetivo para o **NitroCore Hardened**.
+- **Hipóteses históricas**: números de syscalls, detalhes internos do I/O do PS5
+  e uso de XOM precisam de fontes primárias antes de serem reutilizados.
+- **Meta, não resultado**: qualquer aplicação no NitroCore exige especificação,
+  baseline, implementação e teste próprios.
 
 ## 2. Status da Aprendizagem Supervisionada
 
@@ -56,7 +62,8 @@ A Sony utilizou o FreeBSD como base para o PS4 e PS5 devido ao controle total (l
 ### [Fase 8] - O Coração do Sistema (`sys/kern`)
 - **Foco**: Analisar a infraestrutura básica: Boot, Devices e Locking.
 - **Destaque**: Análise concluída de `init_main.c` (Boot orquestrado), `subr_bus.c` (Abstração Newbus) e `kern_mutex.c` (Sincronização Adaptativa).
-- **Detalhes**: Veja o dossiê especializado em [ANALISE_SYS_KERN_FREEBSD.md](file:///home/marcel/Parcel%20Suite/Parcel%20Suite/Parcel%20Play%20OS/supervised_learning/ANALISE_SYS_KERN_FREEBSD.md).
+- **Detalhes históricos**: Veja [ANALISE_SYS_KERN_FREEBSD.md](ANALISE_SYS_KERN_FREEBSD.md).
 
 ---
-*Este processo é contínuo e nunca deve ser interrompido.*
+*Este documento é preservado como histórico e deve ser migrado para entradas
+rastreáveis antes de orientar implementação.*

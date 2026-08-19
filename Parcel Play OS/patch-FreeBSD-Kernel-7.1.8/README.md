@@ -41,8 +41,12 @@ arquivos e 1,8 GiB, mas:
 - está em caminho com espaços, rejeitado pelo Kbuild;
 - não possui origem, tag ou commit verificáveis localmente.
 
-Ela serve para análise e checagem de compatibilidade. A aplicação real exige
-uma fonte oficial verificada, inicializada em Git e em caminho sem espaços.
+Ela agora contém a integração PlayOS aplicada e compilada. A área limpa usada
+no build é `/home/marcel/kernel-work/playos-7.1.8`; isso resolve os espaços, mas
+não substitui a futura obtenção de uma fonte oficial verificável em Git.
+
+O primeiro `bzImage`, os 14 módulos e o initramfs foram produzidos com sucesso.
+Consulte `results/BUILD_PLAYOS_7.1.8_2026-08-18.md`.
 
 ## Verificação
 

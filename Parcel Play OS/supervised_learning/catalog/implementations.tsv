@@ -1,0 +1,8 @@
+implementation_id	target	kind	path	status	validation	source_ids
+IMP-NOBLE-PATCHSET	Ubuntu Noble 6.8.4	patchset	patch-FreeBSD-Noble/	implemented	build-generic-no-boot	SRC-NOBLE-BUILD,SRC-NOBLE-MANIFEST
+IMP-NOBLE-KERNEL	Ubuntu Noble 6.8.4	artifact	build/playos-noble-generic/output/	implemented	sha256-initramfs-modules	SRC-NOBLE-BUILD
+IMP-LINUX718-PATCHSET	Linux 7.1.8	patchset	patch-FreeBSD-Kernel-7.1.8/	implemented	build-no-boot	SRC-LINUX718-BUILD,SRC-LINUX718-MANIFEST
+IMP-FBSD-REVERSE	FreeBSD 15.1	proposal-patchset	patch-linux7.1.8-FreeBSD/	planned	static-only	SRC-FBSD-PATCH-MANIFEST,SRC-FBSD-LINUX-REVERSE
+IMP-FBSD-STUDIES	FreeBSD/Linux	study-kit	studies/freebsd15_sys_kern/	implemented	host-experiments	SRC-FBSD-STUDIES,SRC-FBSD-STUDY-KIT
+IMP-FBSD-COMPAT	FreeBSD	userspace-policy	freebsd-compatibility/	planned	static-policy	SRC-FBSD-COMPAT,SRC-FBSD-COMPAT-MATRIX
+IMP-NITROCORE	Linux concepts	prototype	nitrocore/	experimental	not-kernel-integrated	SRC-PROJECT-AUDIT

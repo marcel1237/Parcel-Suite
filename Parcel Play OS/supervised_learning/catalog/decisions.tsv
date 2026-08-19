@@ -1,0 +1,11 @@
+decision_id	decision	status	confidence	source_ids
+DEC-001	FreeBSD sys/kern não será copiado diretamente para Linux	rejected-direct-port	high	SRC-FBSD-PORTABILITY,SRC-FBSD-INTEGRATION
+DEC-002	Integrações usam equivalentes Linux ou reimplementação por APIs nativas	current	high	SRC-FBSD-INTEGRATION,SRC-PLAYOS-ARCH
+DEC-003	ULE Jails VFS mbufs locks e Newbus não são portes diretos para Linux	current	high	SRC-FBSD-PORTABILITY
+DEC-004	FreeBSD integral pode existir como sistema separado ou guest controlado	planned	medium	SRC-PLAYOS-ARCH,SRC-PLAYOS-UNIFIED
+DEC-005	Ubuntu local chamado Resolute é Noble Linux 6.8.4	current	high	SRC-RESOLUTE-VERIFY,SRC-NOBLE-BUILD
+DEC-006	Fonte Resolute Linux 7.0 precisa ser adicionada separadamente	blocked	high	SRC-RESOLUTE-VERIFY
+DEC-007	Fault injection fica fora do perfil de produção	current	high	SRC-NOBLE-BUILD
+DEC-008	Build não é produção antes de boot regressão pacote e hardware	current	high	SRC-NOBLE-BUILD,SRC-LINUX718-BUILD
+DEC-009	FreeBSD recebe ideias Linux primeiro por wrappers e experimentos pequenos	planned	high	SRC-FBSD-LINUX-REVERSE
+DEC-010	OpenBSD e NetBSD são referências de política até haver fontes auditadas	experimental	high	SRC-OPENBSD-FREEBSD,SRC-BSD-TRIAD

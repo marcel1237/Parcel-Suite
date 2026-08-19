@@ -1,0 +1,12 @@
+topic_id	topic	primary_entry	source_ids	priority
+TOP-FBSD-IDENTITY	Identidade e integridade FreeBSD	knowledge/freebsd/identity-capabilities.md	SRC-FBSD-SOURCE,SRC-FBSD-INVENTORY	critical
+TOP-FBSD-SYSKERN	FreeBSD sys/kern	knowledge/freebsd/sys-kern-map.md	SRC-FBSD-SOURCE,SRC-FBSD-PORTABILITY	critical
+TOP-FBSD-SECURITY	Jails Capsicum MAC RCTL	knowledge/freebsd/security-isolation.md	SRC-FBSD-INVENTORY,SRC-FBSD-SOURCE	critical
+TOP-FBSD-IO	Rede armazenamento virtualização	knowledge/freebsd/io-network-virtualization.md	SRC-FBSD-INVENTORY,SRC-FBSD-STUDIES	critical
+TOP-BSD-FAMILY	OpenBSD NetBSD FreeBSD	knowledge/bsd-family/openbsd-netbsd.md	SRC-OPENBSD-FREEBSD,SRC-OPENBSD-NOTES,SRC-NETBSD-NOTES	medium
+TOP-MAPPING	Mapeamento FreeBSD Linux	knowledge/mappings/freebsd-linux.md	SRC-FBSD-PORTABILITY,SRC-FBSD-INTEGRATION	critical
+TOP-PLAYOS	Arquitetura e decisões PlayOS	knowledge/playos/decisions-status.md	SRC-PLAYOS-ARCH,SRC-PLAYOS-UNIFIED	critical
+TOP-LINUX-BUILDS	Builds Noble e Linux 7.1.8	knowledge/linux/build-evidence.md	SRC-NOBLE-BUILD,SRC-LINUX718-BUILD	critical
+TOP-LIVECD	FreeBSD Live CD e instalador	LIVE_CD_FREEBSD.md	SRC-FBSD-LIVECD	high
+TOP-COMPAT	Compatibilidade máxima FreeBSD	freebsd-compatibility/README.md	SRC-FBSD-COMPAT,SRC-FBSD-COMPAT-MATRIX	high
+TOP-RESOLUTE	Identidade Ubuntu Resolute	VERIFICACAO_KERNEL_UBUNTU_RESOLUTE_2026-08-18.md	SRC-RESOLUTE-VERIFY	critical

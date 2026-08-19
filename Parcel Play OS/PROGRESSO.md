@@ -2,6 +2,49 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-08-19] - Base supervisionada BSD/PlayOS implementada
+- **Transformação**: `supervised_learning/` passou de duas notas para uma base operacional com índice, governança, esquemas, catálogos, conhecimento, datasets, avaliações e ferramentas.
+- **Prioridade BSD**: Criadas entradas centrais para FreeBSD 15.1, `sys/kern`, segurança/Jails, rede/I/O/ZFS/bhyve, família BSD e tradução FreeBSD–Linux.
+- **Fontes**: 25 fontes canônicas e 65 documentos relacionados foram catalogados com estado, papel e prioridade.
+- **Estado Real**: 10 decisões e 7 implementações/propostas agora distinguem compilado, estático, planejado, bloqueado e experimental.
+- **Dataset**: 44 exemplos QA — 20 treino, 8 validação, 8 adversariais e 8 avaliação — com fontes e comportamento esperado.
+- **Antialucinação**: Incluídas correções obrigatórias para Noble/Resolute, porte direto de `sys/kern`, Linuxulator, compatibilidade de hardware e builds sem boot.
+- **Ferramentas**: `validate_knowledge.py`, `query_knowledge.py` e Makefile adicionados; validação e três consultas de fumaça passaram.
+- **Legado**: As duas notas antigas foram marcadas como não canônicas, tiveram link absoluto corrigido e propostas perigosas reclassificadas.
+- **Relatório**: `supervised_learning/RELATORIO_IMPLEMENTACAO_2026-08-19.md`.
+
+## [2026-08-19] - Auditoria da base de aprendizado supervisionado
+- **Veredito**: Confirmado que `supervised_learning/` ainda não permite consulta técnica autônoma confiável por IA; prontidão estimada em 2/10.
+- **Dimensão**: Apenas dois Markdown, 88 linhas e 1.114 palavras; nenhum índice, esquema, dataset QA, metadado, teste de recuperação ou catálogo de fontes.
+- **Validação**: Arquivos e símbolos FreeBSD citados foram confirmados na fonte 15.1-p2, mas a pasta não preserva commits, linhas ou evidências reproduzíveis.
+- **Risco**: Fatos, inferências e propostas estão misturados; promessas de desempenho e portabilidade aparecem sem benchmark, análise de ABI ou teste.
+- **Cobertura**: Cerca de 65 documentos relevantes permanecem fora da coleção e não são descobertos por uma IA limitada à pasta.
+- **Direção**: Recomendadas camadas separadas de conhecimento, catálogo, dataset JSONL e avaliações, com IDs, proveniência, confiança e recusa quando não houver evidência.
+- **Relatório**: `supervised_learning/AUDITORIA_BASE_IA_2026-08-19.md`.
+
+## [2026-08-18] - Ubuntu Noble Generic com patches PlayOS concluído
+- **Configuração Real**: Exportada `amd64-generic` de `debian.master/config/annotations` e aplicado apenas o fragmento PlayOS de produção; kTLS permanece módulo e fault injection permanece desativado.
+- **Build Completo**: `bzImage`, módulos, BTF, assinatura temporária, `modules_install` e `depmod` concluíram com código zero para `6.8.4-playos-freebsd-lab1+`.
+- **Cobertura**: 6.467 módulos `.ko` instalados em staging isolado de 7,1 GiB; o módulo kTLS foi confirmado com BTF e assinatura.
+- **Initramfs**: Dracut produziu imagem genérica de 286 MiB e `lsinitrd` encontrou 1.247 entradas da nova release, incluindo kTLS.
+- **Selftests**: Os quatro grupos passaram novamente pelo worktree sem espaços; execução ocorreu no kernel host e ainda deve ser repetida após o boot do novo kernel.
+- **Correção Nova**: Adicionado o patch 0107 para preservar `const` em `tools/lib/bpf/libbpf.c` e permitir o build Generic sob GCC 15.
+- **Rust**: Mantido desativado porque Noble 6.8 exige rustc 1.75.0/bindgen 0.65.1 e a toolchain Resolute local 1.93.1/0.72.1 não passa no gate oficial.
+- **Artefatos**: Kernel, configuração, System.map, initramfs e SHA-256 em `build/playos-noble-generic/output/`.
+- **Limites**: Ainda faltam boot QEMU/hardware, selftests dentro do novo kernel, pacote Debian, chave Secure Boot definitiva e regressão contra Noble Generic puro.
+- **Relatório**: `patch-FreeBSD-Noble/results/BUILD_GENERIC_PROD_6.8.4_2026-08-18.md`.
+
+## [2026-08-18] - Linux 7.1.8 alterado e compilado como PlayOS FreeBSD Lab
+- **Fonte Principal**: `Kernels/kernel linux-7.1.8` recebeu identidade `-playos-freebsd-lab1`, documentação, bootconfig e quatro selftests; a árvore continua sem metadados Git verificáveis.
+- **Área de Build**: Criada `/home/marcel/kernel-work/playos-7.1.8/{source,out,stage}` para contornar os espaços do caminho principal, mantendo o mesmo modelo usado no Noble.
+- **Build**: `bzImage` concluído como `7.1.8-playos-freebsd-lab1`; 14 módulos instalados apenas no staging, incluindo NTSYNC e kTLS.
+- **Initramfs**: Dracut gerou imagem genérica de 48.058.317 bytes sem instalar o kernel ou alterar o host.
+- **Testes**: sendfile, Landlock ABI 8, inventário, cgroup v2, namespaces, seccomp, PSI e AppArmor passaram no kernel host.
+- **Scheduler/BTF**: Uma toolchain local com `pahole` 1.31 e `libdwarves1` foi extraída sem instalação global; o segundo build passou com `CONFIG_DEBUG_INFO_BTF=y`, `CONFIG_SCHED_CLASS_EXT=y` e BTF nos 14 módulos.
+- **Limite**: Boot em VM, pacote Debian, assinatura e GRUB ainda pendentes; QEMU não pôde ser instalado porque sudo exige autenticação interativa.
+- **Artefatos**: Kernel, configuração, System.map, initramfs e hashes em `build/playos-7.1.8/output/`.
+- **Relatório**: `patch-FreeBSD-Kernel-7.1.8/results/BUILD_PLAYOS_7.1.8_2026-08-18.md`.
+
 ## [2026-08-18] - Primeiro Build do Kernel PlayOS FreeBSD Lab
 - **Resultado**: Compilado com sucesso `6.8.4-playos-freebsd-lab1-g74134bfb6b72-dirty`; `bzImage` x86 bootável com 14.050.304 bytes.
 - **Worktree**: Build concluído em `/home/marcel/kernel-work/playos-noble`, após `/tmp` ficar sem espaço no link final.
