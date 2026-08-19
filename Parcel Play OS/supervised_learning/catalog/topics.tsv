@@ -10,3 +10,5 @@ TOP-LINUX-BUILDS	Builds Noble e Linux 7.1.8	knowledge/linux/build-evidence.md	SR
 TOP-LIVECD	FreeBSD Live CD e instalador	LIVE_CD_FREEBSD.md	SRC-FBSD-LIVECD	high
 TOP-COMPAT	Compatibilidade máxima FreeBSD	freebsd-compatibility/README.md	SRC-FBSD-COMPAT,SRC-FBSD-COMPAT-MATRIX	high
 TOP-RESOLUTE	Identidade Ubuntu Resolute	VERIFICACAO_KERNEL_UBUNTU_RESOLUTE_2026-08-18.md	SRC-RESOLUTE-VERIFY	critical
+TOP-FBSD-SUBSYSTEMS	Referência de subsistemas FreeBSD	knowledge/freebsd/subsystem-reference.md	SRC-FBSD-SOURCE,SRC-FBSD-INVENTORY,SRC-FBSD-PORTABILITY	critical
+TOP-BSD-GLOSSARY	Glossário BSD Linux PlayOS	knowledge/bsd-family/glossary.md	SRC-FBSD-INVENTORY,SRC-FBSD-PORTABILITY,SRC-PLAYOS-ARCH	high

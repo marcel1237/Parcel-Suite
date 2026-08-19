@@ -2,6 +2,15 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-08-19] - Documentação BSD ampliada e portal HTML iniciado
+- **Novos Markdown**: Referência de subsistemas FreeBSD, glossário BSD/Linux/PlayOS e roadmap de conhecimento BSD adicionados à base.
+- **Cobertura**: A base agora possui 10 entradas técnicas, 13 tópicos e 68 documentos inventariados, mantendo 25 fontes e 44 exemplos QA.
+- **Portal**: Criado `documentation-portal/` com HTML, CSS e JavaScript locais, identidade PlayOS, 22 cartões documentais, busca e seis filtros.
+- **Estado Real**: O portal diferencia Noble compilado, Linux 7.1.8 compilado, proposta Linux→FreeBSD e fonte Resolute ausente.
+- **Validação**: HTML e 15 links/assets passaram na checagem local; base supervisionada e `git diff --check` permanecem aprovados.
+- **Limite**: Preview HTTP foi impedido pelo sandbox e Node.js não está disponível; teste visual em navegador permanece para a próxima etapa.
+- **Relatório**: `supervised_learning/HTML_PORTAL_STATUS.md` e `documentation-portal/README.md`.
+
 ## [2026-08-19] - Base supervisionada BSD/PlayOS implementada
 - **Transformação**: `supervised_learning/` passou de duas notas para uma base operacional com índice, governança, esquemas, catálogos, conhecimento, datasets, avaliações e ferramentas.
 - **Prioridade BSD**: Criadas entradas centrais para FreeBSD 15.1, `sys/kern`, segurança/Jails, rede/I/O/ZFS/bhyve, família BSD e tradução FreeBSD–Linux.

@@ -64,3 +64,8 @@ DOC-062	resumo_instalacao_kde_freebsd.md	freebsd-desktop	note	context
 DOC-063	studies/freebsd15_sys_kern/README.md	studies	index	current
 DOC-064	supervised_learning/ANALISE_SYS_KERN_FREEBSD.md	freebsd	legacy-note	needs-migration
 DOC-065	supervised_learning/APRENDIZAGEM_FREEBSD.md	freebsd	legacy-note	needs-migration
+DOC-066	supervised_learning/ROADMAP_BSD_KNOWLEDGE.md	freebsd	roadmap	current
+DOC-067	supervised_learning/knowledge/freebsd/subsystem-reference.md	freebsd	reference	current
+DOC-068	supervised_learning/knowledge/bsd-family/glossary.md	bsd-family	glossary	current
+DOC-069	supervised_learning/HTML_PORTAL_STATUS.md	documentation	result	current
+DOC-070	documentation-portal/README.md	documentation	guide	current

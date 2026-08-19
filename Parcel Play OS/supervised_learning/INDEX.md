@@ -1,12 +1,16 @@
 # Índice da base de conhecimento
 
+Portal visual inicial: [documentation-portal/index.html](../documentation-portal/index.html)
+
 ## BSD prioritário
 
 - [FreeBSD 15.1: identidade e capacidades](knowledge/freebsd/identity-capabilities.md)
 - [FreeBSD `sys/kern`: mapa técnico](knowledge/freebsd/sys-kern-map.md)
+- [Referência de subsistemas FreeBSD](knowledge/freebsd/subsystem-reference.md)
 - [Segurança e isolamento BSD](knowledge/freebsd/security-isolation.md)
 - [Rede, armazenamento e virtualização](knowledge/freebsd/io-network-virtualization.md)
 - [OpenBSD e NetBSD no PlayOS](knowledge/bsd-family/openbsd-netbsd.md)
+- [Glossário BSD/Linux/PlayOS](knowledge/bsd-family/glossary.md)
 
 ## Comparação e aplicação
 
@@ -35,3 +39,4 @@
 - [Política de evidência](governance/EVIDENCE_POLICY.md)
 - [Auditoria inicial](AUDITORIA_BASE_IA_2026-08-19.md)
 - [Cobertura atual](evaluations/COVERAGE.md)
+- [Roadmap BSD](ROADMAP_BSD_KNOWLEDGE.md)
