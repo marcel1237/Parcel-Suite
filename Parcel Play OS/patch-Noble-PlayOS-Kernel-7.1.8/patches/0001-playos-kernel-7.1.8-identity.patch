@@ -1,0 +1,7 @@
+diff --git a/localversion-playos b/localversion-playos
+new file mode 100644
+index 000000000000..a9f5cc559120
+--- /dev/null
++++ b/localversion-playos
+@@ -0,0 +1 @@
++-playos-kernel2

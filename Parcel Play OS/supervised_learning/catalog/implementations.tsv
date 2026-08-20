@@ -8,3 +8,5 @@ IMP-FBSD-COMPAT	FreeBSD	userspace-policy	freebsd-compatibility/	planned	static-p
 IMP-NITROCORE	Linux concepts	prototype	nitrocore/	experimental	not-kernel-integrated	SRC-PROJECT-AUDIT
 IMP-DOC-PORTAL	PlayOS Documentation	static-portal	documentation-portal/	implemented	generated-catalog-and-link-validation	SRC-DOC-PORTAL
 IMP-NTSYNC-NOBLE	Ubuntu Noble 6.8.4	kernel-backport	patch-Linux7.1.8-Noble/	implemented	module-btf-no-runtime	SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD,SRC-NOBLE-BUILD
+IMP-PLAYOS-KERNEL1	PlayOS Kernel 6.8.4	kernel-patchset	patch-Linux7.1.8-Noble/	implemented	bzimage-btf-no-boot	SRC-PLAYOS-KERNEL1,SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD
+IMP-PLAYOS-KERNEL2	PlayOS Kernel 7.1.8	kernel-forward-port	patch-Noble-PlayOS-Kernel-7.1.8/	implemented	series-config-build-in-progress	SRC-PLAYOS-KERNEL2-MIGRATION,SRC-LINUX718-BUILD,SRC-RESOLUTE-VERIFY

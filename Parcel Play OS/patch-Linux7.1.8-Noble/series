@@ -1,1 +1,2 @@
 patches/0001-ntsync-backport-linux-7.1.8-to-noble-6.8.patch
+patches/0002-mseal-and-playos-kernel-identity.patch

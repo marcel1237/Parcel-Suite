@@ -1,0 +1,4 @@
+patches/0001-playos-kernel-7.1.8-identity.patch
+patches/0002-doc-playos-freebsd-study.patch
+patches/0003-bootconfig-playos-initcall-sample.patch
+patches/0004-selftests-playos-freebsd-complete.patch

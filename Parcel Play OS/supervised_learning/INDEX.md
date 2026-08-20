@@ -19,6 +19,7 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Mapeamento FreeBSD–Linux](knowledge/mappings/freebsd-linux.md)
 - [Decisões e estado real do PlayOS](knowledge/playos/decisions-status.md)
 - [Builds e evidências Linux](knowledge/linux/build-evidence.md)
+- [PlayOS Kernel 7.1.8 com perfil Noble](knowledge/linux/playos-kernel-7.1.8.md)
 
 ## Catálogos
 

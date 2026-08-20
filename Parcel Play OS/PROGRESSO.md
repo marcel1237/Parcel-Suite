@@ -631,3 +631,20 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Validado**: `ntsync.ko` compilado com BTF usando pahole 1.31; selftest userspace compilado.
 - **Pendente**: build completo, assinatura, boot, `/dev/ntsync`, 11 selftests e regressão Wine/Proton.
 - **Adiado conscientemente**: `sched_ext`, por acoplamento profundo com scheduler, BPF, tracing e UAPI.
+- **PlayOS Kernel 1**: identidade alterada para `6.8.4-playos-kernel1+` e `bzImage` concluído com BTF.
+- **mseal**: syscall e proteções de memória integradas; objetos, link e selftest userspace compilados.
+- **NTSYNC**: módulo reconstruído com BTF para a identidade PlayOS Kernel.
+- **Auditoria 7.1.8**: DRM Panic e fwctl adiados; subsistemas já existentes no Noble não serão duplicados; sched_ext e Rust exigem projetos separados.
+- **Gate aberto**: reconstrução global de módulos ainda precisa eliminar artefatos antigos e terminar limpa; depois seguem assinatura, initramfs, boot e runtime.
+- **Preservação**: a árvore Linux 7.1.8 não será removida antes dos gates de reprodução e validação.
+
+## 2026-08-20 — Forward-port Noble para PlayOS Kernel 7.1.8
+
+- **Decisão**: manter PlayOS Kernel 1/Noble 6.8.4 como fallback e criar PlayOS Kernel 2 sobre Linux 7.1.8.
+- **Patchset**: criada `patch-Noble-PlayOS-Kernel-7.1.8/` com série reproduzível, configuração, scripts, manifesto e análise.
+- **Identidade**: fonte 7.1.8 atualizada para `7.1.8-playos-kernel2`.
+- **Configuração**: annotations Ubuntu Noble `amd64/generic` reconciliadas pelo Kconfig 7.1.8; AppArmor, Landlock, NTSYNC, BTF e sched_ext confirmados.
+- **Produção**: Rust, fault injection e chaves privadas Canonical excluídos; Secure Boot exigirá chave PlayOS.
+- **Selftests host**: sendfile, Landlock ABI 8, cgroup v2, namespaces, seccomp, PSI e AppArmor passaram; NTSYNC e kTLS não carregados foram skips.
+- **Evidência externa**: Resolute usa Linux 7.0; em 20/08/2026 kernel.org já lista 7.1.9 stable e 7.2 mainline.
+- **Build**: compilação completa `bzImage modules` do perfil Generic em staging isolado iniciada; boot continua pendente.

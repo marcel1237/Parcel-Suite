@@ -17,8 +17,9 @@ O recurso fica em módulo por meio de `CONFIG_NTSYNC=m`, facilitando rollback.
 
 ## Evidência disponível
 
-`ntsync.ko` compilou para `6.8.4-playos-freebsd-lab1+` e contém BTF gerado com
-pahole 1.31. O selftest userspace compilou, mas não pode ser executado de forma
+`ntsync.ko` compilou inicialmente para `6.8.4-playos-freebsd-lab1+` e depois foi
+reconstruído para `6.8.4-playos-kernel1+`; ambos contêm BTF gerado com pahole
+1.31. O selftest userspace compilou, mas não pode ser executado de forma
 funcional no kernel host porque `/dev/ntsync` não existe nele.
 
 Portanto, o estado correto é compilável e integrado, não validado em runtime e

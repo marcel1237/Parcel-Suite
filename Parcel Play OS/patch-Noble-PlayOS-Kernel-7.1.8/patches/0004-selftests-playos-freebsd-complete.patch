@@ -1,0 +1,110 @@
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index 641a180..8227301 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -98,6 +98,7 @@ TARGETS += proc
+ TARGETS += pstore
+ TARGETS += ptrace
+ TARGETS += openat2
++TARGETS += parcel_freebsd
+ TARGETS += rdma
+ TARGETS += resctrl
+ TARGETS += riscv
+diff --git a/tools/testing/selftests/parcel_freebsd/Makefile b/tools/testing/selftests/parcel_freebsd/Makefile
+new file mode 100644
+index 0000000..2bad77f
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/Makefile
+@@ -0,0 +1,5 @@
++# SPDX-License-Identifier: GPL-2.0
++CFLAGS += -O2 -g -Wall -Wextra -Werror
++TEST_GEN_PROGS := parcel_sendfile parcel_landlock
++TEST_PROGS := parcel_features.sh parcel_isolation.sh
++include ../lib.mk
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_features.sh b/tools/testing/selftests/parcel_freebsd/parcel_features.sh
+new file mode 100755
+index 0000000..df33c45
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_features.sh
+@@ -0,0 +1,11 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++echo "TAP version 13"; echo "1..8"
++[ -d /sys/kernel/tracing ] || [ -d /sys/kernel/debug/tracing ] && echo "ok 1 - tracing available" || echo "ok 1 - tracing unavailable # SKIP"
++[ -r /proc/cgroups ] && echo "ok 2 - cgroups available" || echo "not ok 2 - cgroups unavailable"
++[ -e /proc/self/ns/user ] && [ -e /proc/self/ns/net ] && echo "ok 3 - namespaces available" || echo "not ok 3 - namespaces unavailable"
++[ -r /proc/sys/kernel/unprivileged_bpf_disabled ] && echo "ok 4 - BPF policy visible" || echo "ok 4 - BPF policy unavailable # SKIP"
++[ -e /sys/kernel/sched_ext/state ] && echo "ok 5 - sched_ext available" || echo "ok 5 - sched_ext unavailable # SKIP"
++[ -e /dev/ntsync ] && echo "ok 6 - NTSYNC available" || echo "ok 6 - NTSYNC unavailable # SKIP"
++[ -d /sys/module/tls ] && echo "ok 7 - kTLS present" || echo "ok 7 - kTLS not loaded # SKIP"
++[ -d /sys/kernel/debug/failslab ] && echo "ok 8 - fault injection present" || echo "ok 8 - fault injection absent # SKIP lab-only"
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_isolation.sh b/tools/testing/selftests/parcel_freebsd/parcel_isolation.sh
+new file mode 100755
+index 0000000..391659d
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_isolation.sh
+@@ -0,0 +1,8 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++echo "TAP version 13"; echo "1..5"
++[ -f /sys/fs/cgroup/cgroup.controllers ] && echo "ok 1 - cgroup v2 available" || echo "not ok 1 - cgroup v2 unavailable"
++[ -e /proc/self/ns/user ] && [ -e /proc/self/ns/pid ] && [ -e /proc/self/ns/net ] && [ -e /proc/self/ns/mnt ] && echo "ok 2 - isolation namespaces available" || echo "not ok 2 - namespaces missing"
++seccomp=$(awk '/^Seccomp:/ { print $2 }' /proc/self/status 2>/dev/null); case "$seccomp" in 0|1|2) echo "ok 3 - seccomp visible (mode $seccomp)" ;; *) echo "not ok 3 - seccomp unavailable" ;; esac
++[ -r /proc/pressure/cpu ] && [ -r /proc/pressure/memory ] && [ -r /proc/pressure/io ] && echo "ok 4 - PSI available" || echo "ok 4 - PSI unavailable # SKIP"
++[ -d /sys/module/apparmor ] && echo "ok 5 - AppArmor present" || echo "ok 5 - AppArmor absent # SKIP"
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_landlock.c b/tools/testing/selftests/parcel_freebsd/parcel_landlock.c
+new file mode 100644
+index 0000000..125a206
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_landlock.c
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <errno.h>
++#include <linux/landlock.h>
++#include <stdio.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++int main(void)
++{
++	long abi; puts("TAP version 13"); puts("1..1");
++#ifndef __NR_landlock_create_ruleset
++	puts("ok 1 - Landlock syscall unavailable # SKIP"); return 4;
++#else
++	errno = 0; abi = syscall(__NR_landlock_create_ruleset, NULL, 0, LANDLOCK_CREATE_RULESET_VERSION);
++	if (abi >= 1) { printf("ok 1 - Landlock ABI is available (version %ld)\n", abi); return 0; }
++	if (errno == ENOSYS || errno == EOPNOTSUPP) { puts("ok 1 - Landlock unavailable # SKIP"); return 4; }
++	printf("not ok 1 - Landlock query failed (errno %d)\n", errno); return 1;
++#endif
++}
+diff --git a/tools/testing/selftests/parcel_freebsd/parcel_sendfile.c b/tools/testing/selftests/parcel_freebsd/parcel_sendfile.c
+new file mode 100644
+index 0000000..19e0d89
+--- /dev/null
++++ b/tools/testing/selftests/parcel_freebsd/parcel_sendfile.c
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: GPL-2.0
++#define _GNU_SOURCE
++#include <errno.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/sendfile.h>
++#include <sys/socket.h>
++#include <unistd.h>
++#define TEST_SIZE 16384
++static int fail(const char *op) { fprintf(stderr, "not ok 1 - %s: %s\n", op, strerror(errno)); return 1; }
++int main(void)
++{
++	unsigned char src[TEST_SIZE], dst[TEST_SIZE]; char path[] = "/tmp/parcel-sendfile-XXXXXX";
++	size_t done = 0, i; off_t off = 0; int s[2], fd; ssize_t ret;
++	puts("TAP version 13"); puts("1..1");
++	for (i = 0; i < TEST_SIZE; i++) src[i] = (unsigned char)((i * 31U + 7U) & 0xffU);
++	fd = mkstemp(path); if (fd < 0) return fail("mkstemp"); unlink(path);
++	if (write(fd, src, sizeof(src)) != (ssize_t)sizeof(src)) return fail("write source");
++	if (socketpair(AF_UNIX, SOCK_STREAM, 0, s) < 0) return fail("socketpair");
++	if (sendfile(s[0], fd, &off, sizeof(src)) != (ssize_t)sizeof(src)) return fail("sendfile");
++	while (done < sizeof(dst)) { ret = read(s[1], dst + done, sizeof(dst) - done); if (ret <= 0) return fail("read socket"); done += (size_t)ret; }
++	close(s[0]); close(s[1]); close(fd);
++	if (memcmp(src, dst, sizeof(src))) { errno = EIO; return fail("data comparison"); }
++	puts("ok 1 - sendfile preserves data over an AF_UNIX socket"); return 0;
++}

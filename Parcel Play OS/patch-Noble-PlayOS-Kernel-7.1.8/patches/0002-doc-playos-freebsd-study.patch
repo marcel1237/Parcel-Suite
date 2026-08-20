@@ -1,0 +1,90 @@
+From 7180000000000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: Parcel Play OS <kernel@parcel.invalid>
+Date: Tue, 18 Aug 2026 01:00:00 -0300
+Subject: [PATCH 1/3] docs: define FreeBSD study translation for Parcel
+
+Document how FreeBSD kernel ideas are evaluated against existing Linux 7.1
+mechanisms. This patch changes no runtime behaviour.
+
+Signed-off-by: Parcel Play OS <kernel@parcel.invalid>
+---
+ Documentation/admin-guide/parcel-freebsd-study.rst | 68 ++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+ create mode 100644 Documentation/admin-guide/parcel-freebsd-study.rst
+
+diff --git a/Documentation/admin-guide/parcel-freebsd-study.rst b/Documentation/admin-guide/parcel-freebsd-study.rst
+new file mode 100644
+index 000000000000..718000000001
+--- /dev/null
++++ b/Documentation/admin-guide/parcel-freebsd-study.rst
+@@ -0,0 +1,68 @@
++==============================
++Parcel FreeBSD policy studies
++==============================
++
++Parcel Play OS uses selected FreeBSD ``sys/kern`` files as sources of test
++hypotheses. FreeBSD internal APIs are not a Linux compatibility layer and
++source files must not be copied wholesale.
++
++Translation map
++===============
++
++The preferred Linux 7.1 mechanisms are:
++
++* boot tracing: bootconfig, ftrace and initcall tracepoints;
++* failure tests: Linux fault injection in a laboratory kernel;
++* ULE policy research: sched_ext BPF programs with safe fallback;
++* sendfile and TLS: Linux sendfile, splice and kTLS;
++* Jail and VNET isolation: namespaces and cgroup v2;
++* Capsicum-like restriction: seccomp, Landlock, capabilities and LSMs;
++* name cache research: dcache, RCU-walk and pathname lookup profiling;
++* Windows synchronization: the in-tree NTSYNC driver.
++
++NTSYNC must not be reimplemented by Parcel. ULE runqueues and FreeBSD locks
++must not be copied into the Linux scheduler.
++
++Evidence before code
++====================
++
++A patch requires a reproducible Linux problem. Architectural differences are
++not evidence by themselves. Prefer tracing, selftests, configuration and
++userspace policy before source changes.
++
++Production and laboratory kernels
++=================================
++
++Fault injection, KASAN, KCSAN and KCOV belong to separate laboratory builds.
++They must not be enabled automatically in production or gaming kernels.
++Destructive tests require a disposable VM and recoverable disk image.
++
++Scheduler studies
++=================
++
++Start with EEVDF as the baseline. A policy inspired by ULE should use
++sched_ext, pass upstream sched_ext selftests and return tasks safely to the
++built-in scheduler on exit or error. Core scheduler patches are a last resort.
++
++Small algorithms
++================
++
++PID controllers, filters and statistical helpers remain in userspace until a
++real in-kernel consumer exists. Kernel code must avoid floating point, define
++units and overflow behaviour, use existing Linux helpers and include KUnit
++tests.
++
++Licensing
++=========
++
++Every derived fragment needs per-file licence review. Copyright notices and
++attribution must be retained when required. Independent implementation from
++documented behaviour and tests is preferred.
++
++Acceptance gates
++================
++
++Functional patches require a verified upstream tag or commit, clean build,
++relevant selftests, VM boot, security review, performance statistics and a
++documented rollback. A known-good vanilla kernel remains a boot fallback.
++Experiments without measurable value stay outside the production series.
+-- 
+2.43.0

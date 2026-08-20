@@ -74,3 +74,10 @@ DOC-072	patch-Linux7.1.8-Noble/README.md	noble-linux718	guide	current
 DOC-073	patch-Linux7.1.8-Noble/MANIFEST.md	noble-linux718	manifest	current
 DOC-074	patch-Linux7.1.8-Noble/results/VALIDACAO_NTSYNC_2026-08-19.md	noble-linux718	result	current
 DOC-075	supervised_learning/knowledge/linux/ntsync-backport-noble.md	noble-linux718	knowledge	current
+DOC-076	patch-Linux7.1.8-Noble/MIGRACAO_LINUX_7.1.8_PARA_PLAYOS_KERNEL.md	playos-kernel	plan	current
+DOC-077	patch-Linux7.1.8-Noble/results/BUILD_PLAYOS_KERNEL1_2026-08-19.md	playos-kernel	result	current
+DOC-078	supervised_learning/knowledge/linux/playos-kernel-migration.md	playos-kernel	knowledge	current
+DOC-079	patch-Noble-PlayOS-Kernel-7.1.8/README.md	playos-kernel-718	guide	current
+DOC-080	patch-Noble-PlayOS-Kernel-7.1.8/MANIFEST.md	playos-kernel-718	manifest	current
+DOC-081	patch-Noble-PlayOS-Kernel-7.1.8/ANALISE_MIGRACAO_NOBLE_PARA_7.1.8.md	playos-kernel-718	audit	current
+DOC-082	supervised_learning/knowledge/linux/playos-kernel-7.1.8.md	playos-kernel-718	knowledge	current

@@ -14,3 +14,5 @@ TOP-FBSD-SUBSYSTEMS	Referência de subsistemas FreeBSD	knowledge/freebsd/subsyst
 TOP-BSD-GLOSSARY	Glossário BSD Linux PlayOS	knowledge/bsd-family/glossary.md	SRC-FBSD-INVENTORY,SRC-FBSD-PORTABILITY,SRC-PLAYOS-ARCH	high
 TOP-DOC-PORTAL	Portal unificado de documentação	documentation-portal/README.md	SRC-DOC-PORTAL	high
 TOP-LINUX-NTSYNC	Backport NTSYNC Linux 7.1.8 para Noble	knowledge/linux/ntsync-backport-noble.md	SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD,SRC-NOBLE-BUILD	critical
+TOP-PLAYOS-KERNEL	Migração Noble e Linux 7.1.8 para PlayOS Kernel	knowledge/linux/playos-kernel-migration.md	SRC-PLAYOS-KERNEL1,SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD	critical
+TOP-PLAYOS-KERNEL-718	PlayOS Kernel 7.1.8 com perfil Noble	knowledge/linux/playos-kernel-7.1.8.md	SRC-PLAYOS-KERNEL2-MIGRATION,SRC-LINUX718-BUILD,SRC-RESOLUTE-VERIFY	critical

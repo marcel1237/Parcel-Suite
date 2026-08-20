@@ -1,0 +1,38 @@
+# PlayOS Kernel 7.1.8 production policy layered over Ubuntu Noble Generic.
+CONFIG_BOOT_CONFIG=y
+CONFIG_BPF_SYSCALL=y
+CONFIG_BPF_JIT=y
+CONFIG_CGROUPS=y
+CONFIG_CGROUP_BPF=y
+CONFIG_NAMESPACES=y
+CONFIG_USER_NS=y
+CONFIG_PID_NS=y
+CONFIG_NET_NS=y
+CONFIG_SECCOMP=y
+CONFIG_SECCOMP_FILTER=y
+CONFIG_SECURITY=y
+CONFIG_SECURITY_APPARMOR=y
+CONFIG_SECURITY_LANDLOCK=y
+CONFIG_TLS=m
+CONFIG_NTSYNC=m
+CONFIG_SCHED_CLASS_EXT=y
+CONFIG_DEBUG_INFO=y
+CONFIG_DEBUG_INFO_BTF=y
+CONFIG_FTRACE=y
+CONFIG_DYNAMIC_FTRACE=y
+CONFIG_PSI=y
+
+# Local builds do not possess Canonical's private signing key material.
+CONFIG_SYSTEM_TRUSTED_KEYS=""
+CONFIG_SYSTEM_REVOCATION_KEYS=""
+
+# Rust remains disabled until a 7.1-compatible pinned toolchain is recorded.
+# CONFIG_RUST is not set
+
+# Destructive laboratory facilities are excluded from production.
+# CONFIG_FAULT_INJECTION is not set
+# CONFIG_FUNCTION_ERROR_INJECTION is not set
+# CONFIG_FAILSLAB is not set
+# CONFIG_FAIL_PAGE_ALLOC is not set
+# CONFIG_FAIL_MAKE_REQUEST is not set
+# CONFIG_FAIL_FUNCTION is not set

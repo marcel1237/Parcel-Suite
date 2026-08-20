@@ -1,0 +1,3 @@
+Trabalhar no aprimoramento do gnome
+
+1. Fazer o porte da suite de aplicativo do kde para usar em QT tudo no gnome. Uma box QT compativel.

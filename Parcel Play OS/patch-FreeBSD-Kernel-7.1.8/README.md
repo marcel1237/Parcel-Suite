@@ -1,5 +1,10 @@
 # Patchset FreeBSD → Linux vanilla 7.1.8
 
+> Linha histórica de laboratório. A migração com perfil Ubuntu Noble e a nova
+> identidade `7.1.8-playos-kernel2` estão em
+> `../patch-Noble-PlayOS-Kernel-7.1.8/`. Os resultados antigos permanecem como
+> evidência e não devem ser reescritos retroativamente.
+
 Área exclusiva para preparar patches inspirados no FreeBSD 15 `sys/kern` para
 o Linux upstream 7.1.8 usado pelo Parcel Play OS.
 

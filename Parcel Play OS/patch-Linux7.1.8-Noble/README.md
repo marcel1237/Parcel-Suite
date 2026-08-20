@@ -1,4 +1,4 @@
-# Linux 7.1.8 → Ubuntu Noble 6.8.4
+# Linux 7.1.8 → PlayOS Kernel sobre Ubuntu Noble 6.8.4
 
 Série de backports Linux nativos selecionados para enriquecer o kernel PlayOS
 Noble sem misturar subsistemas grandes ou ABI incompatível.
@@ -32,3 +32,17 @@ pendentes porque o kernel atualmente em execução não oferece `/dev/ntsync`.
 
 Veja `results/VALIDACAO_NTSYNC_2026-08-19.md` para os limites exatos da
 evidência.
+
+## Segundo backport: mseal e identidade PlayOS Kernel
+
+O `mseal()` foi reconstruído sobre a série inicial oficial do Linux 6.10, mais
+próxima das APIs MM do Noble que o código final do 7.1.8. A implementação inclui
+a syscall 462, flag `VM_SEALED`, proteções contra `munmap`, `mremap`, `mprotect`
+e `madvise`, documentação e kselftest.
+
+O sufixo de release futuro passou de `-playos-freebsd-lab1` para
+`-playos-kernel1`. Isso identifica o produto sem afirmar que o kernel Linux é
+um kernel FreeBSD.
+
+O inventário `MIGRACAO_LINUX_7.1.8_PARA_PLAYOS_KERNEL.md` é o gate antes de
+qualquer remoção da árvore vanilla.

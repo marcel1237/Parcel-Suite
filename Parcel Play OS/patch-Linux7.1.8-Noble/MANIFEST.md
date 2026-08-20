@@ -10,6 +10,7 @@
 ## Série
 
 1. `0001-ntsync-backport-linux-7.1.8-to-noble-6.8.patch`
+2. `0002-mseal-and-playos-kernel-identity.patch`
 
 O fragmento `config/ntsync.config` mantém o recurso como módulo.
 
@@ -20,6 +21,9 @@ O fragmento `config/ntsync.config` mantém o recurso como módulo.
 - `Documentation/userspace-api/ntsync.rst`;
 - integração Kconfig, Makefile, documentação e kselftest;
 - `tools/testing/selftests/drivers/ntsync/`.
+- `mm/mseal.c` e integração nas operações de memória;
+- `Documentation/userspace-api/mseal.rst` e `mseal_test.c`;
+- `localversion-playos` com identidade `-playos-kernel1`.
 
 ## Gates
 
@@ -35,4 +39,7 @@ O fragmento `config/ntsync.config` mantém o recurso como módulo.
 - patch aplicado à árvore Noble;
 - `ntsync.ko` compilado com BTF;
 - selftest userspace compilado;
-- runtime, boot, assinatura do módulo e regressão ainda pendentes.
+- `bzImage` `6.8.4-playos-kernel1+` concluído, com BTF e símbolos `mseal`;
+- NTSYNC reconstruído para a nova identidade e com BTF;
+- runtime, boot, initramfs, assinatura, regressão e conclusão limpa do alvo
+  global `modules` ainda são gates obrigatórios.
