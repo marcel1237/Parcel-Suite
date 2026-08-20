@@ -9,3 +9,5 @@ DEC-007	Fault injection fica fora do perfil de produção	current	high	SRC-NOBLE
 DEC-008	Build não é produção antes de boot regressão pacote e hardware	current	high	SRC-NOBLE-BUILD,SRC-LINUX718-BUILD
 DEC-009	FreeBSD recebe ideias Linux primeiro por wrappers e experimentos pequenos	planned	high	SRC-FBSD-LINUX-REVERSE
 DEC-010	OpenBSD e NetBSD são referências de política até haver fontes auditadas	experimental	high	SRC-OPENBSD-FREEBSD,SRC-BSD-TRIAD
+DEC-011	NTSYNC do 7.1.8 entra no Noble como módulo reversível	current	high	SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD
+DEC-012	sched_ext não será copiado diretamente do 7.1.8 para Noble	deferred	high	SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD

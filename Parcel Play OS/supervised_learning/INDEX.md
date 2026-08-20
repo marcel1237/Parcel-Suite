@@ -1,5 +1,7 @@
 # Índice da base de conhecimento
 
+Entrada obrigatória para IA: [AGENTS.md](../AGENTS.md)
+
 Portal visual inicial: [documentation-portal/index.html](../documentation-portal/index.html)
 
 ## BSD prioritário

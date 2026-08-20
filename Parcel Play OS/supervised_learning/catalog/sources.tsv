@@ -24,3 +24,5 @@ SRC-FBSD-PATCH-MANIFEST	manifest	FreeBSD	15.1	patch-linux7.1.8-FreeBSD/MANIFEST.
 SRC-RESOLUTE-VERIFY	report	Ubuntu Resolute	7.0	VERIFICACAO_KERNEL_UBUNTU_RESOLUTE_2026-08-18.md	current	critical	Correção de identidade Resolute versus Noble local
 SRC-PROJECT-AUDIT	report	PlayOS	2026-08-18	AUDITORIA_COMPLETA_DIRECAO_2026-08-18.md	current	high	Auditoria de direção e propostas
 SRC-PROGRESS	log	PlayOS	continuous	PROGRESSO.md	current	medium	Registro cronológico; não substitui fontes primárias
+SRC-DOC-PORTAL	result	PlayOS Documentation	2026-08-19	supervised_learning/HTML_PORTAL_STATUS.md	current	high	Estado e validação do portal documental gerado
+SRC-NTSYNC-NOBLE	result	Ubuntu Noble/Linux	6.8.4/7.1.8	patch-Linux7.1.8-Noble/results/VALIDACAO_NTSYNC_2026-08-19.md	current	critical	Backport NTSYNC compilado com BTF; runtime e boot pendentes

@@ -1,5 +1,7 @@
 # Base supervisionada BSD/Linux/PlayOS
 
+Diretriz principal para agentes e novas sessões: [`../AGENTS.md`](../AGENTS.md).
+
 Esta pasta é a camada de conhecimento verificável do PlayOS. Sua prioridade é
 BSD — sobretudo FreeBSD 15.1 — e sua relação correta com Linux e o PlayOS.
 

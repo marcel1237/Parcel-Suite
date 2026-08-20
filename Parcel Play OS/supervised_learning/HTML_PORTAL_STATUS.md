@@ -13,7 +13,7 @@ O portal apresenta:
 - família BSD e comparação Linux;
 - estado real de Noble 6.8.4, Linux 7.1.8, patchset FreeBSD e Resolute;
 - busca e filtros no navegador;
-- 22 cartões documentais;
+- cartões gerados para todo o inventário documental;
 - roadmap para boot e validação FreeBSD;
 - indicadores da base supervisionada.
 
@@ -23,15 +23,21 @@ O portal apresenta:
 - 15 links/assets estáticos no HTML, nenhum caminho ausente;
 - todos os caminhos Markdown embutidos no catálogo foram revisados;
 - `git diff --check` passou;
-- base supervisionada permanece válida com 68 documentos inventariados,
-  10 entradas técnicas e 13 tópicos.
+- base supervisionada e portal possuem validadores integrados.
 
 O host bloqueou abertura de socket local no sandbox e não possui Node.js para
 `node --check`. Por isso esta rodada não inclui preview HTTP nem teste visual de
 navegador. O JavaScript é deliberadamente pequeno, sem dependências e usa apenas
 dados estáticos locais.
 
+## Automação concluída
+
+`generate_portal.py` lê o inventário, fontes, tópicos, conhecimento e datasets,
+gerando `generated-data.js`. Cartões e indicadores deixaram de ser mantidos
+manualmente. `validate_portal.py` confirma IDs únicos, contagens e todos os
+caminhos. O comando unificado é `make -C documentation-portal validate`.
+
 ## Decisão
 
-Manter o portal local nesta fase. A próxima etapa deve automatizar sua geração
-a partir dos catálogos para evitar divergência entre HTML e Markdown.
+Manter o portal local nesta fase. O próximo passo é renderizar Markdown em
+páginas internas e criar navegação por relações entre documentos.

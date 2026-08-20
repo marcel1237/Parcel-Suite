@@ -44,3 +44,11 @@ O build de laboratório registrou:
 Esses resultados provam compilabilidade e geração de artefatos, não correção em
 runtime. QEMU não foi instalado porque a instalação global exigia autenticação
 sudo interativa. Nenhum desses builds deve ser chamado de release de produção.
+
+## Incremento NTSYNC no Noble
+
+Em 2026-08-19, o NTSYNC do Linux 7.1.8 foi integrado à fonte Noble e compilado
+isoladamente como `ntsync.ko`, com BTF e `vermagic` do build Noble. O selftest
+userspace compilou, mas seus 11 casos não puderam abrir `/dev/ntsync` no kernel
+host. Esse incremento ainda não faz parte da evidência do build Generic completo
+acima; exige novo build completo, boot, carregamento e regressão.

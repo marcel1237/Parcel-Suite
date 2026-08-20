@@ -12,3 +12,5 @@ TOP-COMPAT	Compatibilidade máxima FreeBSD	freebsd-compatibility/README.md	SRC-F
 TOP-RESOLUTE	Identidade Ubuntu Resolute	VERIFICACAO_KERNEL_UBUNTU_RESOLUTE_2026-08-18.md	SRC-RESOLUTE-VERIFY	critical
 TOP-FBSD-SUBSYSTEMS	Referência de subsistemas FreeBSD	knowledge/freebsd/subsystem-reference.md	SRC-FBSD-SOURCE,SRC-FBSD-INVENTORY,SRC-FBSD-PORTABILITY	critical
 TOP-BSD-GLOSSARY	Glossário BSD Linux PlayOS	knowledge/bsd-family/glossary.md	SRC-FBSD-INVENTORY,SRC-FBSD-PORTABILITY,SRC-PLAYOS-ARCH	high
+TOP-DOC-PORTAL	Portal unificado de documentação	documentation-portal/README.md	SRC-DOC-PORTAL	high
+TOP-LINUX-NTSYNC	Backport NTSYNC Linux 7.1.8 para Noble	knowledge/linux/ntsync-backport-noble.md	SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD,SRC-NOBLE-BUILD	critical

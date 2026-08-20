@@ -2,6 +2,21 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-08-19] - Portal documental automatizado pelos catálogos
+- **Geração**: `generate_portal.py` transforma o inventário e metadados supervisionados em `generated-data.js` determinístico.
+- **Cobertura**: O portal deixou de conter somente 22 cartões manuais e passou a incluir todo documento inventariado.
+- **Métricas**: Fontes, documentos, entradas de conhecimento, tópicos e QA agora são calculados, não digitados no HTML.
+- **Validação**: `validate_portal.py` verifica payload, IDs, contagens, assets e todos os links documentais.
+- **Comando Único**: `make -C documentation-portal validate` regenera o portal, valida a base e verifica caminhos.
+- **Governança**: Portal registrado como implementação; HTML continua camada visual, enquanto Markdown/TSV/JSONL permanecem fontes de verdade.
+
+## [2026-08-19] - Diretriz única de entrada para Inteligências Artificiais
+- **Entrada Automática**: Criado `AGENTS.md` na raiz para orientar agentes antes de qualquer análise ampla do repositório.
+- **Fluxo Simplificado**: A IA lê a diretriz, consulta README/INDEX, roteia o assunto pelos catálogos e só abre código necessário à tarefa.
+- **Conteúdo**: Baselines, prioridade BSD, evidência, estados, portabilidade FreeBSD–Linux, protocolos por pedido, documentação, portal, validação, segurança e antialucinação.
+- **Atalho do Usuário**: Uma nova sessão pode começar com “Leia AGENTS.md e continue o PlayOS”.
+- **Integração**: README, índice e inventário da base supervisionada apontam para a nova diretriz.
+
 ## [2026-08-19] - Documentação BSD ampliada e portal HTML iniciado
 - **Novos Markdown**: Referência de subsistemas FreeBSD, glossário BSD/Linux/PlayOS e roadmap de conhecimento BSD adicionados à base.
 - **Cobertura**: A base agora possui 10 entradas técnicas, 13 tópicos e 68 documentos inventariados, mantendo 25 fontes e 44 exemplos QA.
@@ -607,3 +622,12 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 ## Status Atual
 - **Fase**: Análise de DNA e Engenharia de Kernel Híbrido.
 - **Próximo Objetivo**: Realizar o merge conceitual entre a base purista 7.1.8 e os drivers do Ubuntu 26.
+
+## 2026-08-19 — Vitamina Linux 7.1.8 no Ubuntu Noble
+
+- **Implementado**: backport do NTSYNC 7.1.8 para a fonte Noble 6.8.4, incluindo UAPI, documentação e kselftest.
+- **Adaptado**: alocação de objetos e publicação de descritores para APIs existentes no Linux 6.8.
+- **Configurado**: `CONFIG_NTSYNC=m`, mantendo rollback por módulo.
+- **Validado**: `ntsync.ko` compilado com BTF usando pahole 1.31; selftest userspace compilado.
+- **Pendente**: build completo, assinatura, boot, `/dev/ntsync`, 11 selftests e regressão Wine/Proton.
+- **Adiado conscientemente**: `sched_ext`, por acoplamento profundo com scheduler, BPF, tracing e UAPI.

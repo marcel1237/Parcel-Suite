@@ -6,3 +6,5 @@ IMP-FBSD-REVERSE	FreeBSD 15.1	proposal-patchset	patch-linux7.1.8-FreeBSD/	planne
 IMP-FBSD-STUDIES	FreeBSD/Linux	study-kit	studies/freebsd15_sys_kern/	implemented	host-experiments	SRC-FBSD-STUDIES,SRC-FBSD-STUDY-KIT
 IMP-FBSD-COMPAT	FreeBSD	userspace-policy	freebsd-compatibility/	planned	static-policy	SRC-FBSD-COMPAT,SRC-FBSD-COMPAT-MATRIX
 IMP-NITROCORE	Linux concepts	prototype	nitrocore/	experimental	not-kernel-integrated	SRC-PROJECT-AUDIT
+IMP-DOC-PORTAL	PlayOS Documentation	static-portal	documentation-portal/	implemented	generated-catalog-and-link-validation	SRC-DOC-PORTAL
+IMP-NTSYNC-NOBLE	Ubuntu Noble 6.8.4	kernel-backport	patch-Linux7.1.8-Noble/	implemented	module-btf-no-runtime	SRC-NTSYNC-NOBLE,SRC-LINUX718-BUILD,SRC-NOBLE-BUILD

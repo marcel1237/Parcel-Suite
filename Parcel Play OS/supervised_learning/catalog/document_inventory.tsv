@@ -69,3 +69,8 @@ DOC-067	supervised_learning/knowledge/freebsd/subsystem-reference.md	freebsd	ref
 DOC-068	supervised_learning/knowledge/bsd-family/glossary.md	bsd-family	glossary	current
 DOC-069	supervised_learning/HTML_PORTAL_STATUS.md	documentation	result	current
 DOC-070	documentation-portal/README.md	documentation	guide	current
+DOC-071	AGENTS.md	ai-governance	instruction	current
+DOC-072	patch-Linux7.1.8-Noble/README.md	noble-linux718	guide	current
+DOC-073	patch-Linux7.1.8-Noble/MANIFEST.md	noble-linux718	manifest	current
+DOC-074	patch-Linux7.1.8-Noble/results/VALIDACAO_NTSYNC_2026-08-19.md	noble-linux718	result	current
+DOC-075	supervised_learning/knowledge/linux/ntsync-backport-noble.md	noble-linux718	knowledge	current
