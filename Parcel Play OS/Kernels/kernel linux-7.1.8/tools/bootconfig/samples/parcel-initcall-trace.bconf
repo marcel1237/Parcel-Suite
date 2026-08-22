@@ -1,0 +1,9 @@
+# Opt-in Parcel laboratory boot trace; inert unless attached to an initramfs
+# and enabled with the bootconfig kernel parameter.
+ftrace.instance.parcel_boot {
+	tracing_on = 1
+	buffer_size = 4096KB
+	events.initcall.initcall_start.enable = 1
+	events.initcall.initcall_finish.enable = 1
+	events.sched.sched_process_exec.enable = 1
+}

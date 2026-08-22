@@ -1,5 +1,6 @@
 topic_id	topic	primary_entry	source_ids	priority
-TOP-BUILD-RECREATE	Primeira abertura e reconstrução de build	../build/RECRIAR_BUILD.md	SRC-BUILD-RECREATE	critical
+TOP-BUILD-RECREATE	Primeira abertura e validação do projeto	../start	SRC-BUILD-RECREATE	critical
+TOP-KERNEL-OVERLAYS	Baselines externos e overlays de kernel	../Kernels/RELATORIO_DIFERENCAS_KERNELS_2026-08-22.md	SRC-KERNEL-OVERLAYS	critical
 TOP-FBSD-IDENTITY	Identidade e integridade FreeBSD	knowledge/freebsd/identity-capabilities.md	SRC-FBSD-SOURCE,SRC-FBSD-INVENTORY	critical
 TOP-FBSD-SYSKERN	FreeBSD sys/kern	knowledge/freebsd/sys-kern-map.md	SRC-FBSD-SOURCE,SRC-FBSD-PORTABILITY	critical
 TOP-FBSD-SECURITY	Jails Capsicum MAC RCTL	knowledge/freebsd/security-isolation.md	SRC-FBSD-INVENTORY,SRC-FBSD-SOURCE	critical

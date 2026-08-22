@@ -59,12 +59,18 @@ Prioridade não significa aceitar uma proposta sem prova.
 
 - Fonte FreeBSD completa: FreeBSD 15.1-RELEASE-p2 em `/home/marcel/Parcel
   Suite/Operating Systems/freebsd-15.1.0-p2`.
-- `Kernels/FreeBSD 15` é uma cópia parcial; não substitui a fonte completa.
-- `Kernels/ubuntu 26 resolute kernel` contém Ubuntu Noble Linux 6.8.4 apesar do
-  nome histórico da pasta.
+- Fontes Linux completas ficam fora do projeto em `/home/marcel/Parcel
+  Suite/Linux Kernels`; os caminhos editáveis estão em
+  `config/kernel-sources.conf`.
+- `Kernels/` contém somente overlays PlayOS (arquivos novos ou divergentes),
+  nunca uma árvore completa para build.
+- `Kernels/FreeBSD 15` é um overlay atualmente vazio; não substitui a fonte
+  completa.
+- `Kernels/ubuntu 26 resolute kernel` é o overlay do Ubuntu Noble Linux 6.8.4,
+  apesar do nome histórico da pasta.
 - Ubuntu Resolute oficial foi identificado pelo projeto como Linux 7.0; sua
   fonte correspondente ainda não está presente como baseline correto.
-- `Kernels/kernel linux-7.1.8` é Linux vanilla 7.1.8.
+- `Kernels/kernel linux-7.1.8` é o overlay do Linux vanilla 7.1.8.
 - Builds Noble e 7.1.8 foram concluídos, mas ainda não foram inicializados em
   QEMU ou hardware como kernels PlayOS validados.
 

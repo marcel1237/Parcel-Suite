@@ -1,5 +1,6 @@
 source_id	type	system	version	path	status	priority	description
-SRC-BUILD-RECREATE	procedure	PlayOS	2026-08-21	build/RECRIAR_BUILD.md	current	critical	Procedimento canônico para primeira abertura, inventário, reconstrução e validação da área build
+SRC-BUILD-RECREATE	code	PlayOS	2026-08-21	start	current	critical	Entrada segura para primeira abertura, inventário e validação local
+SRC-KERNEL-OVERLAYS	audit	PlayOS kernels	2026-08-22	Kernels/RELATORIO_DIFERENCAS_KERNELS_2026-08-22.md	current	critical	Auditoria integral e configuração dos overlays contra baselines externos
 SRC-FBSD-SOURCE	code	FreeBSD	15.1-RELEASE-p2	/home/marcel/Parcel Suite/Operating Systems/freebsd-15.1.0-p2/sys	current	critical	Árvore completa do kernel FreeBSD usada como fonte primária
 SRC-FBSD-INVENTORY	report	FreeBSD	15.1-RELEASE-p2	patch-linux7.1.8-FreeBSD/INVENTARIO_FREEBSD_15.1_P2.md	current	critical	Inventário completo da árvore FreeBSD
 SRC-FBSD-PORTABILITY	report	FreeBSD/Linux	15.1/6.8	PORTABILIDADE_FREEBSD15_SYS_KERN_PARA_UBUNTU.md	current	critical	Auditoria por família de portabilidade sys/kern

@@ -3,6 +3,11 @@ set -euo pipefail
 
 project_dir=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 build_dir="$project_dir/build"
+kernel_config="$project_dir/config/kernel-sources.conf"
+if [ -r "$kernel_config" ]; then
+    # shellcheck source=config/kernel-sources.conf
+    source "$kernel_config"
+fi
 
 usage() {
     cat <<'EOF'
@@ -15,7 +20,7 @@ Uso:
   ./start verify          valida documentação e checksums existentes
   ./start verify-full     inclui o hash da ISO de 6,3 GB (pode demorar)
   ./start layout          recria somente os diretórios vazios de build
-  ./start guide           mostra o manual completo de reconstrução
+  ./start guide           mostra o relatório/configuração dos kernels
 
 Este comando não instala pacotes, kernels, GRUB nem altera fontes externas.
 EOF
@@ -46,10 +51,14 @@ show_item() {
 status() {
     echo "PlayOS: auditoria de abertura"
     echo "Projeto: $project_dir"
-    show_item "fonte Linux 7.1.8" "$project_dir/Kernels/kernel linux-7.1.8/Makefile"
-    show_item "fonte Noble 6.8.4" "$project_dir/Kernels/ubuntu 26 resolute kernel/Makefile"
+    show_item "configuração de kernels" "$kernel_config"
+    show_item "fonte Linux 7.1.8" "${PLAYOS_LINUX_718_BASE:-não configurada}/Makefile"
+    show_item "fonte Noble 6.8.4" "${PLAYOS_NOBLE_684_BASE:-não configurada}/Makefile"
+    show_item "fonte FreeBSD 15.1" "${PLAYOS_FREEBSD_151_BASE:-não configurada}/kern"
+    show_item "overlay Linux 7.1.8" "$project_dir/Kernels/kernel linux-7.1.8"
+    show_item "overlay Noble 6.8.4" "$project_dir/Kernels/ubuntu 26 resolute kernel"
     show_item "patchset Kernel 2" "$project_dir/patch-Noble-PlayOS-Kernel-7.1.8/series"
-    show_item "manual de build" "$build_dir/RECRIAR_BUILD.md"
+    show_item "relatório de overlays" "$project_dir/Kernels/RELATORIO_DIFERENCAS_KERNELS_2026-08-22.md"
     echo
     echo "Ferramentas (presença não substitui teste de versão):"
     for tool in bash git make gcc bc bison flex openssl pahole dracut sha256sum xorriso grub-script-check python3; do
@@ -62,7 +71,7 @@ status() {
     echo
     find "$build_dir" -type f -path '*/output/*' -printf '%s bytes  %p\n' 2>/dev/null | sort -n || true
     echo
-    echo "Leia: $build_dir/RECRIAR_BUILD.md"
+    echo "Leia: $project_dir/Kernels/RELATORIO_DIFERENCAS_KERNELS_2026-08-22.md"
 }
 
 verify_checksums() {
@@ -116,7 +125,7 @@ case "${1:-first-open}" in
     verify) verify no ;;
     verify-full) verify yes ;;
     layout) layout ;;
-    guide) ${PAGER:-less} "$build_dir/RECRIAR_BUILD.md" ;;
+    guide) ${PAGER:-less} "$project_dir/Kernels/RELATORIO_DIFERENCAS_KERNELS_2026-08-22.md" ;;
     -h|--help|help) usage ;;
     *) usage >&2; exit 2 ;;
 esac

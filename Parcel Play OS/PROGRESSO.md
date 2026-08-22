@@ -660,3 +660,17 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
   reconstruir todas as mudanças a partir de checkout limpo.
 - próximo gate: exportar e testar a série Noble limpa; depois repetir Kernel 2
   e bootar os artefatos em QEMU/OVMF.
+# 2026-08-22 — Kernels convertidos em overlays versionáveis
+
+- `fact`: comparação por checksum encontrou 9 divergências no Linux 7.1.8, 40
+  no Noble 6.8.4 e nenhuma nas cópias FreeBSD 15, FreeBSD 16 e Conectiva 4.
+- `implementation`: removidas 182.534 entradas idênticas; preservados os 49
+  arquivos divergentes em `Kernels/`.
+- `implementation`: caminhos externos somente leitura foram centralizados em
+  `config/kernel-sources.conf`; auditoria/poda reproduzível foi adicionada em
+  `scripts/prune-kernel-overlays.sh`.
+- `decision`: `Kernels/` deixa de ser ignorada e passa a versionar somente
+  overlays, enquanto fontes completas permanecem fora do projeto.
+- `unknown`: composição pós-poda ainda não recebeu build e boot novos.
+- próximo gate: reconstruir staging a partir de baseline + overlay, comparar o
+  diff resultante, compilar e inicializar em QEMU/OVMF.
