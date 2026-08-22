@@ -1,0 +1,1 @@
+Personalização de mercado para cloud e servidores do XFce. (Semelhante ao Gnome Red Hat)

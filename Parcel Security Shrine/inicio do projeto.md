@@ -218,8 +218,8 @@ consegue ler:
 
 * **Credenciais:** Usuários e senhas de protocolos como **HTTP** (sites sem o
   cadeado), **FTP** (transferência de arquivos), **Telnet** (acesso remoto) e **
-  SMTP/POP3** (e-mails antigos). As senhas aparecem em letras claras, exatamente
-  como foram digitadas.
+  SMTP/POP3** (e-mails antigos). As senhas aparecem em letras claras,
+  exatamente como foram digitadas.
 * **Cookies de Sessão:** Mesmo que você não saiba a senha, o sniffer pode
   capturar o "cookie" que o site usa para manter você logado. Com esse cookie,
   um atacante pode clonar sua sessão (Session Hijacking) sem precisar de senha.

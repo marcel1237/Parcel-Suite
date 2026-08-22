@@ -1,4 +1,5 @@
 document_id	path	area	role	status
+DOC-083	build/RECRIAR_BUILD.md	build	procedure	current
 DOC-001	ANALISE_ALTERACOES_2026-08-18.md	project	audit	current
 DOC-002	ANALISE_PROJETO_2026-08-15.md	project	audit	historical
 DOC-003	APLICACAO_FREEBSD15_NO_UBUNTU_RESOLUTE_2026-08-18.md	portability	report	current

@@ -1,4 +1,5 @@
 topic_id	topic	primary_entry	source_ids	priority
+TOP-BUILD-RECREATE	Primeira abertura e reconstrução de build	../build/RECRIAR_BUILD.md	SRC-BUILD-RECREATE	critical
 TOP-FBSD-IDENTITY	Identidade e integridade FreeBSD	knowledge/freebsd/identity-capabilities.md	SRC-FBSD-SOURCE,SRC-FBSD-INVENTORY	critical
 TOP-FBSD-SYSKERN	FreeBSD sys/kern	knowledge/freebsd/sys-kern-map.md	SRC-FBSD-SOURCE,SRC-FBSD-PORTABILITY	critical
 TOP-FBSD-SECURITY	Jails Capsicum MAC RCTL	knowledge/freebsd/security-isolation.md	SRC-FBSD-INVENTORY,SRC-FBSD-SOURCE	critical

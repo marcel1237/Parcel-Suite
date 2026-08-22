@@ -648,3 +648,15 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Selftests host**: sendfile, Landlock ABI 8, cgroup v2, namespaces, seccomp, PSI e AppArmor passaram; NTSYNC e kTLS não carregados foram skips.
 - **Evidência externa**: Resolute usa Linux 7.0; em 20/08/2026 kernel.org já lista 7.1.9 stable e 7.2 mainline.
 - **Build**: compilação completa `bzImage modules` do perfil Generic em staging isolado iniciada; boot continua pendente.
+# 2026-08-21 — Entrada `start` e reconstrução de `build`
+
+- `fact`: `build/` e as fontes Linux locais estavam ignoradas pelo Git; um
+  clone novo não recuperava esses dados.
+- `implementation`: criado `./start` para primeira abertura, inventário,
+  layout idempotente, validação documental e checksums, sem instalação no host.
+- `implementation`: criado `build/RECRIAR_BUILD.md` e aberta exceção específica
+  no `.gitignore` para manter somente esse manual versionado dentro de `build/`.
+- `unknown`: Noble 6.8.4 ainda não possui uma série portátil única capaz de
+  reconstruir todas as mudanças a partir de checkout limpo.
+- próximo gate: exportar e testar a série Noble limpa; depois repetir Kernel 2
+  e bootar os artefatos em QEMU/OVMF.

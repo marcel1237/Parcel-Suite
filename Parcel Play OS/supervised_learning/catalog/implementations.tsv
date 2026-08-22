@@ -1,4 +1,5 @@
 implementation_id	target	kind	path	status	validation	source_ids
+IMP-PROJECT-START	PlayOS	project-entrypoint	start	implemented	bash-syntax-first-open-and-checksums	SRC-BUILD-RECREATE
 IMP-NOBLE-PATCHSET	Ubuntu Noble 6.8.4	patchset	patch-FreeBSD-Noble/	implemented	build-generic-no-boot	SRC-NOBLE-BUILD,SRC-NOBLE-MANIFEST
 IMP-NOBLE-KERNEL	Ubuntu Noble 6.8.4	artifact	build/playos-noble-generic/output/	implemented	sha256-initramfs-modules	SRC-NOBLE-BUILD
 IMP-LINUX718-PATCHSET	Linux 7.1.8	patchset	patch-FreeBSD-Kernel-7.1.8/	implemented	build-no-boot	SRC-LINUX718-BUILD,SRC-LINUX718-MANIFEST

@@ -1,0 +1,7 @@
+1. Analise o código do Leo AI que se encontra no Browser Brave. Espcificamente o código que aparece da aba: brave://leo-ai/ , uma parte que aparece inclusive do lado direito o botão novo chat, que cobre uma aba inteira do brave.
+
+2. Responda para mim como ele está funcionando no momento, pois vamos aprimorar ele para ficar semelhante ao Vertex AI da google e o App chatgpt da Open ai que possui a IA codex. Para analisar e editar código conforme solicitado. Usando no caso a Leo AI do brave. No caso no momento ela é somente uma chat, não como a vertex ai da google que edita e analisa código direto nos folders.
+
+3. Vamos verificar o IntelliJ Idea para ver como ele faz edição do código depois de ter recebido do provider LLM, Vamos também verificar como ele faz a parte de Read do código... e também com todas as IAs que tem no Idea, como codex , gemini etc... pois vamos fazer essa parte do brave analisar e editar código, vamos usar o Idea para ver como podemos fazer isso.
+
+4. Vamos entender como é feito com o Leo do brave, pois vamos usar provalvelmente o comando CAT para fazer as alterações, pois ele aceita receber os arquivos de código no provider para leitura e analise, a parte de edição é só ele responder em comando cat sempre.

@@ -7,18 +7,23 @@ assistente que trabalhe neste projeto.
 
 Ao iniciar uma nova conversa ou tarefa:
 
-1. Leia este arquivo completamente.
-2. Não comece analisando todo o repositório.
-3. Leia `supervised_learning/README.md`.
-4. Leia `supervised_learning/INDEX.md`.
-5. Consulte `supervised_learning/catalog/topics.tsv` para localizar o assunto.
-6. Consulte somente as entradas de `supervised_learning/knowledge/` relacionadas
-   à solicitação.
-7. Confirme fontes em `supervised_learning/catalog/sources.tsv`.
-8. Confirme o estado real em `supervised_learning/catalog/implementations.tsv`
-   e `supervised_learning/catalog/decisions.tsv`.
-9. Só analise código-fonte ou outros documentos quando a pergunta exigir
-   evidência adicional, implementação ou atualização da base.
+1.  Leia este arquivo completamente.
+2.  Não comece analisando todo o repositório.
+3.  Leia `supervised_learning/README.md`.
+4.  Leia `supervised_learning/INDEX.md`.
+5.  Consulte `supervised_learning/catalog/topics.tsv` para localizar o assunto.
+6.  Consulte somente as entradas de `supervised_learning/knowledge/`
+    relacionadas à solicitação.
+7.  Confirme fontes em `supervised_learning/catalog/sources.tsv`.
+8.  Confirme o estado real em `supervised_learning/catalog/implementations.tsv`
+    e `supervised_learning/catalog/decisions.tsv`.
+9.  Só analise código-fonte ou outros documentos quando a pergunta exigir
+    evidência adicional, implementação ou atualização da base.
+
+Em uma primeira abertura do checkout (ou após limpar artefatos), execute
+`./start`. Ele cria somente o layout transitório, audita fontes/ferramentas,
+valida a documentação e confere checksums; não instala nada no host. O manual
+de reconstrução está em `build/RECRIAR_BUILD.md`.
 
 O usuário pode simplificar o início dizendo apenas:
 
@@ -39,21 +44,21 @@ patches pequenos e arquitetura userspace quando apropriado.
 
 Ordem padrão de dedicação:
 
-1. FreeBSD 15.1: kernel, userland, boot, Jails, segurança, rede, storage,
-   virtualização, instalador e compatibilidade.
-2. Comparação FreeBSD–Linux com evidência reproduzível.
-3. OpenBSD e NetBSD, elevando sua cobertura somente após obter fontes
-   primárias auditáveis.
-4. Arquitetura PlayOS e contratos comuns entre backends.
-5. Linux Noble 6.8.4 e Linux vanilla 7.1.8 modificados.
-6. Protótipos NitroCore e demais propostas experimentais.
+1.  FreeBSD 15.1: kernel, userland, boot, Jails, segurança, rede, storage,
+    virtualização, instalador e compatibilidade.
+2.  Comparação FreeBSD–Linux com evidência reproduzível.
+3.  OpenBSD e NetBSD, elevando sua cobertura somente após obter fontes
+    primárias auditáveis.
+4.  Arquitetura PlayOS e contratos comuns entre backends.
+5.  Linux Noble 6.8.4 e Linux vanilla 7.1.8 modificados.
+6.  Protótipos NitroCore e demais propostas experimentais.
 
 Prioridade não significa aceitar uma proposta sem prova.
 
 ## Baselines que nunca devem ser confundidos
 
-- Fonte FreeBSD completa: FreeBSD 15.1-RELEASE-p2 em
-  `/home/marcel/Parcel Suite/Operating Systems/freebsd-15.1.0-p2`.
+- Fonte FreeBSD completa: FreeBSD 15.1-RELEASE-p2 em `/home/marcel/Parcel
+  Suite/Operating Systems/freebsd-15.1.0-p2`.
 - `Kernels/FreeBSD 15` é uma cópia parcial; não substitui a fonte completa.
 - `Kernels/ubuntu 26 resolute kernel` contém Ubuntu Noble Linux 6.8.4 apesar do
   nome histórico da pasta.
@@ -70,12 +75,12 @@ repita silenciosamente nomes de pastas como se fossem identidade técnica.
 
 Use esta ordem:
 
-1. código-fonte identificado por versão/commit e linhas;
-2. resultado reproduzível de build ou teste;
-3. documentação primária upstream;
-4. relatório local que cite fontes anteriores;
-5. inferência explicitamente identificada;
-6. proposta ainda sem validação.
+1.  código-fonte identificado por versão/commit e linhas;
+2.  resultado reproduzível de build ou teste;
+3.  documentação primária upstream;
+4.  relatório local que cite fontes anteriores;
+5.  inferência explicitamente identificada;
+6.  proposta ainda sem validação.
 
 O arquivo `PROGRESSO.md` é um registro cronológico, não substitui fonte
 primária. Documentos históricos ou conceituais não devem superar resultados
@@ -113,15 +118,15 @@ VFS, rede, scheduler, drivers e ABI internas diferentes.
 
 Fluxo permitido:
 
-1. definir o comportamento desejado;
-2. localizar o mecanismo FreeBSD e sua evidência;
-3. procurar equivalente nativo no kernel alvo;
-4. criar baseline sem patch;
-5. comparar política e comportamento;
-6. reimplementar somente a menor ideia necessária usando APIs nativas;
-7. revisar licença;
-8. testar correção, segurança, regressão e desempenho;
-9. rejeitar a mudança se ela não superar o mecanismo existente.
+1.  definir o comportamento desejado;
+2.  localizar o mecanismo FreeBSD e sua evidência;
+3.  procurar equivalente nativo no kernel alvo;
+4.  criar baseline sem patch;
+5.  comparar política e comportamento;
+6.  reimplementar somente a menor ideia necessária usando APIs nativas;
+7.  revisar licença;
+8.  testar correção, segurança, regressão e desempenho;
+9.  rejeitar a mudança se ela não superar o mecanismo existente.
 
 Não portar diretamente para Linux:
 
@@ -158,54 +163,57 @@ Compare metas, semântica, invariantes e resultados; não somente nomes.
 
 ### Se o usuário pedir explicação ou análise
 
-1. Consulte a base supervisionada.
-2. Responda com estado e fontes.
-3. Abra código somente para confirmar lacunas ou detalhes solicitados.
-4. Não altere código sem pedido de implementação.
+1.  Consulte a base supervisionada.
+2.  Responda com estado e fontes.
+3.  Abra código somente para confirmar lacunas ou detalhes solicitados.
+4.  Não altere código sem pedido de implementação.
 
 ### Se o usuário pedir auditoria
 
-1. Compare documentação, catálogos, código e resultados.
-2. Liste divergências por gravidade.
-3. Diferencie erro, risco, dívida técnica e falta de evidência.
-4. Não declare produção sem todos os gates.
+1.  Compare documentação, catálogos, código e resultados.
+2.  Liste divergências por gravidade.
+3.  Diferencie erro, risco, dívida técnica e falta de evidência.
+4.  Não declare produção sem todos os gates.
 
 ### Se o usuário pedir implementação
 
-1. Confirme baseline e branch.
-2. Preserve mudanças existentes do usuário.
-3. Faça a menor alteração nativa e revisável.
-4. Crie patch quando o trabalho pertencer aos patchsets.
-5. Compile/teste proporcionalmente ao risco.
-6. Atualize documentação, catálogo de implementação e progresso.
-7. Registre limitações e próximos gates.
+1.  Confirme baseline e branch.
+2.  Preserve mudanças existentes do usuário.
+3.  Faça a menor alteração nativa e revisável.
+4.  Crie patch quando o trabalho pertencer aos patchsets.
+5.  Compile/teste proporcionalmente ao risco.
+6.  Atualize documentação, catálogo de implementação e progresso.
+7.  Registre limitações e próximos gates.
 
 ### Se o usuário pedir comparação de sistemas
 
 Use a mesma versão, hardware, configuração, workload, repetição e métrica. Se
-isso não existir, forneça análise estrutural e marque desempenho como
-`unknown`. Nunca invente números.
+isso não existir, forneça análise estrutural e marque desempenho como `unknown`.
+Nunca invente números.
 
 ### Se o usuário pedir recomendação
 
 Separe recomendação para desktop, servidor, laboratório, hardware e produto.
-Explique trade-offs e grau de evidência. Recomendações que causem muito trabalho
-ou risco precisam de critérios verificáveis.
+Explique trade-offs e grau de evidência. Recomendações que causem muito
+trabalho ou risco precisam de critérios verificáveis.
 
 ## Protocolo de documentação
 
 Toda análise material deve enriquecer a documentação, sem criar prosa duplicada.
 
-1. Atualize uma entrada existente quando o assunto já possuir fonte canônica.
-2. Crie nova entrada em `supervised_learning/knowledge/` quando houver novo
-   conhecimento estável.
-3. Adicione fonte em `supervised_learning/catalog/sources.tsv` quando ela for canônica.
-4. Adicione ou atualize tópico em `supervised_learning/catalog/topics.tsv`.
-5. Registre decisão em `supervised_learning/catalog/decisions.tsv`.
-6. Registre código, patch ou artefato em `supervised_learning/catalog/implementations.tsv`.
-7. Atualize `supervised_learning/catalog/document_inventory.tsv` para novos documentos relevantes.
-8. Crie exemplos QA quando a conclusão prevenir erro recorrente.
-9. Atualize `PROGRESSO.md` com resultado, validação e limite.
+1.  Atualize uma entrada existente quando o assunto já possuir fonte canônica.
+2.  Crie nova entrada em `supervised_learning/knowledge/` quando houver novo
+    conhecimento estável.
+3.  Adicione fonte em `supervised_learning/catalog/sources.tsv` quando ela for
+    canônica.
+4.  Adicione ou atualize tópico em `supervised_learning/catalog/topics.tsv`.
+5.  Registre decisão em `supervised_learning/catalog/decisions.tsv`.
+6.  Registre código, patch ou artefato em 
+    `supervised_learning/catalog/implementations.tsv`.
+7.  Atualize `supervised_learning/catalog/document_inventory.tsv` para novos
+    documentos relevantes.
+8.  Crie exemplos QA quando a conclusão prevenir erro recorrente.
+9.  Atualize `PROGRESSO.md` com resultado, validação e limite.
 10. Execute o validador.
 
 Cada entrada técnica deve informar ID, tipo, confiança, estado, data e fontes.
@@ -218,11 +226,11 @@ navegação; Markdown, TSV e JSONL continuam sendo as fontes de verdade.
 
 Ao adicionar conteúdo importante:
 
-1. atualize primeiro a base Markdown/catalogada;
-2. depois atualize ou gere o portal;
-3. verifique todos os links;
-4. não publique caminhos privados ou conteúdo sensível;
-5. não considere o HTML mais atual que os catálogos.
+1.  atualize primeiro a base Markdown/catalogada;
+2.  depois atualize ou gere o portal;
+3.  verifique todos os links;
+4.  não publique caminhos privados ou conteúdo sensível;
+5.  não considere o HTML mais atual que os catálogos.
 
 ## Validação obrigatória
 
@@ -231,21 +239,18 @@ Antes de concluir mudanças na base:
 ```sh
 python3 supervised_learning/tools/validate_knowledge.py
 ```
-
 Smoke tests:
 
 ```sh
 make -C supervised_learning query-smoke
 ```
-
 Busca local:
 
 ```sh
 python3 supervised_learning/tools/query_knowledge.py FreeBSD Jails Linux
 ```
-
-Para alterações de código, execute também build/testes específicos e
-`git diff --check`. Não esconda warnings relevantes.
+Para alterações de código, execute também build/testes específicos e `git diff
+\--check`. Não esconda warnings relevantes.
 
 ## Regras contra alucinação
 
@@ -263,8 +268,8 @@ Para alterações de código, execute também build/testes específicos e
 
 - Trate as fontes externas FreeBSD como somente leitura, salvo autorização
   explícita para alterá-las.
-- Não instale kernel, módulos, bootloader ou entrada GRUB no host sem autorização
-  explícita.
+- Não instale kernel, módulos, bootloader ou entrada GRUB no host sem
+  autorização explícita.
 - Não sobrescreva mudanças existentes do usuário.
 - Não use operações Git destrutivas.
 - Builds devem usar staging e diretórios isolados.
@@ -275,12 +280,12 @@ Para alterações de código, execute também build/testes específicos e
 
 Ao finalizar uma tarefa, informe de forma objetiva:
 
-1. o que foi concluído;
-2. quais arquivos foram alterados;
-3. quais testes passaram;
-4. warnings e riscos encontrados;
-5. o que permanece pendente;
-6. qual é o próximo gate técnico.
+1.  o que foi concluído;
+2.  quais arquivos foram alterados;
+3.  quais testes passaram;
+4.  warnings e riscos encontrados;
+5.  o que permanece pendente;
+6.  qual é o próximo gate técnico.
 
 ## Arquivos de entrada rápida
 
@@ -297,6 +302,6 @@ Ao finalizar uma tarefa, informe de forma objetiva:
 
 ## Princípio final
 
-Leia primeiro a base organizada. Investigue o repositório somente para responder
-à pergunta atual, confirmar evidência ou implementar uma mudança autorizada.
-Profundidade é desejada; repetição e análise indiscriminada não são.
+Leia primeiro a base organizada. Investigue o repositório somente para
+responder à pergunta atual, confirmar evidência ou implementar uma mudança
+autorizada. Profundidade é desejada; repetição e análise indiscriminada não são.

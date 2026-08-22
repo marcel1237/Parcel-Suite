@@ -1,4 +1,5 @@
 decision_id	decision	status	confidence	source_ids
+DEC-018	Build é transitório e toda primeira abertura usa start sem instalar no host	current	high	SRC-BUILD-RECREATE
 DEC-001	FreeBSD sys/kern não será copiado diretamente para Linux	rejected-direct-port	high	SRC-FBSD-PORTABILITY,SRC-FBSD-INTEGRATION
 DEC-002	Integrações usam equivalentes Linux ou reimplementação por APIs nativas	current	high	SRC-FBSD-INTEGRATION,SRC-PLAYOS-ARCH
 DEC-003	ULE Jails VFS mbufs locks e Newbus não são portes diretos para Linux	current	high	SRC-FBSD-PORTABILITY

@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_dir=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+build_dir="$project_dir/build"
+
+usage() {
+    cat <<'EOF'
+PlayOS — entrada segura do projeto
+
+Uso:
+  ./start                 executa a rotina de primeira abertura
+  ./start first-open      cria o layout transitório e audita o ambiente
+  ./start status          mostra fontes, ferramentas e artefatos disponíveis
+  ./start verify          valida documentação e checksums existentes
+  ./start verify-full     inclui o hash da ISO de 6,3 GB (pode demorar)
+  ./start layout          recria somente os diretórios vazios de build
+  ./start guide           mostra o manual completo de reconstrução
+
+Este comando não instala pacotes, kernels, GRUB nem altera fontes externas.
+EOF
+}
+
+layout() {
+    mkdir -p \
+        "$build_dir/playos-7.1.8/output" \
+        "$build_dir/playos-noble/output" \
+        "$build_dir/playos-noble-generic/output" \
+        "$build_dir/resolute-mvp/download" \
+        "$build_dir/resolute-mvp/gnupg" \
+        "$build_dir/resolute-mvp/output" \
+        "$build_dir/resolute-mvp/work"
+    echo "layout criado/verificado em: $build_dir"
+}
+
+show_item() {
+    label=$1
+    path=$2
+    if [ -e "$path" ]; then
+        printf 'OK       %-28s %s\n' "$label" "$path"
+    else
+        printf 'AUSENTE  %-28s %s\n' "$label" "$path"
+    fi
+}
+
+status() {
+    echo "PlayOS: auditoria de abertura"
+    echo "Projeto: $project_dir"
+    show_item "fonte Linux 7.1.8" "$project_dir/Kernels/kernel linux-7.1.8/Makefile"
+    show_item "fonte Noble 6.8.4" "$project_dir/Kernels/ubuntu 26 resolute kernel/Makefile"
+    show_item "patchset Kernel 2" "$project_dir/patch-Noble-PlayOS-Kernel-7.1.8/series"
+    show_item "manual de build" "$build_dir/RECRIAR_BUILD.md"
+    echo
+    echo "Ferramentas (presença não substitui teste de versão):"
+    for tool in bash git make gcc bc bison flex openssl pahole dracut sha256sum xorriso grub-script-check python3; do
+        if command -v "$tool" >/dev/null 2>&1; then
+            printf 'OK       %s\n' "$tool"
+        else
+            printf 'AUSENTE  %s\n' "$tool"
+        fi
+    done
+    echo
+    find "$build_dir" -type f -path '*/output/*' -printf '%s bytes  %p\n' 2>/dev/null | sort -n || true
+    echo
+    echo "Leia: $build_dir/RECRIAR_BUILD.md"
+}
+
+verify_checksums() {
+    full=${1:-no}
+    found=0
+    while IFS= read -r -d '' manifest; do
+        if [ "$full" != yes ] && [[ "$manifest" == "$build_dir/resolute-mvp/"* ]]; then
+            echo "Manifesto ISO presente; use ./start verify-full para reler a imagem grande."
+            continue
+        fi
+        found=1
+        echo "Verificando $manifest"
+        # Manifestos upstream podem listar outras arquiteturas não baixadas.
+        # Valide todos os arquivos presentes sem transformar downloads
+        # opcionais ausentes em falha falsa.
+        (cd "$(dirname "$manifest")" && sha256sum --ignore-missing -c "$(basename "$manifest")")
+    done < <(find "$build_dir" -type f -name SHA256SUMS -print0 2>/dev/null)
+    if [ "$full" = yes ] && [ -f "$build_dir/resolute-mvp/output/parcel-play-11-menu-prototype-amd64.iso" ]; then
+        echo '44a1ca2c3c239b0b87747c8372daee7d50c1a8d043644a1a5b0666516b95ec5d  build/resolute-mvp/output/parcel-play-11-menu-prototype-amd64.iso' |
+            (cd "$project_dir" && sha256sum -c -)
+        found=1
+    elif [ -f "$build_dir/resolute-mvp/output/parcel-play-11-menu-prototype-amd64.iso" ]; then
+        echo "ISO protótipo presente; use ./start verify-full para reler seus 6,3 GB."
+    fi
+    [ "$found" -eq 1 ] || echo "Nenhum artefato com checksum encontrado; esperado em clone novo."
+}
+
+verify() {
+    full=${1:-no}
+    (cd "$project_dir" && python3 supervised_learning/tools/validate_knowledge.py)
+    (cd "$project_dir" && make -C supervised_learning query-smoke)
+    if [ -f "$project_dir/documentation-portal/validate_portal.py" ]; then
+        (cd "$project_dir" && python3 documentation-portal/validate_portal.py)
+    fi
+    verify_checksums "$full"
+}
+
+first_open() {
+    layout
+    status
+    echo
+    echo "Validação local:"
+    verify
+    echo
+    echo "Primeira abertura concluída. Ausências acima são gates, não falhas ocultas."
+}
+
+case "${1:-first-open}" in
+    first-open) first_open ;;
+    status) status ;;
+    verify) verify no ;;
+    verify-full) verify yes ;;
+    layout) layout ;;
+    guide) ${PAGER:-less} "$build_dir/RECRIAR_BUILD.md" ;;
+    -h|--help|help) usage ;;
+    *) usage >&2; exit 2 ;;
+esac
