@@ -674,3 +674,11 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - `unknown`: composição pós-poda ainda não recebeu build e boot novos.
 - próximo gate: reconstruir staging a partir de baseline + overlay, comparar o
   diff resultante, compilar e inicializar em QEMU/OVMF.
+
+## [2026-08-22] - Substituição de Identidade Ubuntu para PlayOS
+- **Ação**: Criação da estratégia de branding total para a mídia e sistema básico.
+- **Implementação**: Script `scripts/build-playos-iso.sh` pronto para gerar a nova ISO com Volume ID `PlayOS-26.04-amd64`.
+- **Implementação**: Configuração GRUB `config/boot/grub-playos.cfg` com menu 100% PlayOS.
+- **Implementação**: Script de branding interno `scripts/apply-internal-branding.sh` para execução em chroot.
+- **Documentação**: Criada entrada de conhecimento `supervised_learning/knowledge/playos/iso-branding.md`.
+- **Estado**: Branding externo concluído na árvore ISO; branding interno aguardando privilégios para repacotamento SquashFS.

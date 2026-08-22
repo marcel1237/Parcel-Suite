@@ -82,3 +82,4 @@ DOC-079	patch-Noble-PlayOS-Kernel-7.1.8/README.md	playos-kernel-718	guide	curren
 DOC-080	patch-Noble-PlayOS-Kernel-7.1.8/MANIFEST.md	playos-kernel-718	manifest	current
 DOC-081	patch-Noble-PlayOS-Kernel-7.1.8/ANALISE_MIGRACAO_NOBLE_PARA_7.1.8.md	playos-kernel-718	audit	current
 DOC-082	supervised_learning/knowledge/linux/playos-kernel-7.1.8.md	playos-kernel-718	knowledge	current
+DOC-069	supervised_learning/knowledge/playos/iso-branding.md	playos	branding	current

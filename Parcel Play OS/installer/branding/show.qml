@@ -36,7 +36,7 @@ Rectangle {
                     Layout.alignment: Qt.AlignHCenter
                 }
                 Text {
-                    text: "Baseado no Ubuntu 26 com Kernel NitroCore"
+                    text: "Infraestrutura PlayOS com Kernel NitroCore"
                     color: "#3daee9"
                     font.pixelSize: 18
                     Layout.alignment: Qt.AlignHCenter

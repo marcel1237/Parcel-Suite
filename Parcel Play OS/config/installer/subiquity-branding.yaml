@@ -1,0 +1,9 @@
+# Subiquity Branding Override for PlayOS
+branding:
+  name: "PlayOS"
+  welcome: "Bem-vindo ao PlayOS 26.04"
+  slideshow:
+    - title: "Performance de Console"
+      content: "Kernel NitroCore otimizado para latência zero."
+    - title: "Compatibilidade Híbrida"
+      content: "Execute Apps de Windows, Android e Arch Linux sem esforço."
