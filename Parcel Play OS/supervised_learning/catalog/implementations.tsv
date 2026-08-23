@@ -14,3 +14,6 @@ IMP-PLAYOS-KERNEL1	PlayOS Kernel 6.8.4	kernel-patchset	patch-Linux7.1.8-Noble/	i
 IMP-PLAYOS-KERNEL2	PlayOS Kernel 7.1.8	kernel-forward-port	patch-Noble-PlayOS-Kernel-7.1.8/	implemented	series-config-build-in-progress	SRC-PLAYOS-KERNEL2-MIGRATION,SRC-LINUX718-BUILD,SRC-RESOLUTE-VERIFY
 IMP-PLAYOS-ISO-BUILD	PlayOS ISO	build-script	scripts/build-playos-iso.sh	implemented	automated-grub-and-volid	SRC-RESOLUTE-BUILD
 IMP-PLAYOS-GRUB-CFG	PlayOS Menu	config	config/boot/grub-playos.cfg	implemented	baseline-branding-replacement	SRC-RESOLUTE-BUILD
+IMP-PLAYOS-SUBIQUITY-CFG	Subiquity Branding	config	config/installer/subiquity-branding.yaml	implemented	override-config-template	SRC-RESOLUTE-BUILD
+IMP-PLAYOS-POST-INSTALL	PlayOS Metamorphosis	script	scripts/nitro-post-install.sh	implemented	automated-branding-on-target	SRC-RESOLUTE-BUILD
+IMP-PLAYOS-REBUILD-LIVE	Live CD Rebuild	script	scripts/rebuild-live-rootfs.sh	implemented	automated-squashfs-reconstruction	SRC-RESOLUTE-BUILD

@@ -10,7 +10,7 @@ Para garantir a excelência absoluta, auditamos o **Decágono de Referência (10
 - **Arch Linux, openSUSE, Fedora, FreeBSD, Debian, Gentoo, NetBSD, OpenBSD, CentOS Stream e Oracle Linux**.
 
 ### Modos de Operação:
-- **Sessão Basic**: Gnome otimizado sobre base Ubuntu 26.
+- **Sessão Basic**: Gnome otimizado sobre infraestrutura PlayOS.
 - **Sessão Full**: KDE Plasma com integração profunda ao NitroCore.
 - **Transparência Total**: Kernel independente de fabricantes e distribuições comerciais.
 

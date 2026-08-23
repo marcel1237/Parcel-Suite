@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Criar rapidamente uma primeira imagem Live amd64 do Parcel Play OS baseada no Ubuntu 26.04 LTS (Resolute), contendo:
+Criar rapidamente uma primeira imagem Live amd64 do Parcel Play OS baseada na infraestrutura PlayOS (Resolute) LTS (Resolute), contendo:
 
 - GNOME completo por meio do metapacote `ubuntu-desktop`;
 - KDE completo por meio do metapacote `kde-full`;

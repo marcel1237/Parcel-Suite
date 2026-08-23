@@ -1,0 +1,6 @@
+# Subiquity Auto-Install Hook
+# Este fragmento deve ser adicionado ao arquivo user-data da ISO.
+autoinstall:
+  version: 1
+  late-commands:
+    - curtin in-target -- target=/ bash -c "cd /cdrom/scripts && ./nitro-post-install.sh"

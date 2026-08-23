@@ -61,7 +61,7 @@ Kirigami.ApplicationWindow {
                 Layout.fillHeight: true
                 model: ListModel {
                     ListElement { name: "Visual Studio Code"; source: "Arch AUR"; icon: "com.visualstudio.code"; desc: "Editor de código vanguarda (Pacman/Yay)"; nitro: true }
-                    ListElement { name: "GIMP"; source: "Ubuntu Base"; icon: "gimp"; desc: "Editor de imagem estável (APT)"; nitro: false }
+                    ListElement { name: "GIMP"; source: "PlayOS Base"; icon: "gimp"; desc: "Experiência estável via repositório PlayOS"; nitro: false }
                     ListElement { name: "Steam"; source: "Parcel Games"; icon: "steam"; desc: "Plataforma de jogos otimizada para NitroCore"; nitro: true }
                     ListElement { name: "LibreOffice"; source: "Flathub"; icon: "libreoffice-main"; desc: "Suíte de escritório em sandbox (Flatpak)"; nitro: false }
                 }

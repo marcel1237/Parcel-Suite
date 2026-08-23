@@ -682,3 +682,78 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Implementação**: Script de branding interno `scripts/apply-internal-branding.sh` para execução em chroot.
 - **Documentação**: Criada entrada de conhecimento `supervised_learning/knowledge/playos/iso-branding.md`.
 - **Estado**: Branding externo concluído na árvore ISO; branding interno aguardando privilégios para repacotamento SquashFS.
+
+## [2026-08-22] - Integração de Branding no Instalador Visual
+- **Ação**: Atualização da identidade visual nos instaladores Calamares e Subiquity.
+- **Implementação**: Slideshow Calamares (`show.qml`) atualizado para focar na marca PlayOS.
+- **Implementação**: Configuração de fontes do Subiquity (`install-sources.yaml`) modificada para exibir "PlayOS Desktop".
+- **Implementação**: Criado template de branding para Subiquity em `config/installer/subiquity-branding.yaml`.
+- **Documentação**: Criado dossiê `INTEGRACAO_INSTALADOR_BRANDING.md`.
+
+## [2026-08-22] - Planejamento de Assets e Limpeza de Branding
+- **Ação**: Identificação de caminhos de ativos visuais (ícones, wallpapers) para substituição futura no RootFS.
+- **Implementação**: Criado dossiê `supervised_learning/knowledge/playos/asset-identity.md`.
+- **Implementação**: Atualizados mockups de UI (`SoftwareCenter.qml` e `View.qml`) para utilizar `playos-logo` em vez de ícones do Ubuntu.
+- **Implementação**: Revisados documentos estratégicos (`COMPATIBILIDADE_UNIVERSAL.md`, `LIVE_CD_RESOLUTE.md`) para priorizar o nome PlayOS como identidade do sistema.
+
+## [2026-08-22] - Implementação da Autotransformação (Pós-Instalação)
+- **Ação**: Criação de um fluxo automatizado para aplicar o branding PlayOS no sistema final após a instalação.
+- **Implementação**: Script `scripts/inject-visual-assets.sh` para troca de logos e ícones no sistema alvo.
+- **Implementação**: Script orquestrador `scripts/nitro-post-install.sh` que roda no final da instalação (`late-commands`).
+- **Implementação**: Arquivo de configuração `config/installer/post-install-hooks.yaml` para integração com o instalador Subiquity.
+- **Documentação**: Novo dossiê estratégico `supervised_learning/knowledge/playos/auto-metamorphosis.md`.
+- **Estado**: Estratégia "Metamorfose" implementada e pronta para teste na ISO.
+
+## [2026-08-22] - Identidade Completa do Live CD
+- **Ação**: Implementação de ferramentas para garantir que o ambiente Live (antes da instalação) exiba a marca PlayOS.
+- **Implementação**: Script `scripts/rebuild-live-rootfs.sh` para reconstrução do SquashFS com branding interno.
+- **Implementação**: Atualização dos metadados de Release em `dists/resolute/Release` (Origin, Label e Suite alterados para PlayOS).
+- **Estado**: O Live CD agora está pronto para transição total. A execução do script de reconstrução exige `sudo`.
+
+## [2026-08-22] - Suporte a Wallpaper e Logos Customizados
+- **Ação**: Automatização da substituição do papel de parede e logos do Ubuntu pelo PlayOS na sessão Live.
+- **Implementação**: Script `scripts/apply-internal-branding.sh` atualizado para configurar o GNOME para usar `/usr/share/backgrounds/playos/default-dark.jpg`.
+- **Implementação**: Script `scripts/rebuild-live-rootfs.sh` atualizado para injetar automaticamente arquivos do diretório `assets/` para o RootFS.
+- **Estado**: Pronto para injeção de ativos. O usuário deve colocar `wallpaper.jpg` e `logo.svg` na pasta `assets/` do projeto.
+
+## [2026-08-22] - Script Mestre de Construção (Orquestrador)
+- **Ação**: Criação de um script único para automatizar todo o processo de branding e geração de ISO.
+- **Implementação**: Script `scripts/master-build-playos.sh` que une a reconstrução do RootFS à geração da ISO.
+- **Diferencial**: O script realiza checagem de dependências e avisa sobre a ausência de ativos em `assets/`.
+- **Estado**: Processo de build totalmente automatizado em um comando único.
+
+## [2026-08-22] - Expansão de Branding Visual e Documentação Master
+- **Ação**: Refinamento da substituição de marca para atingir Splash de Boot (Plymouth) e Wallpaper padrão.
+- **Implementação**: Script `scripts/inject-visual-assets.sh` atualizado para v1.1.0, com busca agressiva de arquivos de imagem do Ubuntu.
+- **Documentação**: Criado o guia completo `build/manuals/ISO_CREATION_GUIDE.md`.
+- **Estado**: O sistema agora é capaz de apagar rastros visuais do Ubuntu no RootFS durante a reconstrução.
+
+## [2026-08-22] - Customização do Terminal Neon e Versão v1.1.0 do Build
+- **Ação**: Implementação do prompt de comando customizado com cores neon.
+- **Implementação**: Script `scripts/apply-internal-branding.sh` atualizado para v1.2.0.
+- **Detalhe Visual**: O terminal exibirá `nitro@playos:~$ ` com cores verde (nitro) e ciano (playos).
+- **Implementação**: Script mestre `master-build-playos.sh` atualizado para v1.1.0, unificando todas as novas proteções e visual.
+- **Estado**: Identidade de terminal integrada ao fluxo de reconstrução do RootFS.
+
+## [2026-08-22] - Banner MOTD em ASCII e Identidade de Login
+- **Ação**: Criação de um banner de boas-vindas em ASCII Art para o terminal.
+- **Implementação**: Script `scripts/apply-internal-branding.sh` atualizado para v1.3.0.
+- **Detalhe Visual**: O banner "PlayOS" em cores neon verde e ciano aparecerá em todo login de terminal.
+- **Refinamento**: Desativação do texto de ajuda padrão do Ubuntu (`10-help-text`) para uma experiência mais limpa.
+- **Versão**: Build Master elevada para v1.2.0.
+
+## [2026-08-22] - Consolidação Monolítica: PlayOS Ultimate Builder
+- **Ação**: União de todos os scripts de branding, transformação de RootFS e geração de ISO em um único utilitário.
+- **Implementação**: Script `scripts/ultimate-playos-builder.sh` (v1.0.0).
+- **Recursos Integrados**:
+    - Extração e Repacotamento de SquashFS (ZSTD).
+    - Metamorfose interna via `chroot` (os-release, hostname, MOTD).
+    - Injeção agressiva de ativos visuais (Wallpaper Warty, ícones Yaru/Hicolor).
+    - Terminal Neon automático (`nitro@playos`).
+    - Geração de ISO com Replay de Boot (BIOS/UEFI compatível com original).
+- **Estado**: Ferramenta de build definitiva concluída.
+
+## [2026-08-22] - Documentação Mestre da ISO Concluída
+- **Ação**: Consolidação de todo o conhecimento de build no guia `build/manuals/PLAYOS_ISO_MASTER_GUIDE.md`.
+- **Conteúdo**: Instruções de branding, fluxo técnico do Builder e guia de solução de problemas.
+- **Estado**: Documentação de engenharia de mídia concluída em 100%.

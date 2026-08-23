@@ -41,7 +41,7 @@ View {
                     anchors.margins: 20
 
                     Kirigami.Icon {
-                        source: "distributor-logo-ubuntu"
+                        source: "playos-logo"
                         Layout.preferredWidth: 80
                         Layout.preferredHeight: 80
                         Layout.alignment: Qt.AlignHCenter

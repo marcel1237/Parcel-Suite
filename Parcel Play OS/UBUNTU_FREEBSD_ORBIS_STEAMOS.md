@@ -2,7 +2,7 @@
 
 Este documento detalha como o **Parcel Play OS** unifica as quatro maiores potências tecnológicas do mundo Unix e Linux para criar o sistema operacional definitivo de entretenimento e produtividade.
 
-## 1. Ubuntu 26/27 (A Infraestrutura e o Ecossistema)
+## 1. PlayOS 26/27 (A Infraestrutura e o Ecossistema)
 O Ubuntu fornece a base sólida e o vasto repositório de aplicativos.
 - **Papel**: User-space (APT/Snap), suporte a drivers de usuário e estabilidade comercial.
 - **DNA Parcel**: Herdamos a estrutura de empacotamento (`debian.master/`) para garantir que o NitroCore seja 100% compatível com a base mais popular do mundo.

@@ -25,7 +25,7 @@ Quando todos os componentes estiverem implementados, o menu poderá oferecer
 
 ### Configuração de Menu:
 
-- **Opção padrão durante o desenvolvimento**: **Ubuntu Oficial**.
+- **Opção padrão durante o desenvolvimento**: **PlayOS Baseline**.
   - *Razão*: É o único kernel já integrado ao Resolute e serve como baseline e
     recuperação.
 - **Opções Linux planejadas**: Arch, Fedora, openSUSE, Gentoo, Debian, CentOS e
@@ -64,7 +64,7 @@ Cada `menuentry` deve carregar explicitamente o kernel e o initrd
 correspondentes. Exemplo conceitual:
 
 ```grub
-menuentry "Parcel Play OS — Ubuntu Oficial" {
+menuentry "Parcel Play OS — PlayOS Baseline" {
     linux /casper/vmlinuz-ubuntu boot=casper quiet splash parcel.kernel=ubuntu
     initrd /casper/initrd-ubuntu
 }
@@ -83,7 +83,7 @@ O boot do Parcel Play OS é dividido em estágios de alta performance:
 
 ### Estágio 1: Kernel de Gênese
 
-- Boot do kernel escolhido no GRUB; durante o MVP, somente o Ubuntu Oficial
+- Boot do kernel escolhido no GRUB; durante o MVP, somente o PlayOS Baseline
   estará disponível.
 
 ### Estágio 2: Dark Volt (Early UI)
