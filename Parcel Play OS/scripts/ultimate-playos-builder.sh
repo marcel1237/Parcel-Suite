@@ -41,9 +41,9 @@ if ! command -v xorriso >/dev/null || ! command -v mksquashfs >/dev/null || ! co
     exit 1
 fi
 
-if [ ! -f "$ASSETS/wallpaper.jpg" ] || [ ! -f "$ASSETS/logo.svg" ] || [ ! -f "$ASSETS/logo.png" ]; then
+if [ ! -f "$ASSETS/playos-wallpaper.png" ] || [ ! -f "$ASSETS/logo.svg" ] || [ ! -f "$ASSETS/logo.png" ]; then
     echo -e "${RED}ERRO: Ativos vitais ausentes em 'assets/'.${NC}"
-    echo "Certifique-se de que wallpaper.jpg, logo.svg e logo.png estão presentes."
+    echo "Certifique-se de que playos-wallpaper.png, logo.svg e logo.png estão presentes."
     exit 1
 fi
 
@@ -128,10 +128,10 @@ CHROOT_EOF
 # Branding Visual Interno (Wallpaper/Logos)
 echo "Injetando papéis de parede e logotipos..."
 sudo mkdir -p "$ROOTFS/usr/share/backgrounds/playos"
-sudo cp "$ASSETS/wallpaper.jpg" "$ROOTFS/usr/share/backgrounds/playos/default.jpg"
+sudo cp "$ASSETS/playos-wallpaper.png" "$ROOTFS/usr/share/backgrounds/playos/default.png"
 
 # Sobrescrever wallpapers teimosos do Ubuntu
-sudo find "$ROOTFS/usr/share/backgrounds" -type f \( -name "*ubuntu*" -o -name "*raccoon*" -o -name "warty*" \) -exec cp "$ASSETS/wallpaper.jpg" {} \;
+sudo find "$ROOTFS/usr/share/backgrounds" -type f \( -name "*ubuntu*" -o -name "*raccoon*" -o -name "warty*" \) -exec cp "$ASSETS/playos-wallpaper.png" {} \;
 
 # Ícones de sistema
 sudo find "$ROOTFS/usr/share/icons/hicolor" -name "distributor-logo-ubuntu*" -exec cp "$ASSETS/logo.svg" {} \;
@@ -140,10 +140,10 @@ sudo find "$ROOTFS/usr/share/icons/hicolor" -name "distributor-logo-ubuntu*" -ex
 sudo mkdir -p "$ROOTFS/usr/share/glib-2.0/schemas"
 sudo cat <<G_EOF > "$ROOTFS/usr/share/glib-2.0/schemas/99_playos-branding.gschema.override"
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/playos/default.jpg'
-picture-uri-dark='file:///usr/share/backgrounds/playos/default.jpg'
+picture-uri='file:///usr/share/backgrounds/playos/default.png'
+picture-uri-dark='file:///usr/share/backgrounds/playos/default.png'
 [org.gnome.desktop.screensaver]
-picture-uri='file:///usr/share/backgrounds/playos/default.jpg'
+picture-uri='file:///usr/share/backgrounds/playos/default.png'
 G_EOF
 sudo chroot "$ROOTFS" glib-compile-schemas /usr/share/glib-2.0/schemas/
 

@@ -22,9 +22,9 @@ if ! command -v xorriso >/dev/null || ! command -v mksquashfs >/dev/null; then
     exit 1
 fi
 
-if [ ! -f "$ASSETS_DIR/wallpaper.jpg" ] || [ ! -f "$ASSETS_DIR/logo.svg" ]; then
+if [ ! -f "$ASSETS_DIR/playos-wallpaper.png" ] || [ ! -f "$ASSETS_DIR/logo.svg" ]; then
     echo "AVISO: Arquivos em 'assets/' incompletos."
-    echo "Necessário: wallpaper.jpg, logo.svg e logo.png para branding total."
+    echo "Necessário: playos-wallpaper.png, logo.svg e logo.png para branding total."
     sleep 1
 fi
 

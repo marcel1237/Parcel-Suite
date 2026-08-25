@@ -26,7 +26,7 @@ fi
 # 2. Gerar Placeholders para PNG e JPG 
 # Se o ImageMagick estiver instalado, ele gera imagens reais. 
 # Caso contrário, ele busca uma imagem do sistema para usar como base.
-if [ ! -f "$ASSETS_DIR/logo.png" ] || [ ! -f "$ASSETS_DIR/wallpaper.jpg" ]; then
+if [ ! -f "$ASSETS_DIR/logo.png" ] || [ ! -f "$ASSETS_DIR/playos-wallpaper.png" ]; then
     echo "Buscando imagens de sistema para usar como placeholders..."
     
     # Tenta achar o logo do Ubuntu para copiar como base (se não houver um PlayOS real)
@@ -34,11 +34,11 @@ if [ ! -f "$ASSETS_DIR/logo.png" ] || [ ! -f "$ASSETS_DIR/wallpaper.jpg" ]; then
     SYS_WALLPAPER="/usr/share/backgrounds/warty-final-ubuntu.png"
 
     [ -f "$SYS_LOGO" ] && cp "$SYS_LOGO" "$ASSETS_DIR/logo.png"
-    [ -f "$SYS_WALLPAPER" ] && cp "$SYS_WALLPAPER" "$ASSETS_DIR/wallpaper.jpg"
+    [ -f "$SYS_WALLPAPER" ] && cp "$SYS_WALLPAPER" "$ASSETS_DIR/playos-wallpaper.png"
     
     # Se ainda assim não existirem (em sistemas mínimos), cria arquivos vazios para passar na checagem
     [ ! -f "$ASSETS_DIR/logo.png" ] && touch "$ASSETS_DIR/logo.png"
-    [ ! -f "$ASSETS_DIR/wallpaper.jpg" ] && touch "$ASSETS_DIR/wallpaper.jpg"
+    [ ! -f "$ASSETS_DIR/playos-wallpaper.png" ] && touch "$ASSETS_DIR/playos-wallpaper.png"
 fi
 
 echo -e "${GREEN}>> [Sucesso] Ativos preparados em: $ASSETS_DIR/${NC}"

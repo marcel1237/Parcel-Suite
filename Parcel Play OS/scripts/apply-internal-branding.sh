@@ -49,12 +49,12 @@ echo ">> [UI] Ajustando preferências visuais do sistema..."
 mkdir -p /usr/share/glib-2.0/schemas/
 cat <<G_EOF > /usr/share/glib-2.0/schemas/99_playos-settings.gschema.override
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/playos/default.jpg'
-picture-uri-dark='file:///usr/share/backgrounds/playos/default.jpg'
+picture-uri='file:///usr/share/backgrounds/playos/default.png'
+picture-uri-dark='file:///usr/share/backgrounds/playos/default.png'
 primary-color='#232629'
 
 [org.gnome.desktop.screensaver]
-picture-uri='file:///usr/share/backgrounds/playos/default.jpg'
+picture-uri='file:///usr/share/backgrounds/playos/default.png'
 
 [org.gnome.shell.extensions.dash-to-dock]
 background-opacity=0.4

@@ -9,11 +9,11 @@ echo 'DISTRIB_ID=PlayOS' >> /etc/default/distro
 if [ -d "/usr/share/glib-2.0/schemas" ]; then
     cat <<G_EOF > /usr/share/glib-2.0/schemas/10_playos-branding.gschema.override
 [org.gnome.desktop.background]
-picture-uri='file:///usr/share/backgrounds/playos/default.jpg'
-picture-uri-dark='file:///usr/share/backgrounds/playos/default.jpg'
+picture-uri='file:///usr/share/backgrounds/playos/default.png'
+picture-uri-dark='file:///usr/share/backgrounds/playos/default.png'
 
 [org.gnome.desktop.screensaver]
-picture-uri='file:///usr/share/backgrounds/playos/default.jpg'
+picture-uri='file:///usr/share/backgrounds/playos/default.png'
 G_EOF
     glib-compile-schemas /usr/share/glib-2.0/schemas/
 fi

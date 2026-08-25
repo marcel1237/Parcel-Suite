@@ -24,10 +24,10 @@ sudo unsquashfs -d "$ROOTFS" "$SQUASHFS_FILE"
 
 # 3. Injetar Ativos Físicos (Wallpapers e Logos)
 echo "Injetando ativos visuais do diretório assets/..."
-if [ -f "$ASSETS/wallpaper.jpg" ]; then
+if [ -f "$ASSETS/playos-wallpaper.png" ]; then
     echo ">> Injetando Wallpaper PlayOS..."
     sudo mkdir -p "$ROOTFS/usr/share/backgrounds/playos"
-    sudo cp "$ASSETS/wallpaper.jpg" "$ROOTFS/usr/share/backgrounds/playos/default-dark.jpg"
+    sudo cp "$ASSETS/playos-wallpaper.png" "$ROOTFS/usr/share/backgrounds/playos/default.png"
 fi
 
 if [ -f "$ASSETS/logo.svg" ]; then
