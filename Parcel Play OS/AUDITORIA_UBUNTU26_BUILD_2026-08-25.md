@@ -5,6 +5,11 @@
 - tamanho observado: aproximadamente 49 MiB
 - modo da auditoria: somente leitura
 - conclusão: coleção de fontes upstream; não é um build concluído nem a fonte direta da ISO atual
+> **Retificação após execução real:** foi encontrado um perfil PlayOS local não
+> versionado e `auto/config` modificado. O LXD via Snap funciona com acesso
+> elevado e chegou ao Germinate; o build parou por HTTP 503 no servidor de
+> seeds. Consulte `AVALIACAO_METODO_LIVECD_ROOTFS_PLAYOS_2026-08-25.md`.
+
 
 ## 1. Objetivo desta auditoria
 

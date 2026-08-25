@@ -1,0 +1,13 @@
+Source: playos-artwork
+Section: misc
+Priority: optional
+Maintainer: Marcel <marcel@parcelplay.os>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+
+Package: playos-artwork
+Architecture: all
+Depends: ${misc:Depends}, libglib2.0-bin
+Description: Branding assets for PlayOS
+ This package provides the visual identity for PlayOS, including
+ high-resolution wallpapers, logos, and interface overrides.

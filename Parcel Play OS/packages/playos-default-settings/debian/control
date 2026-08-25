@@ -1,0 +1,13 @@
+Source: playos-default-settings
+Section: misc
+Priority: optional
+Maintainer: Marcel <marcel@parcelplay.os>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+
+Package: playos-default-settings
+Architecture: all
+Depends: ${misc:Depends}
+Description: Default settings and performance tuning for PlayOS
+ This package provides the core system configuration for PlayOS,
+ including sysctl optimizations for gaming and OS identity files.
