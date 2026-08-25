@@ -231,3 +231,63 @@ Requisitos:
 decidir criar uma edição imutável baseada em snaps. Isso implica outro modelo
 de atualização, recuperação, armazenamento e instalação. Esses componentes não
 são necessários para corrigir a ISO clássica atual.
+
+## 10. Riscos
+
+1. **Versão incorreta:** `livecd-rootfs` local é 26.10.5, não uma revisão
+   comprovadamente fixada ao Resolute 26.04.
+2. **Build não reproduzível:** não há snapshot APT, lock de fontes nem manifesto
+   do ambiente.
+3. **Pipeline incompleto:** faltam dependências e subprojetos essenciais.
+4. **Mistura de produtos:** Ubuntu Core Desktop não é equivalente ao desktop
+   clássico da mídia atual.
+5. **Upstream móvel:** branches `main` e `ubuntu/master` podem mudar.
+6. **Privilégios:** builds diretos usam mount, chroot e instalação de
+   dependências; o caminho LXD é mais seguro.
+7. **Sem evidência de execução:** não há logs ou outputs que validem o conjunto.
+
+## 11. Plano de adoção
+
+### Fase 1 — congelar a base
+
+- selecionar oficialmente a base Resolute;
+- recuperar a ISO e validar o checksum;
+- identificar as revisões de ferramentas correspondentes;
+- registrar tudo num manifesto versionado.
+
+### Fase 2 — preparar ambiente isolado
+
+- instalar e configurar LXD ou uma VM de build;
+- configurar mirror/snapshot e cache APT;
+- completar dependências de `ubuntu-cdimage`;
+- executar primeiro `ubuntu-test-iso` para validar o ambiente.
+
+### Fase 3 — integrar PlayOS
+
+- criar overlays e hooks fora das árvores upstream;
+- aplicar identidade, wallpaper e dconf antes das camadas finais;
+- introduzir pacotes PlayOS de forma versionada;
+- integrar o kernel 7.1.8 somente depois de o build oficial ser reproduzível.
+
+### Fase 4 — validação
+
+- validar checksums e conteúdo das camadas;
+- testar BIOS e UEFI;
+- testar sessão Live clara e escura;
+- testar instalação e primeiro boot;
+- validar fallback do kernel;
+- registrar logs e hashes no diretório `build/` descartável.
+
+## 12. Veredito
+
+O diretório é importante e aponta para a direção correta de longo prazo, pois
+permite abandonar o remaster manual de uma `iso-tree` mutável. No estado atual,
+porém, ele é apenas uma coleção limpa e incompleta de fontes upstream.
+
+Classificação de uso atual: **referência/planejamento**.
+
+Classificação de uso recomendado: **base do futuro pipeline reproduzível da ISO
+clássica**, usando principalmente `livecd-rootfs` e `ubuntu-cdimage`.
+
+Classificação de `core-base-desktop` e `ubuntu-core-desktop-24`: **pesquisa para
+uma possível edição imutável futura**, fora do escopo imediato da ISO atual.
