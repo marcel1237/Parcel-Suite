@@ -24,3 +24,6 @@ DEC-022	PlayOS Graphics Platform será um produto único instalável com compone
 DEC-023	Inicialização PlayOS será validada em camadas com X11 como fallback gráfico	current	high	SRC-GRAPHICS-PLATFORM-BOOT,SRC-GRAPHICS-UNIFIED-PRODUCT
 DEC-024	Catálogo freedesktop orientará funções mas pacotes PlayOS serão selecionados por core standard e perfis	current	high	SRC-FREEDESKTOP-SOFTWARE-ANALYSIS,SRC-GRAPHICS-UNIFIED-PRODUCT
 DEC-025	PlayOS oferecerá XFCE GNOME e KDE Plasma sobre uma base compartilhada com somente um display manager ativo	current	high	SRC-PLAYOS-MULTI-DESKTOP,SRC-PLAYOS-DESKTOP-COMPONENTS-MANUAL
+DEC-026	Kernel gráfico PlayOS não conterá XFCE GNOME KDE nem servidores gráficos userspace	current	high	SRC-PLAYOS-GRAPHICS-KERNEL-NODE,SRC-GRAPHICS-STACK
+DEC-027	PlayOS Graphics Core reunirá todos os componentes não-desktop sem depender de GNOME KDE ou XFCE	current	high	SRC-PLAYOS-GRAPHICS-CORE-NODE,SRC-PLAYOS-GRAPHICS-KERNEL-NODE
+DEC-028	Vulkan fará parte do Graphics Core como runtime userspace sobre DRM Mesa X11 e Wayland	current	high	SRC-PLAYOS-VULKAN,SRC-PLAYOS-GRAPHICS-CORE-NODE

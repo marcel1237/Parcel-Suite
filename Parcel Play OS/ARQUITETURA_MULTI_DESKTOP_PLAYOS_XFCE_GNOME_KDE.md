@@ -8,6 +8,11 @@
 - **Desktops previstos:** XFCE, GNOME e KDE Plasma.
 - **Implementação e runtime:** ainda não realizados por este documento.
 
+> **Separação posterior:** XFCE, GNOME e KDE Plasma não fazem parte do kernel
+> gráfico PlayOS. Este documento descreve desktops opcionais instalados acima de
+> `linux-playos-graphics` e `playos-graphics-core`. A especificação canônica do
+> kernel sem desktops está em `KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md`.
+
 Este documento amplia o PlayOS Graphics Platform. A base de kernel, serviços,
 gráficos, entrada, fontes, áudio e padrões XDG será compartilhada. Cada desktop
 terá pacote, sessão, compositor, portal e integração próprios.

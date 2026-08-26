@@ -31,6 +31,9 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Software freedesktop.org necessário ao PlayOS](../ANALISE_SOFTWARE_FREEDESKTOP_PLAYOS_GRAPHICS_PLATFORM_2026-08-26.md)
 - [Manual dos componentes-base do desktop PlayOS](../MANUAL_COMPONENTES_BASE_PLAYOS_DESKTOP.md)
 - [Arquitetura multi-desktop XFCE, GNOME e KDE Plasma](../ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md)
+- [Kernel gráfico PlayOS sem desktops](../KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md)
+- [PlayOS Graphics Core completo sem desktops](../PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md)
+- [Vulkan no PlayOS Graphics Core](../VULKAN_NO_PLAYOS_GRAPHICS_CORE.md)
 
 ## Catálogos
 

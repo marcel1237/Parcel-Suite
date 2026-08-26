@@ -6,6 +6,10 @@
 > `ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md`; os limites entre kernel
 > e userspace definidos aqui continuam válidos.
 
+> **Kernel sem desktop:** a definição atual de `linux-playos-graphics` exclui
+> XFCE, GNOME, KDE e todo servidor/compositor userspace. Consulte
+> `KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md`.
+
 - ID: `PLAYOS-GRAPHICS-STACK-001`
 - tipo: `architecture-analysis`
 - estado: proposta; não implementada; não compilada; não testada

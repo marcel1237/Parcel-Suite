@@ -100,3 +100,6 @@ DOC-091	INICIALIZACAO_PLAYOS_GRAPHICS_PLATFORM.md	playos	graphics-platform-boot	
 DOC-092	ANALISE_SOFTWARE_FREEDESKTOP_PLAYOS_GRAPHICS_PLATFORM_2026-08-26.md	playos	freedesktop-software-analysis	current
 DOC-093	MANUAL_COMPONENTES_BASE_PLAYOS_DESKTOP.md	playos	desktop-base-components-manual	current
 DOC-094	ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md	playos	multi-desktop-architecture	current
+DOC-095	KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md	kernels	graphics-kernel-without-desktops	current
+DOC-096	PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md	playos	graphics-core-without-desktops	current
+DOC-097	VULKAN_NO_PLAYOS_GRAPHICS_CORE.md	playos	vulkan-graphics-core	current

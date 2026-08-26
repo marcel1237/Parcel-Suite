@@ -858,3 +858,33 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Login**: LightDM, GDM e SDDM foram analisados, mas somente um poderá estar ativo por imagem.
 - **Conflitos tratados**: portals, agentes polkit, daemons de configuração, notificações, keyrings e aplicações duplicadas.
 - **Estado**: arquitetura e matriz de testes M0–M11 documentadas; pacotes, tamanhos, display manager final, ISO e runtime pendentes.
+
+## [2026-08-26] - Kernel gráfico PlayOS sem desktops
+
+- **Documento**: `KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md`.
+- **Decisão**: XFCE, GNOME e KDE Plasma são retirados do conceito e do pacote do kernel gráfico.
+- **Conteúdo do kernel**: DRM/KMS, drivers de GPU, dma-buf, sincronização, input, console, firmware loader e infraestrutura de hardware.
+- **Fora do kernel**: Mesa/libdrm, Xorg, Wayland, Xwayland, compositores, display managers, desktops e PipeWire.
+- **Empacotamento**: kernel e módulos próprios; `playos-graphics-core` userspace separado; desktops opcionais dependem da base, nunca o contrário.
+- **Validação**: definidos gates KG0–KG11 e uma Live ISO técnica que inicializa até console sem desktop.
+- **Estado**: arquitetura documentada; configuração, build, pacotes, VM, ISO e hardware permanecem pendentes.
+
+## [2026-08-26] - Graphics Core completo sem GNOME, KDE ou XFCE
+
+- **Documento**: `PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md`.
+- **Restauração**: systemd/logind, D-Bus, polkit, rede, energia, discos, XDG, Mesa, input, fontes, Xorg, Wayland, Xwayland, Labwc, LightDM, ALSA, PipeWire e WirePlumber voltam ao produto.
+- **Exclusão**: GNOME, KDE Plasma e XFCE, com seus shells, compositores e display managers específicos, não entram na composição.
+- **Fronteira**: somente DRM/KMS, drivers e mecanismos de hardware ficam no kernel; demais itens são reunidos pelo metapacote userspace `playos-graphics-core`.
+- **Sessões**: X11 técnica e Wayland/Labwc básica, sem ambiente de desktop.
+- **ISO**: definida edição Graphics Core para validar toda a pilha antes de instalar um desktop opcional.
+- **Estado**: arquitetura GC0 documentada; resolução APT, pacotes, boot, sessões, ISO e hardware permanecem pendentes.
+
+## [2026-08-26] - Vulkan no PlayOS Graphics Core
+
+- **Documento**: `VULKAN_NO_PLAYOS_GRAPHICS_CORE.md`.
+- **Integração**: loader Vulkan, ICDs Mesa e WSI para X11/XCB e Wayland/Labwc passam a integrar o Graphics Core.
+- **Drivers**: ANV, RADV, NVK quando disponível, lavapipe e perfis de virtualização serão resolvidos contra a versão real do Mesa.
+- **Pacotes**: separados runtime, ferramentas, desenvolvimento/validation layers e futuro perfil multiarch 32-bit.
+- **Diagnóstico**: definidos comandos `playos-graphicsctl vulkan`, manifesto de dispositivo, WSI, driver e hardware/software.
+- **Validação**: gates VK0–VK12 cobrem loader, ICDs, GPUs, X11, Wayland, Xwayland, suspensão, ISO e 32-bit.
+- **Estado**: Vulkan documentado e aprovado na arquitetura; instalação, testes e runtime permanecem pendentes.

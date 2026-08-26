@@ -11,6 +11,19 @@
 - **Validação:** nomes e versões exatos dos pacotes ainda precisam ser resolvidos
   no repositório APT usado pelo build.
 
+> **Fronteira do kernel:** XFCE, GNOME e KDE Plasma foram retirados do conceito
+> de kernel gráfico. Este manual descreve serviços e userspace que podem ser
+> instalados sobre ele. O kernel independente está especificado em
+> `KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md`.
+
+> **Graphics Core vigente:** todos os componentes comuns deste manual voltam à
+> composição instalável, exceto GNOME, KDE Plasma e XFCE. Consulte
+> `PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md`.
+
+> **Vulkan:** o Graphics Core inclui loader e drivers Vulkan userspace sobre
+> DRM/Mesa, com WSI X11 e Wayland. Consulte
+> `VULKAN_NO_PLAYOS_GRAPHICS_CORE.md`.
+
 Este manual documenta o uso no PlayOS de:
 
 ```text

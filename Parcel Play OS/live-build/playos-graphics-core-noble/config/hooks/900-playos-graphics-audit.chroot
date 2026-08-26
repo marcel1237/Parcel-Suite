@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+audit=/usr/share/playos/graphics-core-build-audit.txt
+mkdir -p /usr/share/playos
+
+{
+  echo 'PlayOS Graphics Core build audit'
+  echo 'desktop_environment=none'
+  echo 'forbidden packages:'
+  dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E '^(ubuntu-desktop|kubuntu-desktop|xubuntu-desktop|gnome-shell|plasma-desktop|xfce4)(:|$)' || true
+  echo 'required packages:'
+  dpkg-query -W -f='${binary:Package}\t${Version}\n' systemd dbus policykit-1 network-manager upower udisks2 libdrm2 mesa-vulkan-drivers libvulkan1 xserver-xorg xwayland labwc lightdm pipewire wireplumber
+} > "$audit"

@@ -7,6 +7,15 @@
 - **Produto proposto:** `playos-graphics-platform`.
 - **Implementação, build, ISO e boot:** ainda não realizados.
 
+> **Revisão de arquitetura:** este documento descreve a plataforma integrada de
+> distribuição. O artefato `linux-playos-graphics` não inclui XFCE, GNOME nem
+> KDE, e tampouco inclui servidores/compositores userspace. Consulte
+> `KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md`.
+
+> **Produto sem desktops:** a composição integrada atual reúne todos os
+> componentes gráficos e de serviços, mas não depende de GNOME, KDE Plasma ou
+> XFCE. Consulte `PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md`.
+
 Este documento define como entregar como **um único produto**: Ubuntu Noble e
 kernel PlayOS, X11/Xorg, Wayland/Xwayland e os desktops XFCE, GNOME e KDE
 Plasma. Labwc atende o laboratório Wayland do XFCE; GNOME usa Mutter e Plasma
@@ -385,6 +394,8 @@ Até lá: **produto especificado, ainda não implementado**.
 - `ANALISE_SOFTWARE_FREEDESKTOP_PLAYOS_GRAPHICS_PLATFORM_2026-08-26.md`.
 - `MANUAL_COMPONENTES_BASE_PLAYOS_DESKTOP.md`.
 - `ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md`.
+- `KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md`.
+- `PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md`.
 
 A unificação ocorre em empacotamento, identidade, configuração, diagnóstico,
 testes e suporte — nunca pela fusão incorreta das camadas no kernel.

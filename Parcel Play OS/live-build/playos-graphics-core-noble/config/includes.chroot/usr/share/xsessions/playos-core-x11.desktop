@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=PlayOS Core X11 (Technical)
+Comment=Minimal PlayOS X11 session without a desktop environment
+Exec=/usr/local/bin/playos-core-x11-session
+TryExec=/usr/local/bin/playos-core-x11-session
+Type=Application
+DesktopNames=PlayOS;
