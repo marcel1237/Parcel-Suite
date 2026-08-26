@@ -20,6 +20,13 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Decisões e estado real do PlayOS](knowledge/playos/decisions-status.md)
 - [Builds e evidências Linux](knowledge/linux/build-evidence.md)
 - [PlayOS Kernel 7.1.8 com perfil Noble](knowledge/linux/playos-kernel-7.1.8.md)
+- [Live ISO mínima Resolute + XFCE e estudo Knoppix](../LIVE_CD_RESOLUTE_XFCE_MINIMAL_KNOPPIX.md)
+- [Auditoria da fonte local escolhida para a Live XFCE](../AUDITORIA_KERNEL_LOCAL_LIVE_RESOLUTE_XFCE_2026-08-26.md)
+- [Comparação Fedora/Knoppix e procedimento Live XFCE](../COMPARACAO_FEDORA_KNOPPIX_LIVE_XFCE_KERNEL_LOCAL_2026-08-26.md)
+- [PlayOS Graphics Kernel Stack: X11 e Wayland integrados](../ARQUITETURA_PLAYOS_GRAPHICS_KERNEL_STACK_2026-08-26.md)
+- [Manual completo do PlayOS Graphics Kernel Stack](../MANUAL_PLAYOS_GRAPHICS_KERNEL_STACK_X11_WAYLAND.md)
+- [Medição de tamanho Noble + X11 + Wayland + XFCE](../MEDICAO_TAMANHO_ISO_NOBLE_X11_WAYLAND_XFCE_2026-08-26.md)
+- [Produto único PlayOS Graphics Platform](../PROJETO_SOFTWARE_UNICO_PLAYOS_GRAPHICS_PLATFORM.md)
 
 ## Catálogos
 

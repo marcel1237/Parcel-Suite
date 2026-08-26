@@ -89,3 +89,10 @@ DOC-072	build/manuals/RECONSTRUCAO_ROOTFS_BRANDING.md	build	manual-branding	curr
 DOC-073	supervised_learning/knowledge/playos/auto-metamorphosis.md	playos	auto-branding	current
 DOC-074	build/manuals/ISO_CREATION_GUIDE.md	build	iso-creation-master-guide	current
 DOC-075	build/manuals/PLAYOS_ISO_MASTER_GUIDE.md	build	iso-creation-definitive-guide	current
+DOC-084	LIVE_CD_RESOLUTE_XFCE_MINIMAL_KNOPPIX.md	playos	live-iso-xfce-analysis	current
+DOC-085	AUDITORIA_KERNEL_LOCAL_LIVE_RESOLUTE_XFCE_2026-08-26.md	kernels	live-local-kernel-audit	current
+DOC-086	COMPARACAO_FEDORA_KNOPPIX_LIVE_XFCE_KERNEL_LOCAL_2026-08-26.md	playos	live-fedora-knoppix-comparison	current
+DOC-087	ARQUITETURA_PLAYOS_GRAPHICS_KERNEL_STACK_2026-08-26.md	playos	graphics-kernel-stack-architecture	current
+DOC-088	MANUAL_PLAYOS_GRAPHICS_KERNEL_STACK_X11_WAYLAND.md	playos	graphics-kernel-stack-manual	current
+DOC-089	MEDICAO_TAMANHO_ISO_NOBLE_X11_WAYLAND_XFCE_2026-08-26.md	build	live-iso-size-measurement	current
+DOC-090	PROJETO_SOFTWARE_UNICO_PLAYOS_GRAPHICS_PLATFORM.md	playos	graphics-unified-product	current

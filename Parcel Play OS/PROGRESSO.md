@@ -757,3 +757,66 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Ação**: Consolidação de todo o conhecimento de build no guia `build/manuals/PLAYOS_ISO_MASTER_GUIDE.md`.
 - **Conteúdo**: Instruções de branding, fluxo técnico do Builder e guia de solução de problemas.
 - **Estado**: Documentação de engenharia de mídia concluída em 100%.
+
+## [2026-08-26] - Estudo Live ISO mínima Resolute + XFCE 4.20
+
+- **Ação**: Comparação do modelo Knoppix com os mecanismos Live disponíveis no Ubuntu Resolute.
+- **Documento**: `LIVE_CD_RESOLUTE_XFCE_MINIMAL_KNOPPIX.md`.
+- **Proposta**: Primeiro protótipo sem instalador com `live-build`, `live-boot`, SquashFS, OverlayFS, kernel `linux-generic` e `xubuntu-desktop-minimal`.
+- **Limite**: Nenhuma ISO foi compilada ou inicializada; tamanho, RAM, Secure Boot e compatibilidade permanecem não determinados.
+- **Próximo gate**: Gerar primeiro o console Live mínimo e só então adicionar XFCE/LightDM.
+
+## [2026-08-26] - Identificação da fonte local da Live XFCE
+
+- **Fonte**: `/home/marcel/Parcel-Suite/Linux Kernels/ubuntu 26 resolute kernel`.
+- **Fato**: `Makefile` declara Linux 6.8.4 e o changelog Ubuntu Noble `6.8.0-30.30`; não é a fonte oficial Resolute 7.0.
+- **Capacidade**: SquashFS, loop, EFI e formatos de initramfs são built-in; OverlayFS e ISO9660 são módulos.
+- **Estado**: não há `.deb`, `bzImage`, `vmlinux` ou módulos compilados na árvore.
+- **Documento**: `AUDITORIA_KERNEL_LOCAL_LIVE_RESOLUTE_XFCE_2026-08-26.md`.
+- **Próximo gate**: empacotar imagem, módulos e headers em staging e criar o initramfs coerente com a ABI.
+
+## [2026-08-26] - Comparação Fedora/Knoppix para Live XFCE simples
+
+- **Documento**: `COMPARACAO_FEDORA_KNOPPIX_LIVE_XFCE_KERNEL_LOCAL_2026-08-26.md`.
+- **Fedora**: Kickstart é uma boa referência declarativa, mas Lorax/Anaconda/RPM não simplificam um rootfs Ubuntu e estão ausentes no host.
+- **Knoppix**: adotado como referência para raiz comprimida e overlay, sem portar cloop/aufs.
+- **Decisão proposta**: `live-build` + `live-boot`, pacotes `.deb` locais do kernel e `xubuntu-desktop-minimal`.
+- **Correção**: usar `--binary-images` e `--linux-packages none`; o estudo anterior usava singular e permitiria seleção automática incorreta do kernel.
+- **Estado**: procedimento documentado, ainda sem build ou boot.
+
+## [2026-08-26] - Arquitetura PlayOS Graphics Kernel Stack
+
+- **Pedido analisado**: novo modelo de kernel PlayOS com X11 e Wayland incluídos.
+- **Limite técnico**: Xorg e compositor Wayland são userspace e não serão ligados ao `vmlinux` nem executados no kernelspace.
+- **Decisão**: distribuir `linux-playos-graphics` e `playos-graphics-stack` como um produto integrado e atualizável.
+- **Sessões**: XFCE/Xorg/xfwm4 como padrão; XFCE/Labwc/Wayland + Xwayland como experimental.
+- **Evidência**: o kernel local já habilita DRM/KMS, dma-buf, evdev, framebuffer e drivers Intel/AMD/nouveau como módulos.
+- **Documento**: `ARQUITETURA_PLAYOS_GRAPHICS_KERNEL_STACK_2026-08-26.md`.
+- **Estado real**: arquitetura documentada; metapacotes, sessões, kernel flavor, build e runtime ainda não implementados.
+
+## [2026-08-26] - Manual completo do PlayOS Graphics Kernel Stack
+
+- **Documento**: `MANUAL_PLAYOS_GRAPHICS_KERNEL_STACK_X11_WAYLAND.md`.
+- **Cobertura geral**: fronteiras kernel/userspace, DRM/KMS, input, Mesa, Xorg, Wayland, Xwayland, XFCE e empacotamento.
+- **Cobertura de uso**: seleção de sessão, identificação, fallback, recuperação e comandos de diagnóstico.
+- **Cobertura específica**: Intel, AMD, nouveau, NVIDIA proprietário, software rendering, jogos, VMs, headless, captura e portals.
+- **Operação**: Live ISO, atualização independente, rollback, versionamento, segurança e Secure Boot.
+- **Qualidade**: gates por camada, critérios de aceitação, árvore de decisão e níveis G0–G8.
+- **Estado atual**: G0, documentação apenas; nenhum pacote ou runtime gráfico PlayOS foi produzido por este trabalho.
+
+## [2026-08-26] - Medição de tamanho Noble + X11 + Wayland + XFCE
+
+- **Método**: resolução APT amd64 em estado vazio com índices assinados Noble, updates e security.
+- **Standard**: 1.163 pacotes, 1.424,4 MiB de `.deb` e 3.104,1 MiB instalados.
+- **Lean**: 570 pacotes, 1.057,4 MiB de `.deb` e 1.822,8 MiB instalados.
+- **Estimativa da ISO standard**: 1,6–2,1 GiB após SquashFS e overhead de boot; ainda não é resultado de build.
+- **Limite**: a medição usa `linux-generic 6.8.0-138.138` como proxy; o kernel local 6.8.0-30 ainda não possui `.deb` mensurável.
+- **Documento**: `MEDICAO_TAMANHO_ISO_NOBLE_X11_WAYLAND_XFCE_2026-08-26.md`.
+
+## [2026-08-26] - Produto único PlayOS Graphics Platform
+
+- **Documento**: `PROJETO_SOFTWARE_UNICO_PLAYOS_GRAPHICS_PLATFORM.md`.
+- **Decisão**: oferecer Noble/kernel PlayOS, X11, Wayland/Labwc/Xwayland e XFCE por uma entrada `playos-graphics-platform`.
+- **Arquitetura**: um pacote-fonte gera metapacotes e ferramentas; componentes upstream continuam separados e atualizáveis.
+- **Experiência**: um comando APT, CLI, manifesto, diagnóstico e duas sessões.
+- **Estado**: especificação documentada; pacote, build, boot, ISO e hardware pendentes.
