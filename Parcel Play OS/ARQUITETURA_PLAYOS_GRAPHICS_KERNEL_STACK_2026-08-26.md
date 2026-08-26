@@ -1,5 +1,11 @@
 # PlayOS Graphics Kernel Stack: X11 e Wayland como produto integrado
 
+> **Atualização multi-desktop (2026-08-26):** este documento registra o desenho
+> inicial focado em XFCE. O PlayOS passou a incluir também GNOME/Mutter e KDE
+> Plasma/KWin. A arquitetura vigente está em
+> `ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md`; os limites entre kernel
+> e userspace definidos aqui continuam válidos.
+
 - ID: `PLAYOS-GRAPHICS-STACK-001`
 - tipo: `architecture-analysis`
 - estado: proposta; não implementada; não compilada; não testada

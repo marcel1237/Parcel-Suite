@@ -1,5 +1,11 @@
 # Manual do PlayOS Graphics Kernel Stack
 
+> **Atualização multi-desktop (2026-08-26):** as instruções XFCE deste manual
+> continuam como perfil específico. GNOME e KDE Plasma foram adicionados ao
+> produto e estão documentados em
+> `ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md`. Mutter e KWin usam a
+> mesma base DRM/Mesa/Wayland, mas não são substituídos por Labwc.
+
 ## X11 e Wayland como produto integrado
 
 - ID: `PLAYOS-GRAPHICS-STACK-MANUAL-001`

@@ -8,12 +8,84 @@
 - **Implementação, build, ISO e boot:** ainda não realizados.
 
 Este documento define como entregar como **um único produto**: Ubuntu Noble e
-kernel PlayOS, X11/Xorg, Wayland/Labwc/Xwayland e XFCE.
+kernel PlayOS, X11/Xorg, Wayland/Xwayland e os desktops XFCE, GNOME e KDE
+Plasma. Labwc atende o laboratório Wayland do XFCE; GNOME usa Mutter e Plasma
+usa KWin.
 
 “Um software” significa uma identidade, uma instalação, uma versão, um
 diagnóstico e uma política de suporte. Não significa um executável monolítico:
 essas camadas têm processos, privilégios, interfaces e ciclos de atualização
 diferentes.
+
+## Conexão simples entre os quatro componentes
+
+Os quatro componentes formam uma corrente:
+
+```text
+Ubuntu Noble
+     ↓
+Kernel PlayOS
+     ↓
+X11 ou Wayland
+     ↓
+XFCE
+```
+
+### 1. Ubuntu Noble: a base
+
+Ubuntu Noble fornece a estrutura geral do sistema: APT, pacotes, bibliotecas,
+serviços, ferramentas administrativas e organização do sistema de arquivos.
+É a plataforma sobre a qual os outros componentes são instalados.
+
+### 2. Kernel PlayOS: a ligação com o hardware
+
+O kernel controla CPU, memória, armazenamento, teclado, mouse e GPU. Para os
+gráficos, oferece mecanismos como DRM/KMS e os drivers necessários. O kernel
+prepara e controla os recursos do hardware, mas não desenha menus, janelas ou
+o desktop.
+
+### 3. X11 ou Wayland: o caminho gráfico
+
+X11 e Wayland são dois caminhos alternativos entre as aplicações e os recursos
+gráficos oferecidos pelo kernel:
+
+- **X11/Xorg:** caminho tradicional, adotado como padrão de compatibilidade;
+- **Wayland/Labwc:** caminho moderno, inicialmente experimental no PlayOS;
+- **Xwayland:** camada que permite executar aplicações X11 dentro da sessão
+  Wayland.
+
+X11 e Wayland não serão os dois servidores principais da mesma sessão. O
+usuário escolhe uma sessão na tela de login.
+
+### 4. XFCE: o ambiente que o usuário vê
+
+XFCE fornece painel, menu, área de trabalho, configurações, janelas e
+gerenciador de arquivos. Ele depende do caminho gráfico selecionado para
+aparecer no monitor e receber teclado e mouse.
+
+Na sessão X11, o fluxo simplificado é:
+
+```text
+Aplicação → XFCE/xfwm4 → Xorg → kernel/DRM → GPU → monitor
+```
+
+Na sessão Wayland, o fluxo é:
+
+```text
+Aplicação → XFCE → Labwc/Wayland → kernel/DRM → GPU → monitor
+                         ↑
+              Xwayland para aplicações X11
+```
+
+### Como isso se torna um produto único
+
+`playos-graphics-platform` conecta as quatro partes por dependências,
+configuração, sessões, diagnóstico e política de atualização. Assim, o usuário
+instala o conjunto com um único comando, embora cada componente permaneça
+tecnicamente separado e possa ser atualizado ou recuperado individualmente.
+
+Em uma frase: **Ubuntu fornece a base, o kernel controla o hardware, X11 ou
+Wayland transporta os gráficos e XFCE oferece o ambiente visual.**
 
 ## Contrato público
 
@@ -28,6 +100,11 @@ Na tela de login haverá duas sessões:
 - **PlayOS XFCE (X11):** padrão estável, com Xorg e `xfwm4`;
 - **PlayOS XFCE (Wayland Lab):** experimental, com Labwc e Xwayland.
 
+Esta lista original foi ampliada. O produto também oferecerá GNOME em X11 e
+Wayland, e KDE Plasma em X11 e Wayland, conforme disponibilidade e validação da
+base Noble. A arquitetura completa está em
+`ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md`.
+
 ## Arquitetura
 
 ```text
@@ -40,6 +117,12 @@ playos-graphics-platform (entrada única)
 │   └── Labwc + Xwayland + utilitários Wayland
 ├── playos-desktop-xfce
 │   └── XFCE + LightDM + integração de sessão
+├── playos-desktop-gnome
+│   └── GNOME Shell + Mutter + portal GNOME
+├── playos-desktop-kde
+│   └── Plasma + KWin + portal KDE
+├── playos-display-manager-profile
+│   └── um entre LightDM, GDM ou SDDM ativo
 └── playos-graphics-tools
     └── manifesto + CLI + diagnóstico
 ```
@@ -299,6 +382,9 @@ Até lá: **produto especificado, ainda não implementado**.
 - `MANUAL_PLAYOS_GRAPHICS_KERNEL_STACK_X11_WAYLAND.md`;
 - `MEDICAO_TAMANHO_ISO_NOBLE_X11_WAYLAND_XFCE_2026-08-26.md`;
 - `COMPARACAO_FEDORA_KNOPPIX_LIVE_XFCE_KERNEL_LOCAL_2026-08-26.md`.
+- `ANALISE_SOFTWARE_FREEDESKTOP_PLAYOS_GRAPHICS_PLATFORM_2026-08-26.md`.
+- `MANUAL_COMPONENTES_BASE_PLAYOS_DESKTOP.md`.
+- `ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md`.
 
 A unificação ocorre em empacotamento, identidade, configuração, diagnóstico,
 testes e suporte — nunca pela fusão incorreta das camadas no kernel.

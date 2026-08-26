@@ -27,6 +27,10 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Manual completo do PlayOS Graphics Kernel Stack](../MANUAL_PLAYOS_GRAPHICS_KERNEL_STACK_X11_WAYLAND.md)
 - [Medição de tamanho Noble + X11 + Wayland + XFCE](../MEDICAO_TAMANHO_ISO_NOBLE_X11_WAYLAND_XFCE_2026-08-26.md)
 - [Produto único PlayOS Graphics Platform](../PROJETO_SOFTWARE_UNICO_PLAYOS_GRAPHICS_PLATFORM.md)
+- [Inicialização do PlayOS Graphics Platform](../INICIALIZACAO_PLAYOS_GRAPHICS_PLATFORM.md)
+- [Software freedesktop.org necessário ao PlayOS](../ANALISE_SOFTWARE_FREEDESKTOP_PLAYOS_GRAPHICS_PLATFORM_2026-08-26.md)
+- [Manual dos componentes-base do desktop PlayOS](../MANUAL_COMPONENTES_BASE_PLAYOS_DESKTOP.md)
+- [Arquitetura multi-desktop XFCE, GNOME e KDE Plasma](../ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md)
 
 ## Catálogos
 

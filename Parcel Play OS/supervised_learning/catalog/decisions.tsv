@@ -19,5 +19,8 @@ DEC-015	Linux 7.1.8 só será removido após gates de reprodução e runtime	cur
 DEC-016	PlayOS Kernel 2 usa Linux 7.1.8 como base e preserva Noble 6.8.4 como fallback	current	high	SRC-PLAYOS-KERNEL2-MIGRATION,SRC-PLAYOS-KERNEL1,SRC-LINUX718-BUILD
 DEC-017	Versão 7.1.8 mais nova que Resolute 7.0 não será chamada melhor antes dos gates de runtime	current	high	SRC-PLAYOS-KERNEL2-MIGRATION,SRC-RESOLUTE-VERIFY
 DEC-020	Xorg e compositor Wayland não serão incorporados ao espaço do kernel	rejected-direct-integration	high	SRC-GRAPHICS-STACK
-DEC-021	PlayOS entregará kernel e gráficos com duas sessões por metapacote Graphics Stack	current	high	SRC-GRAPHICS-STACK,SRC-LIVE-LOCAL-KERNEL
+DEC-021	Perfil XFCE do PlayOS manterá sessões X11 e Wayland por metapacote Graphics Stack	current	high	SRC-GRAPHICS-STACK,SRC-PLAYOS-MULTI-DESKTOP
 DEC-022	PlayOS Graphics Platform será um produto único instalável com componentes internos modulares	current	high	SRC-GRAPHICS-UNIFIED-PRODUCT,SRC-GRAPHICS-STACK
+DEC-023	Inicialização PlayOS será validada em camadas com X11 como fallback gráfico	current	high	SRC-GRAPHICS-PLATFORM-BOOT,SRC-GRAPHICS-UNIFIED-PRODUCT
+DEC-024	Catálogo freedesktop orientará funções mas pacotes PlayOS serão selecionados por core standard e perfis	current	high	SRC-FREEDESKTOP-SOFTWARE-ANALYSIS,SRC-GRAPHICS-UNIFIED-PRODUCT
+DEC-025	PlayOS oferecerá XFCE GNOME e KDE Plasma sobre uma base compartilhada com somente um display manager ativo	current	high	SRC-PLAYOS-MULTI-DESKTOP,SRC-PLAYOS-DESKTOP-COMPONENTS-MANUAL

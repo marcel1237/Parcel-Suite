@@ -820,3 +820,41 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Arquitetura**: um pacote-fonte gera metapacotes e ferramentas; componentes upstream continuam separados e atualizáveis.
 - **Experiência**: um comando APT, CLI, manifesto, diagnóstico e duas sessões.
 - **Estado**: especificação documentada; pacote, build, boot, ISO e hardware pendentes.
+- **Complemento**: documentada a conexão simples entre base Noble, kernel PlayOS, caminho X11/Wayland e desktop XFCE, incluindo os fluxos das duas sessões.
+
+## [2026-08-26] - Inicialização do PlayOS Graphics Platform
+
+- **Documento**: `INICIALIZACAO_PLAYOS_GRAPHICS_PLATFORM.md`.
+- **Fluxo**: UEFI → GRUB → kernel/initramfs → systemd → LightDM → X11 ou Wayland → XFCE.
+- **Live**: documentada a etapa adicional SquashFS + OverlayFS antes do userspace definitivo.
+- **Recuperação**: kernel anterior, console sem interface gráfica e sessão X11 como fallback do Wayland.
+- **Validação**: definidos gates B0–B10, do alinhamento de ABI ao teste em hardware.
+- **Estado**: procedimento proposto; nenhum boot novo foi executado por esta documentação.
+
+## [2026-08-26] - Auditoria do catálogo de software freedesktop.org
+
+- **Documento**: `ANALISE_SOFTWARE_FREEDESKTOP_PLAYOS_GRAPHICS_PLATFORM_2026-08-26.md`.
+- **Escopo**: todos os projetos apresentados nas seções ativas, movidas e inativas da página solicitada.
+- **Classificação**: `CORE`, `PROFILE`, `RECOMMENDED`, `OPTIONAL`, `DEVTEST`, `EXCLUDE` e `TRANSITIVE`.
+- **Conclusão**: a página é inventário incompleto e histórico, não lista de dependências nem certificação.
+- **Arquitetura adicional**: identificados PipeWire, WirePlumber, Xwayland, Labwc, portals, LightDM e XFCE, necessários ao produto mas insuficientemente representados pelo catálogo.
+- **Estado**: matriz conceitual documentada; resolução exata de pacotes e versões Noble continua pendente.
+
+## [2026-08-26] - Manual dos componentes-base do desktop PlayOS
+
+- **Documento**: `MANUAL_COMPONENTES_BASE_PLAYOS_DESKTOP.md`.
+- **Cobertura**: systemd/logind, D-Bus, polkit, NetworkManager, UPower, udisks2, XDG, DRM/KMS, Mesa, input, fontes, X11, Wayland, LightDM, XFCE e áudio.
+- **Integração**: documentados fluxos de boot, sessão, hardware, IPC, autorização, mídia e Live ISO.
+- **Operação**: registrados pacotes candidatos, serviços, arquivos, comandos de diagnóstico, falhas e critérios de aceite.
+- **Segurança**: definidos limites de privilégio, sessão, polkit, dispositivos, X11/Xwayland e captura PipeWire/portal.
+- **Estado**: manual de arquitetura concluído; resolução APT, empacotamento e testes C0–C12 permanecem pendentes.
+
+## [2026-08-26] - Ampliação do PlayOS para XFCE, GNOME e KDE Plasma
+
+- **Documento**: `ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md`.
+- **Decisão**: XFCE deixa de ser o único desktop; GNOME e KDE Plasma entram no produto planejado.
+- **Base comum**: kernel, systemd/logind, D-Bus, polkit, rede, energia, discos, XDG, DRM/Mesa, input, fontes e PipeWire.
+- **Compositores**: XFCE usa `xfwm4` em X11 e Labwc no laboratório Wayland; GNOME usa Mutter; Plasma usa KWin.
+- **Login**: LightDM, GDM e SDDM foram analisados, mas somente um poderá estar ativo por imagem.
+- **Conflitos tratados**: portals, agentes polkit, daemons de configuração, notificações, keyrings e aplicações duplicadas.
+- **Estado**: arquitetura e matriz de testes M0–M11 documentadas; pacotes, tamanhos, display manager final, ISO e runtime pendentes.
