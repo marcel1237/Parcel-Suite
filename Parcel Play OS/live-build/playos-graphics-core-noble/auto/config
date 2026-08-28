@@ -13,7 +13,7 @@ lb config noauto \
   --mirror-chroot-security http://security.ubuntu.com/ubuntu/ \
   --mirror-binary http://archive.ubuntu.com/ubuntu/ \
 	--binary-images iso-hybrid \
-	--bootloader grub \
+	--bootloader grub2 \
 	--debian-installer false \
 	--initramfs live-boot \
 	--initsystem systemd \

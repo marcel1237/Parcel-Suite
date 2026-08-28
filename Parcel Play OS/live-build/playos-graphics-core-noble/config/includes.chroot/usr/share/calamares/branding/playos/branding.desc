@@ -1,0 +1,28 @@
+---
+componentName: playos
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 900px,600px
+windowPlacement: center
+sidebar: widget
+navigation: widget
+strings:
+  productName: PlayOS Graphics Core
+  shortProductName: PlayOS
+  version: Noble
+  versionedName: PlayOS Graphics Core Noble
+  shortVersionedName: PlayOS Noble
+  bootloaderEntryName: PlayOS
+  productUrl: https://github.com/marcel1237
+  supportUrl: https://github.com/marcel1237
+  knownIssuesUrl: https://github.com/marcel1237
+  releaseNotesUrl: https://github.com/marcel1237
+  copyright: "Copyright 2026 Parcel Suite"
+images: {}
+style:
+  SidebarBackground: "#121826"
+  SidebarText: "#f8fafc"
+  SidebarTextCurrent: "#38bdf8"
+  SidebarBackgroundCurrent: "#1e293b"
+slideshow: [ "slide.svg" ]

@@ -1,10 +1,10 @@
 #!/bin/sh
 set -eu
 
-chmod 0755 /usr/local/bin/playos-core-x11-session
 chmod 0755 /usr/local/bin/playos-core-wayland-session
+chmod 0755 /usr/local/sbin/playos-installer
 
-printf '%s\n' 'PlayOS Graphics Core — Ubuntu Noble — no GNOME/KDE/XFCE' > /etc/issue
+printf '%s\n' 'PlayOS Live — Ubuntu Noble — XFCE profile over desktop-neutral Graphics Core' > /etc/issue
 
 systemctl set-default graphical.target
 systemctl enable lightdm.service

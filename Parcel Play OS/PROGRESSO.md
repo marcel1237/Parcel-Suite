@@ -888,3 +888,61 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Diagnóstico**: definidos comandos `playos-graphicsctl vulkan`, manifesto de dispositivo, WSI, driver e hardware/software.
 - **Validação**: gates VK0–VK12 cobrem loader, ICDs, GPUs, X11, Wayland, Xwayland, suspensão, ISO e 32-bit.
 - **Estado**: Vulkan documentado e aprovado na arquitetura; instalação, testes e runtime permanecem pendentes.
+
+## [2026-08-27] - XFCE substitui Openbox somente na Live Noble
+
+- **Documento**: `LIVE_ISO_NOBLE_XFCE_SOBRE_GRAPHICS_CORE_2026-08-27.md`.
+- **Decisão**: o Graphics Core continua sem GNOME, KDE Plasma ou XFCE; a edição Live passa a consumir esse núcleo com XFCE.
+- **Baseline confirmada**: Ubuntu Noble fornece XFCE 4.18; XFCE 4.20 não foi alegado nem incorporado.
+- **Implementação**: removidos pacote, sessão, script e autostart Openbox; adicionados XFCE, goodies, terminal, power manager e integração Thunar.
+- **Login**: LightDM seleciona `xfce` como sessão padrão; Labwc permanece como sessão Wayland técnica separada.
+- **Instalador**: Calamares continua independente do desktop e será acessível pelo menu XDG do XFCE.
+- **Validação**: disponibilidade e versões APT confirmadas; referências ativas a Openbox removidas do perfil, salvo auditoria de pacote proibido.
+- **Limite**: o SquashFS anterior está obsoleto; rebuild, ISO, boot e instalação em VM permanecem pendentes.
+
+## [2026-08-27] - Calamares versus Anaconda
+
+- **Documento**: `COMPARACAO_CALAMARES_ANACONDA_PLAYOS_2026-08-27.md`.
+- **Decisão**: Calamares permanece candidato único da Live Noble XFCE.
+- **Motivo**: integração existente com SquashFS, pacote Noble e custo muito menor que adaptar Anaconda de RPM/DNF para DEB/APT.
+- **Anaconda**: referência futura para Kickstart, LVM, RAID, iSCSI, multipath e uma eventual edição baseada em Fedora/RHEL.
+- **Limite**: recomendação arquitetural; nenhuma instalação PlayOS completa foi comprovada ainda.
+
+## [2026-08-27] - Calamares versus Ubuntu Desktop Provision
+
+- **Documento**: `COMPARACAO_CALAMARES_DESKTOP_PROVISION_PLAYOS_2026-08-27.md`.
+- **MVP**: Calamares permanece por já consumir diretamente o SquashFS da Live e carregar o perfil PlayOS.
+- **Estratégia Ubuntu**: Desktop Provision será avaliado em variante separada com Casper, livecd-rootfs, Subiquity, Curtin e fontes declaradas.
+- **Primeiro boot**: `ubuntu_init`/`provd` é vantagem do Desktop Provision para OEM e provisionamento pós-instalação.
+- **Restrição**: não incluir dois motores na mesma ISO e não copiar hooks GNOME da imagem Core Desktop para o perfil XFCE.
+
+## [2026-08-28] - Build da primeira ISO Noble XFCE Calamares iniciado
+
+- **Perfil**: `live-build/playos-graphics-core-noble/`.
+- **Composição**: Graphics Core neutro, XFCE 4.18 na Live, LightDM, Labwc técnico e Calamares.
+- **Preparação**: build antigo limpo e preservado com outro nome; perfil final sincronizado sem resíduos Openbox.
+- **Execução**: `lb build` ativo na VM `playos-noble-graphics-vm`, unidade `playos-xfce-calamares-build.service`.
+- **Recursos**: 16 GiB livres no início da execução.
+- **Estado**: bootstrap em andamento; ainda não há ISO nem resultado de boot.
+
+## [2026-08-28] - Plano e inventário de fontes da primeira ISO
+
+- **Documento**: `PLANO_IMPLEMENTACAO_PRIMEIRA_ISO_NOBLE_XFCE_CALAMARES.md`.
+- **Pacotes diretos**: 74 nomes, todos obtidos online dos repositórios Ubuntu Noble.
+- **Kernel e firmware**: online; kernel generic oficial, módulos e initramfs coerentes, sem kernel local PlayOS nesta primeira ISO.
+- **Conteúdo local**: configurações Calamares/LightDM, sessão Labwc, launcher, branding, identidade e dois hooks.
+- **Dependências**: resolvidas online pelo APT com recommends; versões finais serão congeladas no manifesto do chroot.
+- **Reprodutibilidade**: nominal, ainda não bit a bit, porque os mirrors não estão fixados em snapshot.
+- **Plano**: preparação, bootstrap, auditoria, SquashFS, GRUB/ISO, inspeção, boot UEFI/BIOS e instalação em VM documentados.
+
+## [2026-08-28] - Primeira ISO Noble XFCE Calamares gerada
+
+- **Artefato**: `build/playos-graphics-core-noble/output/playos-noble-xfce-calamares-amd64.iso`.
+- **Tamanho**: 1.755.160.576 bytes.
+- **SHA-256**: `4ce6c108ad9d455e80ad859ae61e9890f9aa8a5f14d7408d7e8bed8bf994c1b2`.
+- **Payload**: Noble 6.8.0-138, XFCE 4.18, LightDM, Calamares 3.3.5, Labwc, X11/Xwayland, Mesa/Vulkan e PipeWire/WirePlumber.
+- **Exclusões**: GNOME Shell, Ubuntu Desktop, KDE Plasma e Openbox ausentes do manifesto.
+- **Boot estático**: El Torito BIOS, imagem UEFI, MBR GRUB2 híbrido e GPT protetora confirmados.
+- **Correção**: a finalização defeituosa do `live-build 3.0~a57` foi substituída por `grub-mkrescue`/xorriso e registrada em script reutilizável.
+- **Estado**: ISO gerada e auditada estaticamente; boot, desktop, instalador e hardware ainda não foram testados em runtime.
+- **Próximo gate**: boot BIOS e UEFI em VM e instalação Calamares em disco virtual descartável.

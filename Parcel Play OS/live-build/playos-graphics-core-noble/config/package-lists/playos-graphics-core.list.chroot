@@ -41,13 +41,17 @@ fontconfig
 fonts-dejavu-core
 fonts-noto-core
 
-# X11 technical session
+# X11 server and XFCE Live desktop profile
 xserver-xorg
 xserver-xorg-core
 x11-xserver-utils
 xinit
 xterm
-openbox
+xfce4
+xfce4-goodies
+xfce4-terminal
+xfce4-power-manager
+thunar-volman
 
 # Wayland core session
 wayland-protocols
@@ -64,6 +68,16 @@ xdg-desktop-portal-wlr
 # Login manager
 lightdm
 lightdm-gtk-greeter
+
+# Desktop-neutral offline installer
+calamares
+parted
+dosfstools
+e2fsprogs
+rsync
+squashfs-tools
+grub-pc-bin
+grub-efi-amd64-bin
 
 # Audio
 alsa-utils

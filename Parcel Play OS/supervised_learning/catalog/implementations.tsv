@@ -17,3 +17,6 @@ IMP-PLAYOS-GRUB-CFG	PlayOS Menu	config	config/boot/grub-playos.cfg	implemented	b
 IMP-PLAYOS-SUBIQUITY-CFG	Subiquity Branding	config	config/installer/subiquity-branding.yaml	implemented	override-config-template	SRC-RESOLUTE-BUILD
 IMP-PLAYOS-POST-INSTALL	PlayOS Metamorphosis	script	scripts/nitro-post-install.sh	implemented	automated-branding-on-target	SRC-RESOLUTE-BUILD
 IMP-PLAYOS-REBUILD-LIVE	Live CD Rebuild	script	scripts/rebuild-live-rootfs.sh	implemented	automated-squashfs-reconstruction	SRC-RESOLUTE-BUILD
+IMP-PLAYOS-LIVE-CALAMARES-NODE	PlayOS Graphics Core Noble	live-installer	live-build/playos-graphics-core-noble/config/includes.chroot/etc/calamares/	implemented	static-profile-runtime-install-pending	SRC-PLAYOS-LIVE-CALAMARES-NODE
+IMP-PLAYOS-LIVE-XFCE-CORE	PlayOS Noble Live	live-desktop-profile	live-build/playos-graphics-core-noble/	implemented	manifest-static-rebuild-runtime-pending	SRC-PLAYOS-LIVE-XFCE-CORE
+IMP-PLAYOS-FIRST-ISO-BUILD	PlayOS Noble XFCE Calamares	iso-build	live-build/playos-graphics-core-noble/	built-static-audit	iso-sha256-bios-uefi-structure-manifest-no-runtime	SRC-PLAYOS-FIRST-ISO-PLAN

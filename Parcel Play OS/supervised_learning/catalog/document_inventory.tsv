@@ -103,3 +103,8 @@ DOC-094	ARQUITETURA_MULTI_DESKTOP_PLAYOS_XFCE_GNOME_KDE.md	playos	multi-desktop-
 DOC-095	KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md	kernels	graphics-kernel-without-desktops	current
 DOC-096	PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md	playos	graphics-core-without-desktops	current
 DOC-097	VULKAN_NO_PLAYOS_GRAPHICS_CORE.md	playos	vulkan-graphics-core	current
+DOC-098	LIVE_ISO_NOBLE_GRAPHICS_CORE_CALAMARES_2026-08-27.md	build	live-calamares-without-desktops	current
+DOC-099	LIVE_ISO_NOBLE_XFCE_SOBRE_GRAPHICS_CORE_2026-08-27.md	build	live-xfce-over-graphics-core	current
+DOC-100	COMPARACAO_CALAMARES_ANACONDA_PLAYOS_2026-08-27.md	installer	calamares-anaconda-comparison	current
+DOC-101	COMPARACAO_CALAMARES_DESKTOP_PROVISION_PLAYOS_2026-08-27.md	installer	calamares-desktop-provision-comparison	current
+DOC-102	PLANO_IMPLEMENTACAO_PRIMEIRA_ISO_NOBLE_XFCE_CALAMARES.md	build	first-iso-implementation-plan	current

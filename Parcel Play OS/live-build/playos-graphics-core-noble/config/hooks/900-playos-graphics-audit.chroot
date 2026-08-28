@@ -6,9 +6,14 @@ mkdir -p /usr/share/playos
 
 {
   echo 'PlayOS Graphics Core build audit'
-  echo 'desktop_environment=none'
+  echo 'graphics_core_desktop_environment=none'
+  echo 'live_profile_desktop_environment=xfce'
   echo 'forbidden packages:'
-  dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E '^(ubuntu-desktop|kubuntu-desktop|xubuntu-desktop|gnome-shell|plasma-desktop|xfce4)(:|$)' || true
+  dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E '^(ubuntu-desktop|kubuntu-desktop|gnome-shell|plasma-desktop|openbox)(:|$)' || true
   echo 'required packages:'
-  dpkg-query -W -f='${binary:Package}\t${Version}\n' systemd dbus policykit-1 network-manager upower udisks2 libdrm2 mesa-vulkan-drivers libvulkan1 xserver-xorg xwayland labwc lightdm pipewire wireplumber
+  dpkg-query -W -f='${binary:Package}\t${Version}\n' systemd dbus policykit-1 network-manager upower udisks2 libdrm2 mesa-vulkan-drivers libvulkan1 xserver-xorg xfce4 xfce4-session xfwm4 xfce4-panel thunar xwayland labwc lightdm pipewire wireplumber calamares parted squashfs-tools grub-pc-bin grub-efi-amd64-bin
+  echo 'installer configuration:'
+  test -r /etc/calamares/settings.conf
+  test -r /etc/calamares/modules/unpackfs.conf
+  test -r /usr/share/applications/playos-install.desktop
 } > "$audit"

@@ -27,3 +27,7 @@ DEC-025	PlayOS oferecerá XFCE GNOME e KDE Plasma sobre uma base compartilhada c
 DEC-026	Kernel gráfico PlayOS não conterá XFCE GNOME KDE nem servidores gráficos userspace	current	high	SRC-PLAYOS-GRAPHICS-KERNEL-NODE,SRC-GRAPHICS-STACK
 DEC-027	PlayOS Graphics Core reunirá todos os componentes não-desktop sem depender de GNOME KDE ou XFCE	current	high	SRC-PLAYOS-GRAPHICS-CORE-NODE,SRC-PLAYOS-GRAPHICS-KERNEL-NODE
 DEC-028	Vulkan fará parte do Graphics Core como runtime userspace sobre DRM Mesa X11 e Wayland	current	high	SRC-PLAYOS-VULKAN,SRC-PLAYOS-GRAPHICS-CORE-NODE
+DEC-029	A edição Graphics Core Noble avaliará Calamares como instalador único independente do desktop da Live	current	high	SRC-PLAYOS-LIVE-CALAMARES-NODE,SRC-PLAYOS-GRAPHICS-CORE-NODE
+DEC-030	A Live Noble usará XFCE 4.18 no lugar do Openbox sem inserir desktop no Graphics Core	current	high	SRC-PLAYOS-LIVE-XFCE-CORE,SRC-PLAYOS-GRAPHICS-CORE-NODE
+DEC-031	Calamares permanece o instalador candidato da Live Noble XFCE e Anaconda fica como referência RPM empresarial	current	high	SRC-PLAYOS-INSTALLER-COMPARE,SRC-PLAYOS-LIVE-CALAMARES-NODE
+DEC-032	Calamares permanece no MVP e Desktop Provision será avaliado em variante separada baseada em livecd-rootfs e Casper	current	high	SRC-PLAYOS-CALAMARES-DESKTOP-PROVISION,SRC-PLAYOS-LIVE-CALAMARES-NODE
