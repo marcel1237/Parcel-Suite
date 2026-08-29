@@ -946,3 +946,15 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Correção**: a finalização defeituosa do `live-build 3.0~a57` foi substituída por `grub-mkrescue`/xorriso e registrada em script reutilizável.
 - **Estado**: ISO gerada e auditada estaticamente; boot, desktop, instalador e hardware ainda não foram testados em runtime.
 - **Próximo gate**: boot BIOS e UEFI em VM e instalação Calamares em disco virtual descartável.
+
+## [2026-08-28] - Calamares híbrido com Subiquity como backend
+
+- **Ação**: Implementação da ponte Calamares + Subiquity para resolver a falha do instalador standard.
+- **Arquitetura**: Calamares atua como frontend (Show) para coleta de dados e decisões; Subiquity/Curtin atua como backend (Exec) para o deploy.
+- **Novos Módulos**:
+    - `subiquity_bridge`: Traduz `globalStorage` (usuário, particionamento, sessão) para `autoinstall.yaml`.
+    - `subiquity_exec`: Invoca o `subiquity --autoinstall` com o arquivo gerado.
+- **Configuração**: `settings.conf` atualizado para remover módulos `unpackfs` e `bootloader` do Calamares, delegando-os ao Subiquity.
+- **Pacotes**: Adicionados `subiquity-server`, `curtin`, `casper` e `python3-yaml` ao perfil `live-build`.
+- **Hooks**: Tuning de performance e ativação de serviços integrados via `late-commands` do Subiquity.
+- **Estado**: Código implementado e integrado ao perfil; build da ISO híbrida pronto para reprodução.

@@ -78,6 +78,9 @@ rsync
 squashfs-tools
 grub-pc-bin
 grub-efi-amd64-bin
+subiquity-server
+curtin
+casper
 
 # Audio
 alsa-utils
@@ -95,3 +98,4 @@ less
 nano
 curl
 ca-certificates
+python3-yaml
