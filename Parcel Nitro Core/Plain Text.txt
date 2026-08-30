@@ -1,0 +1,1 @@
+Parcel Nitro core com os seguintes kernels: Vanilla, Ubuntu e Fedora (Nobara).
