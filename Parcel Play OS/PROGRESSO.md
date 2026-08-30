@@ -958,3 +958,21 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Pacotes**: Adicionados `subiquity-server`, `curtin`, `casper` e `python3-yaml` ao perfil `live-build`.
 - **Hooks**: Tuning de performance e ativação de serviços integrados via `late-commands` do Subiquity.
 - **Estado**: Código implementado e integrado ao perfil; build da ISO híbrida pronto para reprodução.
+
+## [2026-08-29] - Runbook da primeira ISO Calamares + XFCE
+
+- **Ação**: criado `RECRIAR_PRIMEIRA_ISO_CALAMARES_XFCE.md` para orientar qualquer IA na reconstrução da primeira ISO.
+- **Evidência**: o artefato original foi auditado diretamente; tamanho, SHA-256, manifesto, versões e configuração Calamares embutida foram confirmados.
+- **Divergência registrada**: o perfil atual contém a experiência posterior Calamares + Subiquity, ausente da primeira ISO; o runbook ensina a trabalhar em cópia transitória e restaurar a sequência nativa sem sobrescrever trabalho posterior.
+- **Estado**: documentação implementada; build e runtime não foram repetidos nesta tarefa.
+- **Risco conhecido**: o usuário informou que o Calamares não funcionou; sem log de runtime, a causa exata permanece `unknown`.
+- **Próximo gate**: coletar log do Calamares em boot UEFI/BIOS numa VM descartável ou prosseguir com a variante Desktop Provision em perfil separado.
+
+## [2026-08-29] - Correção dos impedimentos da recriação Calamares + XFCE
+
+- **Auditoria**: o relatório externo foi confrontado com a ISO canônica, seu GRUB, manifesto e perfil.
+- **Causa**: a tentativa misturou `livecd-rootfs`/Casper/germinate com o pipeline histórico `live-build`/`live-boot`.
+- **Evidência**: a ISO usa `/live`, `boot=live`, contém `live-boot`, `live-config` e `live-tools`, não contém Casper e não depende de marcador `/ubuntu`.
+- **Implementação**: criado `prepare-first-calamares-profile.sh`, que restaura o `settings.conf` histórico e remove componentes híbridos somente da cópia de build.
+- **Documentação**: criado `SOLUCAO_IMPEDIMENTOS_RECRIACAO_ISO_CALAMARES_XFCE.md` e corrigido o runbook principal.
+- **Limite**: a composição ainda precisa ser recompilada; a falha funcional do Calamares permanece separada e exige logs de runtime.
