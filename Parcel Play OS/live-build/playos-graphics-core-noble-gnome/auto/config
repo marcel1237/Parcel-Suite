@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+lb config noauto \
+  --mode ubuntu \
+  --architectures amd64 \
+  --distribution noble \
+  --parent-distribution noble \
+  --archive-areas "main restricted universe multiverse" \
+  --parent-archive-areas "main restricted universe multiverse" \
+  --mirror-bootstrap http://archive.ubuntu.com/ubuntu/ \
+  --mirror-chroot http://archive.ubuntu.com/ubuntu/ \
+  --mirror-chroot-security http://security.ubuntu.com/ubuntu/ \
+  --mirror-binary http://archive.ubuntu.com/ubuntu/ \
+	--binary-images iso-hybrid \
+	--bootloader grub2 \
+	--debian-installer false \
+	--initramfs live-boot \
+	--initsystem systemd \
+	--linux-packages linux-image \
+  --linux-flavours generic \
+  --apt-recommends true \
+  --security true \
+  --volatile true \
+  --memtest none \
+  --iso-application "PlayOS Noble GNOME" \
+  --iso-publisher "PlayOS Project" \
+  --iso-volume "PLAYOS_NOBLE_GNOME" \
+  --bootappend-live "boot=live components username=playos hostname=playos locales=pt_BR.UTF-8 keyboard-layouts=br" \
+  "${@}"

@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+audit=/usr/share/playos/graphics-core-build-audit.txt
+mkdir -p /usr/share/playos
+
+{
+  echo 'PlayOS Graphics Core build audit'
+  echo 'graphics_core_desktop_environment=none'
+  echo 'live_profile_desktop_environment=gnome'
+  echo 'forbidden live desktop packages:'
+  dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E '^(xfce4|kubuntu-desktop|plasma-desktop|openbox|lightdm)(:|$)' || true
+  echo 'required packages:'
+  dpkg-query -W -f='${binary:Package}\t${Version}\n' systemd dbus policykit-1 network-manager upower udisks2 libdrm2 mesa-vulkan-drivers libvulkan1 xserver-xorg ubuntu-desktop-minimal gnome-shell gnome-session gdm3 nautilus xwayland labwc pipewire wireplumber calamares parted squashfs-tools grub-pc-bin grub-efi-amd64-bin
+  echo 'installer configuration:'
+  test -r /etc/calamares/settings.conf
+  test -r /etc/calamares/modules/unpackfs.conf
+  test -r /usr/share/applications/playos-install.desktop
+} > "$audit"

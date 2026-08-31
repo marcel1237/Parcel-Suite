@@ -21,3 +21,4 @@ IMP-PLAYOS-LIVE-CALAMARES-NODE	PlayOS Graphics Core Noble	live-installer	live-bu
 IMP-PLAYOS-LIVE-XFCE-CORE	PlayOS Noble Live	live-desktop-profile	live-build/playos-graphics-core-noble/	implemented	manifest-static-rebuild-runtime-pending	SRC-PLAYOS-LIVE-XFCE-CORE
 IMP-PLAYOS-FIRST-ISO-BUILD	PlayOS Noble XFCE Calamares	iso-build	live-build/playos-graphics-core-noble/	built-static-audit	iso-sha256-bios-uefi-structure-manifest-no-runtime	SRC-PLAYOS-FIRST-ISO-PLAN
 IMP-PLAYOS-HYBRID-INSTALLER	Calamares + Subiquity	hybrid-installer	live-build/playos-graphics-core-noble/config/includes.chroot/usr/lib/calamares/modules/	implemented	bridge-and-exec-logic-ready	SRC-PLAYOS-INSTALLER-DESKTOP-PROVISION
+IMP-PLAYOS-LIVE-GNOME-CALAMARES	PlayOS Noble GNOME Calamares	live-desktop-profile	live-build/playos-graphics-core-noble-gnome/	implemented	lb-config-and-shell-syntax-validated-build-runtime-pending	SRC-PLAYOS-LIVE-GNOME-CALAMARES

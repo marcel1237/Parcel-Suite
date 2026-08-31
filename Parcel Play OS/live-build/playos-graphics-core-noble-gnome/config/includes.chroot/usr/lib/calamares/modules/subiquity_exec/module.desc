@@ -1,0 +1,5 @@
+---
+type:       "job"
+name:       "subiquity_exec"
+interface:  "python"
+script:     "main.py"

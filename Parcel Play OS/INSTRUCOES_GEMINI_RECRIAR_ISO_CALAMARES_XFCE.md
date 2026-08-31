@@ -95,6 +95,7 @@ Use a VM LXD Noble `livefs-builder-noble` apenas se ela estiver saudável.
 
 ```sh
 lxc list livefs-builder-noble
+lxc storage info default
 lxc exec livefs-builder-noble -- free -h
 lxc exec livefs-builder-noble -- df -h /
 lxc exec livefs-builder-noble -- sh -lc \
@@ -105,12 +106,16 @@ Critérios mínimos:
 
 - Ubuntu Noble amd64;
 - até 4 GiB de RAM atribuída neste host;
-- pelo menos 25 GiB livres;
+- pelo menos 25 GiB livres dentro da VM;
+- pelo menos 6 GiB realmente livres no pool indicado por
+  `lxc storage info default`;
 - nenhum build concorrente;
 - DNS e repositórios Ubuntu acessíveis.
 
-Se houver build ativo, não inicie outro. Se houver alta carga persistente,
-swap exaurida ou erros de I/O, pare e relate.
+Se houver build ativo, não inicie outro. Se o pool estiver cheio, não confie no
+`df` interno: volumes LXD podem ser thin-provisioned. Não apague instâncias ou
+imagens sem autorização. Se houver alta carga persistente, swap exaurida ou
+erros de I/O, pare e relate.
 
 ## Etapa 2 — instalar somente ferramentas do pipeline correto
 
@@ -240,6 +245,7 @@ Pare e gere relatório se ocorrer:
 - erro APT/dpkg;
 - ausência de kernel, initrd ou SquashFS;
 - falta de espaço.
+- menos de 6 GiB livres no pool LXD, mesmo que a VM anuncie espaço virtual;
 
 Não execute `dpkg --configure -a` para salvar um build que será chamado
 reproduzível. Não remova diversões por hooks. Faça novo `lb clean --purge` e
@@ -252,6 +258,7 @@ cat /root/build-pure/build.exit-status 2>/dev/null || true
 tail -200 /root/build-pure/build.log
 free -h
 df -h /
+lxc storage info default  # executar no host
 journalctl -k --no-pager | \
   grep -Ei 'oom|out of memory|killed process|soft lockup|I/O error' | tail -100
 ```
@@ -329,6 +336,10 @@ xorriso -osirrox on -indev "$iso" \
 grep -E 'boot=live|/live/vmlinuz|/live/initrd' /tmp/playos-grub.cfg
 ! grep -E 'boot=casper|/casper/' /tmp/playos-grub.cfg
 ```
+
+O relatório `-report_el_torito` deve mostrar duas entradas: BIOS e UEFI. Também
+deve mostrar MBR híbrido e estrutura EFI. Uma ISO com somente
+`-b /boot/grub/grub_eltorito` não passa este gate.
 
 Extraia e confira a configuração Calamares:
 

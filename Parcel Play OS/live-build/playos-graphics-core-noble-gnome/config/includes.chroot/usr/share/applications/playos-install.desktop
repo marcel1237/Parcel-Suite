@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Install PlayOS
+Name[pt_BR]=Instalar PlayOS
+Comment=Install PlayOS Graphics Core on a disk
+Comment[pt_BR]=Instalar o PlayOS Graphics Core em um disco
+Exec=/usr/local/sbin/playos-installer
+Icon=calamares
+Terminal=false
+Categories=System;
+Keywords=install;installer;system;

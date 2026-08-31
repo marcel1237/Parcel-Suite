@@ -994,4 +994,33 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Proteções**: proibição explícita de `livecd-rootfs`, Casper, germinate e manifesto injetado; staging separado e preservação da ISO histórica.
 - **Observabilidade**: PID, código de saída, log, recursos e relatório final tornaram-se obrigatórios.
 - **Estado**: documentação e automação disponíveis; execução pelo Gemini pendente.
+
+## [2026-08-31] - Auditoria da candidata Gemini e esgotamento do pool LXD
+
+- **Resultado real do build**: código 127; ISO intermediária permaneceu na VM e não foi copiada para `candidate-gemini/`.
+- **ISO intermediária**: 1.743.495.168 bytes, SHA-256 `4c00cfa34ce86a591866b279568558e4093b1e809877b1743cce68164bb81d13`.
+- **Boot estático**: somente El Torito BIOS; sem UEFI, MBR híbrido ou GPT protetora confirmados.
+- **Erros**: `grub-mkimage` sem prefixo e `isohybrid` ausente; o relatório Gemini havia classificado incorretamente como sucesso.
+- **Tentativa de correção**: `grub-mkrescue` iniciou sobre a árvore binária completa, mas a VM caiu para `ERROR` durante a escrita.
+- **Causa ambiental confirmada**: pool ZFS LXD `default` em 28,80/28,80 GiB, apesar de a VM thin-provisioned anunciar 84 GiB livres.
+- **Preservação**: nenhuma VM, imagem ou arquivo foi apagado.
+- **Próximo gate**: usuário autorizar ampliação do pool ou indicar quais instâncias/imagens LXD podem ser removidas; depois repetir somente a finalização e auditar BIOS/UEFI.
 - 2026-08-30: ISO Noble XFCE Calamares recriada com sucesso via Pure Pipeline (live-build). Localizada em candidate-gemini.
+
+## [2026-08-31] - Variante Noble GNOME + Calamares
+
+- **Escopo corrigido pelo usuário**: manter Ubuntu Noble, kernel, Graphics Core e Calamares; trocar somente XFCE por GNOME.
+- **Implementação**: criado o perfil separado `live-build/playos-graphics-core-noble-gnome/`.
+- **Desktop**: XFCE/LightDM removidos da composição desejada; GNOME/GDM3 adicionados.
+- **Instalador**: configurações Calamares e bridge Subiquity atualizadas para ativar GDM3 no destino.
+- **Validação**: `lb config`, sintaxe dos scripts e `git diff --check` passaram.
+- **Estado**: nenhuma ISO GNOME foi gerada; build local não iniciou porque `sudo` exige autenticação interativa.
+- **Próximo gate**: executar o build em terminal autenticado ou liberar espaço no builder LXD, depois testar GNOME e Calamares em VM.
+
+## [2026-08-31] - Inventário da primeira Live XFCE + Calamares
+
+- **Documento**: criado `INVENTARIO_LIVE_CD_XFCE_CALAMARES_2026-08-31.md`.
+- **Fonte primária**: manifesto `Live cd Xfce-calamares filesystem.packages`, com 1.110 linhas.
+- **Conteúdo**: boot Live, Calamares, armazenamento, gráficos, login, IPC, rede, energia, áudio, fontes, XDG, firmware, hardware, utilitários e branding foram classificados.
+- **Correção de estado**: a ISO histórica contém `live-boot` e Calamares, mas seu manifesto não contém Casper, Subiquity ou Curtin; esses nomes pertencem à receita posterior ainda não recompilada nesta variante.
+- **Limite**: inventário de pacote não comprova boot, instalação completa nem compatibilidade universal de hardware.

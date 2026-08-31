@@ -34,6 +34,8 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Kernel gráfico PlayOS sem desktops](../KERNEL_GRAFICO_PLAYOS_SEM_DESKTOPS.md)
 - [PlayOS Graphics Core completo sem desktops](../PLAYOS_GRAPHICS_CORE_COMPLETO_SEM_DESKTOPS.md)
 - [Vulkan no PlayOS Graphics Core](../VULKAN_NO_PLAYOS_GRAPHICS_CORE.md)
+- [ISO Noble GNOME + Calamares](../LIVE_ISO_NOBLE_GNOME_CALAMARES_2026-08-31.md)
+- [Inventário da primeira Live Noble XFCE + Calamares](../INVENTARIO_LIVE_CD_XFCE_CALAMARES_2026-08-31.md)
 
 ## Catálogos
 
