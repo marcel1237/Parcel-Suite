@@ -42,3 +42,95 @@ Com base no pipeline de **pure live-build**, valide os seguintes pontos:
 
 ---
 **Status da VM (Última Checagem):** `debootstrap` concluído, iniciando fase de `chroot` e instalação da lista PlayOS.
+
+---
+
+## 6. Resposta e auditoria Codex — 2026-08-30
+
+### Estado real encontrado
+
+O relatório estava correto sobre a escolha do pipeline, porém seu estado ficou
+desatualizado. Na inspeção da VM `livefs-builder-noble`:
+
+- não havia processo `lb build`, debootstrap, mksquashfs ou grub-mkrescue;
+- `/root/build-pure/build.log` terminou em `Terminated` durante a
+  descompactação do pacote 421;
+- o live-build desmontou filesystems e salvou caches após o sinal;
+- não existiam ISO, SquashFS, manifesto ou árvore `binary/` final;
+- Calamares já estava presente, mas `live-boot`, `live-config` e `live-tools`
+  ainda não tinham sido instalados;
+- não houve evento OOM registrado no kernel da VM; a origem exata do sinal que
+  encerrou o processo permanece `unknown`.
+
+Esse chroot não deve ser promovido nem finalizado. Para um resultado
+reproduzível, execute `lb clean --purge` e reinicie o build puro.
+
+### 1. Manifesto
+
+O `live-build 3.0~a57-1ubuntu49.1` gera o inventário sem hook adicional. O
+próprio `/usr/lib/live/build/lb_binary_manifest` seleciona:
+
+```text
+casper    -> /casper/filesystem.manifest
+live-boot -> /live/filesystem.packages
+```
+
+Portanto, nesta ISO o arquivo correto é `/live/filesystem.packages`, acompanhado
+de `/live/filesystem.packages-remove`. Exigir `filesystem.manifest` misturaria
+novamente a convenção Casper.
+
+### 2. Calamares `unpackfs`
+
+O pacote Noble `calamares 3.3.5-0ubuntu4` contém o módulo nativo em:
+
+```text
+/usr/lib/x86_64-linux-gnu/calamares/modules/unpackfs/
+```
+
+O módulo não depende conceitualmente de Casper; ele extrai o filesystem
+definido em `unpackfs.conf`. Para a primeira ISO, a origem obrigatória é:
+
+```text
+/run/live/medium/live/filesystem.squashfs
+```
+
+A presença do módulo e uma configuração válida não comprovam instalação. O
+caminho montado deve ser verificado durante boot real, e Calamares ainda precisa
+ser testado com `calamares -d` em disco virtual descartável.
+
+### 3. Finalização GRUB
+
+Execute `tools/finalize-grub-iso.sh` a partir da raiz do perfil. O script
+detecta, nesta ordem:
+
+```text
+binary/
+chroot/binary/
+```
+
+Não se passa o diretório de stage como argumento. O primeiro argumento é apenas
+o nome/caminho da ISO de saída:
+
+```sh
+cd /root/build-pure/profile
+sudo ./tools/finalize-grub-iso.sh \
+  playos-noble-xfce-calamares-amd64.iso
+```
+
+O finalizador só deve ser usado quando uma dessas árvores binárias estiver
+completa e contiver `/live/filesystem.squashfs`, kernel, initrd e configuração
+GRUB. No estado auditado nenhuma delas existia, logo o script não se aplica.
+
+### Próxima execução segura
+
+```sh
+cd /root/build-pure/profile
+sudo lb clean --purge
+sudo lb config
+sudo lb build 2>&1 | tee /root/build-pure/build.log
+```
+
+`nohup` pode proteger contra fechamento do terminal, mas não contra sinal
+externo, falta de memória ou travamento de I/O. Se usado, registre PID e código
+de saída separadamente; ausência do processo nunca deve ser descrita como build
+em execução.

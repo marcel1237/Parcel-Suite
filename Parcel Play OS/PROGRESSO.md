@@ -976,3 +976,22 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Implementação**: criado `prepare-first-calamares-profile.sh`, que restaura o `settings.conf` histórico e remove componentes híbridos somente da cópia de build.
 - **Documentação**: criado `SOLUCAO_IMPEDIMENTOS_RECRIACAO_ISO_CALAMARES_XFCE.md` e corrigido o runbook principal.
 - **Limite**: a composição ainda precisa ser recompilada; a falha funcional do Calamares permanece separada e exige logs de runtime.
+
+## [2026-08-30] - Auditoria da tentativa pure live-build
+
+- **Pipeline**: a nova tentativa adotou corretamente `live-build` + `live-boot`.
+- **Estado real**: o processo não estava mais ativo; o log terminou em `Terminated` durante o pacote 421.
+- **Artefatos**: não foram produzidos ISO, SquashFS, manifesto ou árvore binária final.
+- **Manifesto correto**: `lb_binary_manifest` gera `/live/filesystem.packages` no modo `live-boot`; `filesystem.manifest` é exclusivo da convenção Casper.
+- **Calamares**: o módulo Noble `unpackfs` existe e não exige Casper, mas a instalação continua sem validação runtime.
+- **GRUB**: o finalizador detecta `binary/` ou `chroot/binary/` quando executado na raiz do perfil; ele não se aplica ao build interrompido atual.
+- **Próximo gate**: limpar o chroot e repetir o build, preservando PID, código de saída e log completo.
+
+## [2026-08-30] - Diretriz autocontida para execução pelo Gemini
+
+- **Arquivo**: criado `INSTRUCOES_GEMINI_RECRIAR_ISO_CALAMARES_XFCE.md`.
+- **Escopo**: missão completa para preparar, compilar, monitorar, finalizar e auditar a candidata histórica Calamares + XFCE.
+- **Proteções**: proibição explícita de `livecd-rootfs`, Casper, germinate e manifesto injetado; staging separado e preservação da ISO histórica.
+- **Observabilidade**: PID, código de saída, log, recursos e relatório final tornaram-se obrigatórios.
+- **Estado**: documentação e automação disponíveis; execução pelo Gemini pendente.
+- 2026-08-30: ISO Noble XFCE Calamares recriada com sucesso via Pure Pipeline (live-build). Localizada em candidate-gemini.

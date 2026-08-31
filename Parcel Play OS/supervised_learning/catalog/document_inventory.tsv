@@ -110,3 +110,4 @@ DOC-101	COMPARACAO_CALAMARES_DESKTOP_PROVISION_PLAYOS_2026-08-27.md	installer	ca
 DOC-102	PLANO_IMPLEMENTACAO_PRIMEIRA_ISO_NOBLE_XFCE_CALAMARES.md	build	first-iso-implementation-plan	current
 DOC-103	RECRIAR_PRIMEIRA_ISO_CALAMARES_XFCE.md	build	first-calamares-iso-rebuild-runbook	current
 DOC-104	SOLUCAO_IMPEDIMENTOS_RECRIACAO_ISO_CALAMARES_XFCE.md	build	first-calamares-iso-blockers-solution	current
+DOC-105	INSTRUCOES_GEMINI_RECRIAR_ISO_CALAMARES_XFCE.md	build	gemini-first-calamares-iso-directive	current

@@ -165,3 +165,11 @@ automaticamente a falha funcional do Calamares informada pelo usuário. Essa
 falha exige boot em VM e coleta de `calamares -d`, `journalctl`, `lsblk` e
 `findmnt`. Desktop Provision é uma variante separada, não um remendo deste
 perfil.
+
+## Auditoria da execução de 2026-08-30
+
+A tentativa pure live-build adotou o pipeline correto, mas foi encerrada no
+pacote 421 com `Terminated`. Não havia processo ativo nem árvore binária final.
+O `live-build` confirmou que, com `live-boot`, gera automaticamente
+`/live/filesystem.packages`; o nome `filesystem.manifest` pertence ao modo
+Casper. O chroot interrompido deve ser limpo e reconstruído.
