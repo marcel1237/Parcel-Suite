@@ -1017,6 +1017,14 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Estado**: nenhuma ISO GNOME foi gerada; build local não iniciou porque `sudo` exige autenticação interativa.
 - **Próximo gate**: executar o build em terminal autenticado ou liberar espaço no builder LXD, depois testar GNOME e Calamares em VM.
 
+## [2026-08-31] - Primeira execução do build GNOME
+
+- **Evidência**: analisado `/home/marcel/Documentos/log build iso gnome`, com 1.071 linhas.
+- **Resultado**: build interrompido em `lb_chroot_install-packages`; nenhuma ISO, manifesto ou SquashFS foi produzido.
+- **Causa**: APT Noble retornou `Unable to locate package subiquity-server` e `Unable to locate package curtin`.
+- **Correção**: removidos `subiquity-server`, `curtin` e `casper` da variante GNOME, restaurando o modelo da primeira ISO funcional: `live-boot` + Calamares.
+- **Próximo gate**: executar `sudo lb clean --purge`, `sudo lb config` e `sudo lb build` novamente e preservar o novo log.
+
 ## [2026-08-31] - Inventário da primeira Live XFCE + Calamares
 
 - **Documento**: criado `INVENTARIO_LIVE_CD_XFCE_CALAMARES_2026-08-31.md`.
@@ -1024,3 +1032,20 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Conteúdo**: boot Live, Calamares, armazenamento, gráficos, login, IPC, rede, energia, áudio, fontes, XDG, firmware, hardware, utilitários e branding foram classificados.
 - **Correção de estado**: a ISO histórica contém `live-boot` e Calamares, mas seu manifesto não contém Casper, Subiquity ou Curtin; esses nomes pertencem à receita posterior ainda não recompilada nesta variante.
 - **Limite**: inventário de pacote não comprova boot, instalação completa nem compatibilidade universal de hardware.
+
+## [2026-08-31] - Variante XFCE Live-only sem Calamares
+
+- **Decisão**: abandonar o instalador nesta candidata e priorizar uma Live CD funcional.
+- **Implementação**: criado `live-build/playos-noble-xfce-live-only/` preservando Noble, XFCE, LightDM e Graphics Core.
+- **Remoções**: Calamares, módulos, branding, lançador, Subiquity, Curtin e Casper.
+- **Validação**: `lb config`, sintaxe e auditoria estática da ausência de instaladores passaram.
+- **Staging**: criado `/home/marcel/playos-noble-xfce-live-only` para evitar os problemas do `live-build` com espaços no caminho.
+- **Estado**: build e runtime pendentes de execução autenticada.
+
+## [2026-08-31] - Nova base: kernel Noble e sistema Debian
+
+- **Decisão**: somente kernel e módulos inseparáveis virão do Ubuntu Noble; base, userspace, repositórios, boot e Live serão Debian.
+- **Segurança de pacotes**: proibida a mistura direta de mirrors Ubuntu e Debian; o kernel será importado como artefato local identificado e auditado.
+- **Documentação**: criado `ARQUITETURA_PLAYOS_KERNEL_UBUNTU_NOBLE_USERSPACE_DEBIAN.md` com fronteiras, pipeline, fontes e gates.
+- **Limites**: suite Debian e artefato exato do kernel Noble ainda não foram escolhidos; build e runtime são pendentes.
+- **Limpeza**: cinco stagings antigos em `/home/marcel` foram auditados para remoção; um deles possuía `proc`, `sysfs` e `devpts` montados e exige desmontagem segura.

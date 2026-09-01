@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=PlayOS Core Wayland (Labwc)
+Comment=Minimal PlayOS Wayland session without a desktop environment
+Exec=/usr/local/bin/playos-core-wayland-session
+TryExec=/usr/local/bin/playos-core-wayland-session
+Type=Application
+DesktopNames=PlayOS;

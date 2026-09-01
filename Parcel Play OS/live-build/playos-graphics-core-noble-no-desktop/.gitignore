@@ -1,0 +1,11 @@
+.build/
+binary/
+cache/
+chroot/
+local/
+live-image-*.iso
+config/bootstrap
+config/chroot
+config/binary
+config/common
+config/source

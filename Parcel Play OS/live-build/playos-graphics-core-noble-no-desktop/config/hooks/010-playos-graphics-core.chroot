@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+chmod 0755 /usr/local/bin/playos-core-wayland-session
+chmod 0755 /usr/local/bin/playos-core-x11-session
+
+printf '%s\n' 'PlayOS Live — Ubuntu Noble — Graphics Core without desktop environments' > /etc/issue
+
+systemctl set-default graphical.target
+systemctl enable lightdm.service
+systemctl enable NetworkManager.service
+
+update-mime-database /usr/share/mime
+update-desktop-database /usr/share/applications || true
+fc-cache -f

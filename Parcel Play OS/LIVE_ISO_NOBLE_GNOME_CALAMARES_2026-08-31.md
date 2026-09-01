@@ -26,6 +26,16 @@ Calamares, substituindo somente o desktop XFCE pelo GNOME. Kernel, base Noble,
 O Graphics Core continua desktop-neutral. GNOME pertence à composição da Live,
 assim como XFCE pertencia à variante anterior.
 
+### Correção após a primeira execução
+
+A primeira tentativa de build parou em `lb_chroot_install-packages`, antes da
+geração do SquashFS ou da ISO, porque o APT Noble não encontrou
+`subiquity-server` nem `curtin`. Esses pacotes e Casper vieram da integração
+híbrida posterior e não aparecem no manifesto da primeira ISO XFCE funcional.
+
+Para manter a substituição limitada ao desktop, os três foram removidos desta
+variante. O modelo voltou a ser o da primeira ISO: `live-boot` + Calamares.
+
 ## Perfil
 
 Fonte versionável:
@@ -45,8 +55,9 @@ sudo lb build
 
 O build deve ocorrer num builder Ubuntu 24.04 isolado e com espaço suficiente.
 O host atual exige autenticação interativa para `sudo`; além disso, o pool LXD
-usado anteriormente foi medido em 28,80/28,80 GiB. Por isso nenhuma ISO GNOME
-foi produzida nesta execução.
+usado anteriormente foi medido em 28,80/28,80 GiB. A primeira execução
+autenticada foi realizada pelo usuário, mas parou por pacotes indisponíveis;
+por isso nenhuma ISO GNOME foi produzida até esta revisão.
 
 ## Validação obrigatória depois do build
 
@@ -61,4 +72,3 @@ foi produzida nesta execução.
 8. reinicializar e confirmar que GDM3 e GNOME iniciam no sistema instalado.
 
 Build bem-sucedido não comprova boot nem funcionamento do instalador.
-

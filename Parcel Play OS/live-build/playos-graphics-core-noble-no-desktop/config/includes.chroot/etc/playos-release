@@ -1,0 +1,7 @@
+NAME="PlayOS Graphics Core"
+BASE="Ubuntu Noble"
+PROFILE="graphics-core-no-desktop"
+DESKTOP_ENVIRONMENT="none"
+X11="Xorg technical session"
+WAYLAND="Labwc"
+VULKAN="Mesa ICDs"

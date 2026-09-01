@@ -11,6 +11,7 @@ keyboard-configuration
 dbus
 dbus-user-session
 policykit-1
+lxpolkit
 
 # Network, power and storage
 network-manager
@@ -40,18 +41,12 @@ fontconfig
 fonts-dejavu-core
 fonts-noto-core
 
-# X11 server and GNOME Live desktop profile
+# X11 server and minimal technical session
 xserver-xorg
 xserver-xorg-core
 x11-xserver-utils
 xinit
 xterm
-ubuntu-desktop-minimal
-gnome-shell
-gnome-session
-gnome-control-center
-gnome-terminal
-nautilus
 
 # Wayland core session
 wayland-protocols
@@ -66,10 +61,10 @@ xdg-desktop-portal-gtk
 xdg-desktop-portal-wlr
 
 # Login manager
-gdm3
+lightdm
+lightdm-gtk-greeter
 
-# Desktop-neutral offline installer
-calamares
+# Disk and filesystem utilities available in the Live session
 parted
 dosfstools
 e2fsprogs

@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+audit=/usr/share/playos/graphics-core-build-audit.txt
+mkdir -p /usr/share/playos
+
+{
+  echo 'PlayOS Graphics Core build audit'
+  echo 'graphics_core_desktop_environment=none'
+  echo 'live_profile_desktop_environment=xfce'
+  echo 'forbidden packages:'
+  dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E '^(ubuntu-desktop|kubuntu-desktop|gnome-shell|plasma-desktop|openbox)(:|$)' || true
+  echo 'required packages:'
+  dpkg-query -W -f='${binary:Package}\t${Version}\n' systemd dbus policykit-1 network-manager upower udisks2 libdrm2 mesa-vulkan-drivers libvulkan1 xserver-xorg xfce4 xfce4-session xfwm4 xfce4-panel thunar xwayland labwc lightdm pipewire wireplumber parted squashfs-tools grub-pc-bin grub-efi-amd64-bin
+  echo 'forbidden installer packages:'
+  if dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E '^(calamares|subiquity-server|curtin|casper)(:|$)'; then
+    echo 'erro: instalador ou backend híbrido presente no perfil Live-only' >&2
+    exit 1
+  fi
+} > "$audit"
