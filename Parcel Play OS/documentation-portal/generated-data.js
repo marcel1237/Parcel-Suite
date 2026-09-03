@@ -2,7 +2,7 @@
 window.PLAYOS_PORTAL = {
   "stats": {
     "sources": 55,
-    "documents": 117,
+    "documents": 118,
     "knowledge": 17,
     "qa": 54,
     "topics": 46
@@ -324,7 +324,7 @@ window.PLAYOS_PORTAL = {
       "area": "evidence",
       "status": "current",
       "priority": "P1",
-      "description": "Perfil Debian Live XFCE sem instalador derivado do manifesto histórico com kernel Noble local pendente",
+      "description": "Perfil Debian Live XFCE sem instalador; kernel Noble importado; primeira execução interrompida por device node inválido no contêiner",
       "href": "../LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md",
       "tags": "build debian-trixie-xfce-noble-kernel-live-profile current LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md"
     },
@@ -407,6 +407,16 @@ window.PLAYOS_PORTAL = {
       "description": "Este patchset cria a linha principal do PlayOS Kernel sobre Linux vanilla 7.1.8. Ele reaproveita a política do Ubuntu Noble Generic, adapta a configuração às",
       "href": "../patch-Noble-PlayOS-Kernel-7.1.8/README.md",
       "tags": "playos-kernel-718 guide current patch-Noble-PlayOS-Kernel-7.1.8/README.md"
+    },
+    {
+      "id": "DOC-111",
+      "title": "Pacotes da Live PlayOS Debian Trixie + XFCE + kernel Noble",
+      "area": "evidence",
+      "status": "current",
+      "priority": "P1",
+      "description": "Este arquivo registra os 67 pacotes solicitados diretamente pelo perfil atual da Live. Ele não é ainda o manifesto de todos os pacotes instalados: o",
+      "href": "../PACOTES_LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE.md",
+      "tags": "build debian-trixie-xfce-noble-direct-packages current PACOTES_LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE.md"
     },
     {
       "id": "DOC-042",
