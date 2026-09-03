@@ -115,3 +115,4 @@ DOC-106	LIVE_ISO_NOBLE_GNOME_CALAMARES_2026-08-31.md	build	noble-gnome-calamares
 DOC-107	INVENTARIO_LIVE_CD_XFCE_CALAMARES_2026-08-31.md	build	first-live-xfce-package-inventory	current
 DOC-108	LIVE_ISO_NOBLE_XFCE_SEM_INSTALADOR_2026-08-31.md	build	noble-xfce-live-only-implementation-report	current
 DOC-109	ARQUITETURA_PLAYOS_KERNEL_UBUNTU_NOBLE_USERSPACE_DEBIAN.md	architecture	noble-kernel-debian-userspace-live-decision	current
+DOC-110	LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md	build	debian-trixie-xfce-noble-kernel-live-profile	current

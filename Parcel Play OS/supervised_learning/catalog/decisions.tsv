@@ -32,3 +32,4 @@ DEC-030	A Live Noble usará XFCE 4.18 no lugar do Openbox sem inserir desktop no
 DEC-031	Calamares permanece o instalador candidato da Live Noble XFCE e Anaconda fica como referência RPM empresarial	current	high	SRC-PLAYOS-INSTALLER-COMPARE,SRC-PLAYOS-LIVE-CALAMARES-NODE
 DEC-032	Calamares permanece no MVP e Desktop Provision será avaliado em variante separada baseada em livecd-rootfs e Casper	current	high	SRC-PLAYOS-CALAMARES-DESKTOP-PROVISION,SRC-PLAYOS-LIVE-CALAMARES-NODE
 DEC-033	PlayOS usará somente kernel e módulos Ubuntu Noble sobre userspace e pipeline Live Debian sem misturar repositórios	current	high	SRC-PLAYOS-NOBLE-KERNEL-DEBIAN,SRC-NOBLE-BUILD
+DEC-034	Primeira Live Debian do PlayOS usará Trixie XFCE direto e nenhum instalador com kernel Noble local	current	high	SRC-PLAYOS-LIVE-DEBIAN-XFCE-NOBLE,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN

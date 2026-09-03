@@ -38,6 +38,7 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Inventário da primeira Live Noble XFCE + Calamares](../INVENTARIO_LIVE_CD_XFCE_CALAMARES_2026-08-31.md)
 - [Live Noble XFCE sem instalador](../LIVE_ISO_NOBLE_XFCE_SEM_INSTALADOR_2026-08-31.md)
 - [Kernel Ubuntu Noble sobre userspace e Live Debian](../ARQUITETURA_PLAYOS_KERNEL_UBUNTU_NOBLE_USERSPACE_DEBIAN.md)
+- [Live Debian Trixie XFCE com kernel Noble, sem Calamares](../LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md)
 
 ## Catálogos
 

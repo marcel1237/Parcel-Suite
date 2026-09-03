@@ -1049,3 +1049,12 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Documentação**: criado `ARQUITETURA_PLAYOS_KERNEL_UBUNTU_NOBLE_USERSPACE_DEBIAN.md` com fronteiras, pipeline, fontes e gates.
 - **Limites**: suite Debian e artefato exato do kernel Noble ainda não foram escolhidos; build e runtime são pendentes.
 - **Limpeza**: cinco stagings antigos em `/home/marcel` foram auditados para remoção; um deles possuía `proc`, `sysfs` e `devpts` montados e exige desmontagem segura.
+
+## [2026-09-03] - Perfil Debian Trixie XFCE com kernel Noble
+
+- **Implementação**: criado `live-build/playos-debian-trixie-xfce-noble-kernel/` em modo Debian, sem Calamares ou outro instalador.
+- **Base**: Debian 13 `trixie` fixado por codinome; XFCE, LightDM, serviços, firmware e pipeline Live são Debian.
+- **Kernel**: a receita exige os pacotes locais Noble `6.8.0-138-generic` de imagem, módulos e módulos-extra; artefatos ainda não importados.
+- **Manifesto**: referência derivada preserva 1.109 das 1.110 entradas históricas e remove diretamente somente Calamares.
+- **Validação**: nomes operacionais confirmados nos índices oficiais Trixie; `policykit-1` foi adaptado para `polkitd`, `pkexec` e `lxpolkit`.
+- **Limite**: perfil estático implementado; ISO, boot e runtime permanecem pendentes. O `live-build 3.0~a57` do host é rejeitado por ser incompatível com o pipeline Debian atual.

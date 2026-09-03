@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+audit=/usr/share/playos/build-audit.txt
+mkdir -p /usr/share/playos
+
+forbidden='^(calamares|calamares-data|calamares-settings-debian|libcalamares|subiquity|curtin|casper)(:|$)'
+
+if dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E "$forbidden"; then
+  echo 'erro: instalador proibido presente na composição Live-only' >&2
+  exit 1
+fi
+
+if dpkg-query -W -f='${binary:Package}\n' 2>/dev/null | grep -E '^linux-image-(amd64|cloud-amd64|rt-amd64)(:|$)'; then
+  echo 'erro: metapacote de kernel Debian presente; esperado somente kernel Noble local' >&2
+  exit 1
+fi
+
+dpkg-query -W -f='${binary:Package}\t${Version}\n' \
+  linux-image-6.8.0-138-generic \
+  linux-modules-6.8.0-138-generic \
+  linux-modules-extra-6.8.0-138-generic \
+  live-boot live-config xfce4 xfce4-session xfwm4 xfce4-panel thunar \
+  lightdm network-manager pipewire wireplumber > "$audit"
+
+printf '%s\n' 'installer=none' 'userspace=debian-trixie' \
+  'desktop=xfce' 'kernel_source=ubuntu-noble-local-packages' >> "$audit"

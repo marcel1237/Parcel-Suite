@@ -90,9 +90,9 @@ receita versionada
   -> manifesto, checksums e SBOM
 ```
 
-A suite Debian permanece `unknown` até decisão explícita. Ela não deve seguir
-automaticamente `stable`, pois esse alias muda com o tempo. O codinome e um
-snapshot/repositório datado devem ser fixados para reprodução.
+A suite escolhida para o primeiro perfil é Debian 13 `trixie`, fixada pelo
+codinome em vez do alias mutável `stable`. Para reprodução de release ainda se
+deve registrar snapshot ou data dos repositórios usados no build.
 
 ## Fontes por componente
 
@@ -130,7 +130,7 @@ eles precisam ser desmontados antes da exclusão. As receitas versionadas em
 
 ## Gates
 
-1. escolher codinome e snapshot Debian;
+1. registrar snapshot dos repositórios Debian Trixie;
 2. identificar e verificar o kernel Noble exato;
 3. auditar dependências dos pacotes do kernel;
 4. construir repositório local e metapacote;
