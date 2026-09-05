@@ -1062,3 +1062,9 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Decisão de segurança**: não transformar o contêiner em instância persistentemente privilegiada; repetir o build em VM Debian completa.
 - **Documentação**: `LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md` agora descreve a inspiração Knoppix, a derivação segura do manifesto Ubuntu, os 67 pacotes diretos, hooks, builder e gates; `PACOTES_LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE.md` registra a lista direta.
 - **Limite**: ISO, boot e runtime permanecem pendentes. O `live-build 3.0~a57` do host continua rejeitado por ser incompatível com o pipeline Debian atual.
+- **VM Debian**: concluída como `playos-debian-trixie-builder-vm`, Debian 13.6 amd64, 4 vCPUs, 3 GiB de RAM e disco de 12 GiB.
+- **Builder**: instaladas as ferramentas Debian Live, incluindo `live-build 1:20250505+deb13u1`; perfil e três `.deb` Noble copiados para a VM.
+- **Preflight na VM**: três checksums Noble aprovados e perfil estático aprovado.
+- **Build em andamento**: iniciado como `playos-debian-live-build.service`; a última captura mostrou `lb bootstrap`/`debootstrap` configurando a base Trixie.
+- **Avanço confirmado**: após o bootstrap, o build entrou em `lb chroot_archives chroot install`, reconheceu `/packages` e iniciou os índices Trixie, updates e security; havia cerca de 9,8 GiB livres.
+- **Relatório de execução**: criado `RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md` com linha do tempo, comandos, resultados, falhas, decisões, monitoramento e gates.

@@ -117,3 +117,4 @@ DOC-108	LIVE_ISO_NOBLE_XFCE_SEM_INSTALADOR_2026-08-31.md	build	noble-xfce-live-o
 DOC-109	ARQUITETURA_PLAYOS_KERNEL_UBUNTU_NOBLE_USERSPACE_DEBIAN.md	architecture	noble-kernel-debian-userspace-live-decision	current
 DOC-110	LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md	build	debian-trixie-xfce-noble-kernel-live-profile	current
 DOC-111	PACOTES_LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE.md	build	debian-trixie-xfce-noble-direct-packages	current
+DOC-112	RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md	build	debian-trixie-xfce-noble-build-execution	current

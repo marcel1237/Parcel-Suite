@@ -256,7 +256,15 @@ da saída só será declarado depois do build concluído.
   contornar o problema;
 - `implementation`: foi iniciada a preparação de uma VM Debian completa, onde
   os device nodes do chroot não dependem dessa limitação do contêiner;
+- `result`: a VM Debian 13.6 foi concluída, recebeu o `live-build` atual, o
+  perfil e os pacotes Noble; o preflight passou e o build foi iniciado como
+  `playos-debian-live-build.service`;
+- `result`: na última captura, o serviço estava ativo em `lb bootstrap`, com o
+  `debootstrap` configurando os pacotes essenciais da raiz Trixie;
 - `unknown`: ISO final, boot BIOS/UEFI, sessão XFCE, rede, áudio e hardware.
+
+O relatório cronológico completo desta execução está em
+`RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md`.
 
 A falha foi do ambiente de construção, não evidência de incompatibilidade do
 kernel Noble com o userspace Debian. Essa compatibilidade só poderá ser marcada
