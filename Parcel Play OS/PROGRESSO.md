@@ -1068,3 +1068,37 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Build em andamento**: iniciado como `playos-debian-live-build.service`; a última captura mostrou `lb bootstrap`/`debootstrap` configurando a base Trixie.
 - **Avanço confirmado**: após o bootstrap, o build entrou em `lb chroot_archives chroot install`, reconheceu `/packages` e iniciou os índices Trixie, updates e security; havia cerca de 9,8 GiB livres.
 - **Relatório de execução**: criado `RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md` com linha do tempo, comandos, resultados, falhas, decisões, monitoramento e gates.
+
+## [2026-09-06] - ISO Debian Trixie XFCE com kernel Noble concluída
+
+- **Build**: `live-build` concluiu com sucesso e produziu `live-image-amd64.hybrid.iso` com 1.388.435.456 bytes.
+- **Integridade**: SHA-256 `ed798d40e58da7bc5a0da531a6947da6263766e1fc86ea6e179492475df1c50d` aprovado dentro da VM e após copiar para o projeto.
+- **Saída**: ISO, checksum, manifesto, contents e log copiados para `build/playos-debian-trixie-xfce-noble/output/`.
+- **Transferência segura**: uma primeira cópia truncada foi rejeitada pelo checksum; a repetição usou arquivo temporário e só substituiu a saída após hash e tamanho coincidirem.
+- **Estrutura**: El Torito BIOS e UEFI, MBR protetivo, GPT, SquashFS, initrd e kernel Noble 6.8.0-138 confirmados.
+- **Manifesto**: XFCE 4.20.1, LightDM, live-boot/live-config e os três pacotes Noble presentes; Calamares, Subiquity, Curtin e Casper ausentes.
+- **Boot**: VM LXD iniciou via UEFI; console confirmou carregamento do kernel/initrd e a Live recebeu IPv4 e IPv6.
+- **Limite**: XFCE visual, áudio, Vulkan, runtime interno detalhado e hardware real ainda não foram validados.
+
+## [2026-09-06] - Variante GNOME com o mesmo kernel Noble
+
+- **Perfil**: criado `live-build/playos-debian-trixie-gnome-noble-kernel/`, preservando integralmente a variante XFCE.
+- **Troca**: removidos XFCE/LightDM da seleção direta e adicionados GNOME Core, GDM3, GNOME Terminal e GNOME Software.
+- **Base preservada**: Debian 13 Trixie, pipeline Debian Live e kernel/módulos Noble `6.8.0-138-generic`.
+- **Auditoria**: 62 pacotes diretos, scripts com sintaxe válida, checksums Noble aprovados e pacotes GNOME encontrados no Debian.
+- **Builder**: staging XFCE interno limpo após preservar os artefatos; aproximadamente 11 GiB liberados.
+- **Build**: `playos-debian-gnome-live-build.service` iniciado e ativo em `lb bootstrap_debootstrap`.
+- **Checkpoint**: o build avançou para `lb chroot_install-packages install`, instalando GNOME, GDM3, GTK 3/4, Wayland, Vulkan, PipeWire, fontes, firmware e aplicações; 8,1 GiB ainda estavam livres.
+- **Monitoramento**: documentado o `tail -f` remoto e que `Ctrl+C` encerra somente o acompanhamento, não o serviço de build.
+- **Limite**: ISO, manifesto final e runtime GNOME ainda pendentes.
+
+## [2026-09-06] - ISO Debian Trixie GNOME com kernel Noble concluída
+
+- **Resultado**: `live-build` concluiu os estágios Binary e Build com sucesso.
+- **Artefato**: `build/playos-debian-trixie-gnome-noble/output/live-image-amd64.hybrid.iso`, 2007859200 bytes.
+- **Integridade**: SHA-256 `3d37930ce1db4853a4eda72152b8f5e13f99a942e9e6840ace2a84a3214743eb` aprovado na VM e novamente após a cópia local.
+- **Estrutura**: volume `PLAYOS_D13_GNOME`, boot El Torito BIOS e UEFI, GRUB 2, MBR protetora e GPT.
+- **Kernel**: manifesto interno e árvore `/live` confirmam Ubuntu Noble `6.8.0-138-generic`, módulos e módulos-extra.
+- **Desktop**: GNOME Core, GNOME Shell e GDM3 presentes; XFCE, LightDM, Calamares e Anaconda ausentes da consulta do manifesto.
+- **Risco operacional**: disco raiz da builder em 100%, com 58 MiB livres; não iniciar outro build antes de recuperar capacidade.
+- **Limite**: validação de boot, sessão GNOME, rede, áudio, Mesa/Vulkan e hardware permanece pendente.

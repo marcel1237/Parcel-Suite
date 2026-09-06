@@ -40,6 +40,7 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Kernel Ubuntu Noble sobre userspace e Live Debian](../ARQUITETURA_PLAYOS_KERNEL_UBUNTU_NOBLE_USERSPACE_DEBIAN.md)
 - [Live Debian Trixie XFCE com kernel Noble, sem Calamares](../LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md)
 - [Execução do build Debian Trixie XFCE com kernel Noble](../RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md)
+- [Live Debian Trixie GNOME com kernel Noble, sem instalador](../LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md)
 
 ## Catálogos
 

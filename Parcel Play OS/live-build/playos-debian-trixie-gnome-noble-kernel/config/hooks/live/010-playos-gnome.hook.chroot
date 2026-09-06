@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+printf '%s\n' 'PlayOS Live — Debian 13 trixie userspace — Ubuntu Noble kernel — GNOME' > /etc/issue
+systemctl set-default graphical.target
+systemctl enable gdm3.service
+systemctl enable NetworkManager.service
+
+update-initramfs -u -k all

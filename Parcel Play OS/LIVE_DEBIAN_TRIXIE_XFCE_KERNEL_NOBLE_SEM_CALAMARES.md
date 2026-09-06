@@ -4,8 +4,8 @@
 
 - **ID:** `PLAYOS-LIVE-DEBIAN-XFCE-NOBLE-001`
 - **Tipo:** `implementation` e `implementation-plan`
-- **Estado:** perfil criado; kernel importado; primeiro build interrompido pelo
-  ambiente de contêiner; ISO e runtime pendentes
+- **Estado:** ISO criada e validada estaticamente; boot UEFI e rede confirmados
+  em VM; validação visual do XFCE e hardware pendentes
 - **Confiança:** alta para a composição e nomes Debian; runtime `unknown`
 - **Data:** 2026-09-03
 - **Suite:** Debian 13 `trixie`, fixada por codinome
@@ -261,7 +261,14 @@ da saída só será declarado depois do build concluído.
   `playos-debian-live-build.service`;
 - `result`: na última captura, o serviço estava ativo em `lb bootstrap`, com o
   `debootstrap` configurando os pacotes essenciais da raiz Trixie;
-- `unknown`: ISO final, boot BIOS/UEFI, sessão XFCE, rede, áudio e hardware.
+- `result histórico`: naquele ponto, ISO, boot e runtime ainda estavam
+  pendentes; o estado posterior está registrado abaixo.
+
+Atualização de 2026-09-06: a execução em VM concluiu a ISO, passou no SHA-256,
+confirmou boot El Torito BIOS/UEFI e inicializou uma VM LXD via UEFI. A Live
+recebeu IPv4 e IPv6. XFCE visual, áudio, Vulkan e hardware ainda não foram
+validados; consulte
+`RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md`.
 
 O relatório cronológico completo desta execução está em
 `RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md`.

@@ -4,7 +4,8 @@
 
 - ID: `PLAYOS-LIVE-DEBIAN-XFCE-NOBLE-RUN-001`
 - Tipo: `result` e `execution-report`
-- Estado: build em execução; ISO ainda não produzida
+- Estado: build e ISO concluídos; checksum, estrutura de boot e boot parcial
+  em VM validados; desktop visual pendente
 - Confiança: alta para comandos e resultados registrados
 - Data: 2026-09-03
 - Builder: `playos-debian-trixie-builder-vm`
@@ -284,3 +285,95 @@ sem conceder privilégio persistente ao contêiner. A VM, as ferramentas, o
 perfil e os pacotes Noble foram verificados. O build real está ativo no estágio
 de bootstrap Debian. ISO, boot e runtime continuam classificados como
 `unknown` até os respectivos gates serem executados.
+
+## Resultado final do build — atualização de 2026-09-06
+
+O serviço transitório já havia encerrado e desaparecido do systemd, como
+esperado após conclusão e reinicialização/limpeza da unidade. O final preservado
+de `build.log` registrou:
+
+```text
+P: Binary stage completed
+P: Build completed successfully
+ISO criada: ./live-image-amd64.hybrid.iso
+```
+
+Artefatos produzidos dentro da VM:
+
+| Artefato | Tamanho |
+|---|---:|
+| `live-image-amd64.hybrid.iso` | 1.388.435.456 bytes |
+| `live-image-amd64.packages` | 28.019 bytes |
+| `live-image-amd64.contents` | 18.492 bytes |
+| `live-image-amd64.hybrid.iso.sha256` | 96 bytes |
+
+SHA-256 confirmado:
+
+```text
+ed798d40e58da7bc5a0da531a6947da6263766e1fc86ea6e179492475df1c50d
+```
+
+O relatório El Torito confirmou GRUB BIOS, GRUB UEFI, MBR protetivo, GPT e o
+volume `PLAYOS_D13_XFCE`. A ISO contém:
+
+```text
+/live/vmlinuz-6.8.0-138-generic
+/live/initrd.img-6.8.0-138-generic
+/live/filesystem.squashfs
+```
+
+O manifesto final confirmou XFCE 4.20.1, LightDM, `live-boot`, `live-config` e
+os três pacotes Noble 6.8.0-138. Calamares, seus settings, Subiquity, Curtin e
+Casper não aparecem no manifesto.
+
+## Cópia para o projeto
+
+Os artefatos foram copiados para:
+
+```text
+build/playos-debian-trixie-xfce-noble/output/
+```
+
+A primeira transferência da ISO terminou prematuramente com apenas
+1.030.258.688 bytes; o SHA-256 detectou a truncagem. Essa cópia não foi usada.
+A transferência foi repetida para extensão `.partial`, chegou aos
+1.388.435.456 bytes e apresentou o hash esperado. Somente depois disso ela
+substituiu a cópia incompleta. Uma nova verificação no diretório do projeto
+retornou `OK`.
+
+Foram preservados no projeto:
+
+- ISO completa;
+- arquivo SHA-256;
+- manifesto de pacotes;
+- inventário de conteúdo;
+- log completo do build.
+
+A ISO Calamares anterior foi preservada: a política de saída única não deve
+eliminar o último artefato previamente conhecido antes da validação completa da
+nova candidata.
+
+## Teste de boot LXD
+
+A ISO foi importada no pool LXD como volume somente leitura
+`playos-d13-xfce-noble-iso`. Foi criada a VM isolada
+`playos-d13-xfce-noble-boot-test`, com 2 vCPUs, 2 GiB de RAM, disco vazio de
+8 GiB e Secure Boot desativado.
+
+Resultados observados:
+
+- `result`: a VM iniciou pela ISO e permaneceu `RUNNING`;
+- `result`: o console serial exibiu `EFI stub: Loaded initrd`, confirmando que
+  o firmware UEFI carregou o kernel e o initrd da mídia;
+- `result`: a interface `eth0` ficou ativa e recebeu IPv4 `10.131.47.16` e
+  IPv6, evidência de chegada ao userspace e configuração de rede;
+- `unknown`: o console serial não mostra o desktop porque o GRUB/boot usa saída
+  gráfica silenciosa;
+- `unknown`: a imagem Live não inclui `lxd-agent`, portanto `lxc exec` não pode
+  consultar `uname`, systemd ou a sessão gráfica por dentro;
+- `unknown`: abertura visual efetiva do XFCE, áudio, Mesa/Vulkan e interação do
+  usuário ainda precisam do console VGA.
+
+Classificação atual correta: ISO **compilada, íntegra, inicializável via UEFI e
+capaz de alcançar userspace/rede em VM**. Ela ainda não deve ser classificada
+como desktop visual completamente validado nem pronta para hardware/produção.

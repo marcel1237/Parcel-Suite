@@ -1,0 +1,76 @@
+# Debian Live infrastructure
+live-boot
+live-config
+live-config-systemd
+live-tools
+systemd-sysv
+sudo
+locales
+keyboard-configuration
+console-setup
+
+# Ubuntu Noble kernel ABI confirmed by the source ISO manifest.
+# These packages must be supplied locally in config/packages.chroot/.
+linux-image-6.8.0-138-generic
+linux-modules-6.8.0-138-generic
+linux-modules-extra-6.8.0-138-generic
+
+# Debian GNOME session; no installer task/metapackage.
+gnome-core
+gdm3
+gnome-terminal
+gnome-software
+
+# Debian services and desktop integration
+dbus-user-session
+polkitd
+pkexec
+network-manager
+network-manager-gnome
+upower
+udisks2
+gvfs
+gvfs-backends
+xdg-utils
+xdg-user-dirs
+desktop-file-utils
+shared-mime-info
+
+# Debian graphics, input, fonts and audio
+libgl1-mesa-dri
+mesa-vulkan-drivers
+mesa-utils
+vulkan-tools
+xserver-xorg-input-libinput
+fonts-dejavu-core
+fonts-noto-core
+alsa-utils
+pipewire
+pipewire-audio
+pipewire-pulse
+wireplumber
+pavucontrol
+
+# Debian firmware/microcode; no Ubuntu firmware package
+firmware-linux-free
+firmware-misc-nonfree
+firmware-amd-graphics
+intel-microcode
+amd64-microcode
+
+# Storage, Live diagnostics and utilities retained from the source intent
+parted
+btrfs-progs
+dosfstools
+e2fsprogs
+rsync
+squashfs-tools
+pciutils
+usbutils
+procps
+kmod
+curl
+ca-certificates
+less
+nano
+file
