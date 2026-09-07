@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+printf '%s\n' 'PlayOS Live — Ubuntu Noble — KDE Full — KNOPPIX-inspired architecture' > /etc/issue
+
+printf '%s\n' overlay squashfs iso9660 >> /etc/initramfs-tools/modules
+systemctl set-default graphical.target
+systemctl enable sddm.service
+systemctl enable NetworkManager.service
+
+update-initramfs -u -k all

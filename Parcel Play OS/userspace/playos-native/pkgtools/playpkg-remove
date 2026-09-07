@@ -1,0 +1,37 @@
+#!/bin/sh
+set -eu
+
+root=/
+if [ "${1:-}" = --root ]; then
+  test "$#" -ge 3 || { echo 'uso: playpkg-remove [--root ROOT] NAME' >&2; exit 2; }
+  root=$2
+  shift 2
+fi
+test "$#" -eq 1 || { echo 'uso: playpkg-remove [--root ROOT] NAME' >&2; exit 2; }
+name=$1
+case "$name" in *[!A-Za-z0-9._+-]*|'') echo 'nome de pacote inválido' >&2; exit 1 ;; esac
+
+root=$(CDPATH= cd -- "$root" && pwd)
+db=$root/var/lib/playpkg
+files=$db/installed/$name.files
+test -f "$files" || { echo "pacote não instalado: $name" >&2; exit 1; }
+
+# Files and links first, directories afterwards from deepest to shallowest.
+while IFS= read -r path; do
+  test -n "$path" || continue
+  target=$root/$path
+  if [ ! -d "$target" ] || [ -L "$target" ]; then
+    rm -f -- "$target"
+  fi
+  key=$(printf '%s' "$path" | sha256sum | awk '{print $1}')
+  if [ -f "$db/owners/$key" ] && [ "$(cat "$db/owners/$key")" = "$name" ]; then
+    rm -f -- "$db/owners/$key"
+  fi
+done < "$files"
+
+awk '{ print length, $0 }' "$files" | sort -rn | cut -d' ' -f2- | while IFS= read -r path; do
+  rmdir -- "$root/$path" 2>/dev/null || true
+done
+
+rm -f -- "$db/installed/$name.files" "$db/installed/$name.meta"
+echo "Removido: $name"

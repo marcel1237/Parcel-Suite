@@ -1,0 +1,95 @@
+#!/bin/sh
+set -eu
+
+root=/
+if [ "${1:-}" = --root ]; then
+  test "$#" -ge 3 || { echo 'uso: playpkg-install [--root ROOT] PACKAGE.pxz' >&2; exit 2; }
+  root=$2
+  shift 2
+fi
+test "$#" -eq 1 || { echo 'uso: playpkg-install [--root ROOT] PACKAGE.pxz' >&2; exit 2; }
+package=$1
+
+test -f "$package" || { echo "pacote ausente: $package" >&2; exit 1; }
+mkdir -p "$root"
+root=$(CDPATH= cd -- "$root" && pwd)
+db=$root/var/lib/playpkg
+installed=$db/installed
+owners=$db/owners
+mkdir -p "$installed" "$owners"
+
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/playpkg-install.XXXXXX")
+trap 'rm -rf "$tmp"' EXIT HUP INT TERM
+mkdir -p "$tmp/tree"
+
+tar -tJf "$package" > "$tmp/archive.list"
+if awk '
+  /^\// { bad=1 }
+  { n=split($0,a,"/"); for(i=1;i<=n;i++) if(a[i]=="..") bad=1 }
+  END { exit bad ? 0 : 1 }
+' "$tmp/archive.list"; then
+  echo 'pacote rejeitado: caminho absoluto ou traversal detectado' >&2
+  exit 1
+fi
+
+tar -xJf "$package" -C "$tmp/tree"
+meta=$tmp/tree/PLAYOS/meta
+test -f "$meta" || { echo 'pacote rejeitado: PLAYOS/meta ausente' >&2; exit 1; }
+
+if find "$tmp/tree" \( -type b -o -type c -o -type p -o -type s \) -print -quit | grep -q .; then
+  echo 'pacote rejeitado: device, FIFO ou socket não é permitido no formato v1' >&2
+  exit 1
+fi
+
+find "$tmp/tree" -type l -print | while IFS= read -r link; do
+  target=$(readlink "$link")
+  case "$target" in
+    /*) echo "pacote rejeitado: symlink absoluto: $link -> $target" >&2; exit 1 ;;
+  esac
+  oldifs=$IFS
+  IFS=/
+  for component in $target; do
+    test "$component" != .. || {
+      echo "pacote rejeitado: symlink com traversal: $link -> $target" >&2
+      exit 1
+    }
+  done
+  IFS=$oldifs
+done
+
+for field in NAME VERSION ARCH BUILD LICENSE; do
+  value=$(sed -n "s/^${field}=//p" "$meta")
+  test -n "$value" || { echo "pacote rejeitado: campo $field ausente" >&2; exit 1; }
+done
+name=$(sed -n 's/^NAME=//p' "$meta")
+case "$name" in *[!A-Za-z0-9._+-]*|'') echo 'nome de pacote inválido' >&2; exit 1 ;; esac
+test ! -e "$installed/$name.meta" || { echo "pacote já instalado: $name" >&2; exit 1; }
+
+(cd "$tmp/tree" && find . -mindepth 1 ! -path './PLAYOS' ! -path './PLAYOS/*' -printf '%P\n' | LC_ALL=C sort) > "$tmp/payload.list"
+
+while IFS= read -r path; do
+  test -n "$path" || continue
+  if [ -d "$tmp/tree/$path" ] && [ ! -L "$tmp/tree/$path" ]; then
+    continue
+  fi
+  key=$(printf '%s' "$path" | sha256sum | awk '{print $1}')
+  if [ -f "$owners/$key" ] && [ "$(cat "$owners/$key")" != "$name" ]; then
+    echo "colisão: $path pertence a $(cat "$owners/$key")" >&2
+    exit 1
+  fi
+done < "$tmp/payload.list"
+
+(cd "$tmp/tree" && tar -cf - --exclude='./PLAYOS' .) | (cd "$root" && tar -xpf -)
+cp "$meta" "$installed/$name.meta"
+cp "$tmp/payload.list" "$installed/$name.files"
+
+while IFS= read -r path; do
+  test -n "$path" || continue
+  if [ -d "$tmp/tree/$path" ] && [ ! -L "$tmp/tree/$path" ]; then
+    continue
+  fi
+  key=$(printf '%s' "$path" | sha256sum | awk '{print $1}')
+  printf '%s\n' "$name" > "$owners/$key"
+done < "$tmp/payload.list"
+
+echo "Instalado: $name"

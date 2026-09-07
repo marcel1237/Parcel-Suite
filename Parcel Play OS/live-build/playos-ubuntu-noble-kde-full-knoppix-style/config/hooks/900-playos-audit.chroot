@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+. /etc/os-release
+test "${ID:-}" = playos
+test "${ID_LIKE:-}" = "ubuntu debian"
+test "${VERSION_CODENAME:-}" = noble
+test -r /etc/playos-release
+
+if grep -RqsE '(^|[[:space:]])https?://[^[:space:]]*(deb\.debian\.org|debian\.org/debian)' /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null; then
+  echo 'ERRO: repositório Debian detectado no userspace Ubuntu Noble' >&2
+  exit 1
+fi
+
+for package in kde-full plasma-workspace kwin-x11 kwin-wayland sddm dolphin konsole live-boot live-config network-manager pipewire wireplumber; do
+  dpkg-query -W -f='${Package}\t${Version}\n' "$package"
+done
+
+dpkg-query -W -f='${Package}\t${Version}\n' 'linux-image-*-generic' 'linux-modules-*-generic'
+
+for forbidden in calamares subiquity-server curtin casper gnome-shell xfce4 lightdm; do
+  if dpkg-query -W -f='${db:Status-Abbrev}' "$forbidden" 2>/dev/null | grep -q '^ii'; then
+    echo "ERRO: pacote proibido instalado: $forbidden" >&2
+    exit 1
+  fi
+done

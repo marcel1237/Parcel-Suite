@@ -1,0 +1,6 @@
+GNOME_BUILD_META_URL=https://gitlab.gnome.org/GNOME/gnome-build-meta.git
+GNOME_BUILD_META_BRANCH=gnome-50
+GNOME_BUILD_META_COMMIT=ec28a45a6fcd99195ebc39c1aeda78fd6fe27b8f
+GNOME_BUILDSTREAM_TARGET=core/meta-gnome-core-shell.bst
+GNOME_BUILDSTREAM_IMAGE=registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2:latest
+GNOME_BUILDSTREAM_VERSION_OBSERVED=2.8.0

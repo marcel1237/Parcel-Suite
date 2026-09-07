@@ -1,0 +1,8 @@
+PLAYOS_RELEASE="1"
+PLAYOS_CODENAME="noble"
+PACKAGE_BASE="ubuntu-noble"
+USERSPACE_STATUS="derived-bootstrap"
+KERNEL_PROFILE="ubuntu-noble-generic"
+LIVE_ARCHITECTURE="KNOPPIX-inspired SquashFS plus OverlayFS"
+DESKTOP="KDE Full"
+INSTALLER="none"

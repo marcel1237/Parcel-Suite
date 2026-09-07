@@ -1,0 +1,5 @@
+::sysinit:/etc/rc.d/rc.S
+::wait:/etc/rc.d/rc.M
+::ctrlaltdel:/sbin/reboot
+tty1::askfirst:/bin/sh
+ttyS0::askfirst:/bin/sh

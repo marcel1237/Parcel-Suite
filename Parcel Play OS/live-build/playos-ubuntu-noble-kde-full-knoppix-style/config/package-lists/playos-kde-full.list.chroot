@@ -1,0 +1,50 @@
+# Live root: SquashFS read-only plus OverlayFS writable layer.
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+initramfs-tools
+sudo
+locales
+console-setup
+keyboard-configuration
+
+# Complete KDE suite from the Ubuntu Noble archive.
+kde-full
+plasma-workspace
+plasma-workspace-wayland
+kwin-x11
+kwin-wayland
+sddm
+dolphin
+konsole
+
+# Hardware, desktop integration, networking and audio.
+network-manager
+udisks2
+upower
+dbus-user-session
+policykit-1
+xdg-user-dirs
+xdg-utils
+xdg-desktop-portal
+xdg-desktop-portal-kde
+pipewire
+pipewire-audio
+wireplumber
+alsa-utils
+libgl1-mesa-dri
+mesa-vulkan-drivers
+vulkan-tools
+linux-firmware
+pciutils
+usbutils
+
+# Live diagnostics and media verification.
+squashfs-tools
+procps
+kmod
+less
+nano
+curl
+ca-certificates

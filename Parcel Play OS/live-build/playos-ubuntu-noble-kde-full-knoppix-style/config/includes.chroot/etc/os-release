@@ -1,0 +1,7 @@
+PRETTY_NAME="PlayOS 1 KDE Live (Noble compatibility baseline)"
+NAME="PlayOS"
+VERSION_ID="1"
+VERSION="1 (Noble compatibility baseline)"
+VERSION_CODENAME=noble
+ID=playos
+ID_LIKE="ubuntu debian"

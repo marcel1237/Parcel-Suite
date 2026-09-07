@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+test "$#" -eq 2 || {
+  echo "uso: playpkg-build TREE OUTPUT.pxz" >&2
+  exit 2
+}
+
+tree=$1
+output=$2
+meta=$tree/PLAYOS/meta
+
+test -d "$tree" || { echo "árvore ausente: $tree" >&2; exit 1; }
+test -f "$meta" || { echo "metadados ausentes: $meta" >&2; exit 1; }
+
+for field in NAME VERSION ARCH BUILD LICENSE; do
+  value=$(sed -n "s/^${field}=//p" "$meta")
+  test -n "$value" || { echo "campo obrigatório ausente: $field" >&2; exit 1; }
+done
+
+name=$(sed -n 's/^NAME=//p' "$meta")
+version=$(sed -n 's/^VERSION=//p' "$meta")
+arch=$(sed -n 's/^ARCH=//p' "$meta")
+build=$(sed -n 's/^BUILD=//p' "$meta")
+
+case "$name$version$arch$build" in
+  *[!A-Za-z0-9._+-]*) echo 'metadados contêm caracteres inválidos' >&2; exit 1 ;;
+esac
+
+case "$output" in *.pxz) ;; *) echo 'a saída deve terminar em .pxz' >&2; exit 1 ;; esac
+
+mkdir -p "$(dirname -- "$output")"
+tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+  -C "$tree" -cJf "$output" .
+sha256sum "$output" > "$output.sha256"
+echo "Pacote criado: $output"

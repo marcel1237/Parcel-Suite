@@ -1,0 +1,47 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+mkdir -p /dev/pts /run /media /lower /upper /newroot
+mount -t devpts devpts /dev/pts
+mount -t tmpfs -o mode=0755,nosuid,nodev tmpfs /run
+
+echo 'PlayOS initramfs: carregando módulos'
+for module in virtio_pci virtio_blk virtio_scsi sd_mod sr_mod usb_storage uas isofs iso9660 loop squashfs overlay; do
+  modprobe "$module" 2>/dev/null || true
+done
+mdev -s 2>/dev/null || true
+sleep 3
+
+medium=
+for device in /dev/sr0 /dev/sr1 /dev/vda /dev/vdb /dev/sda /dev/sdb; do
+  [ -b "$device" ] || continue
+  umount /media 2>/dev/null || true
+  if mount -o ro "$device" /media 2>/dev/null && [ -f /media/PLAYOS/PLAYOS.squashfs ]; then
+    medium=$device
+    break
+  fi
+done
+
+if [ -z "$medium" ]; then
+  echo 'PlayOS: mídia com /PLAYOS/PLAYOS.squashfs não encontrada.'
+  exec sh
+fi
+
+echo "PlayOS: mídia encontrada em $medium"
+mount -t squashfs -o loop,ro /media/PLAYOS/PLAYOS.squashfs /lower || exec sh
+mount -t tmpfs -o mode=0755 tmpfs /upper || exec sh
+mkdir -p /upper/upper /upper/work
+mount -t overlay overlay -o lowerdir=/lower,upperdir=/upper/upper,workdir=/upper/work /newroot || exec sh
+
+mkdir -p /newroot/proc /newroot/sys /newroot/dev /newroot/run /newroot/mnt/live
+mount --move /proc /newroot/proc
+mount --move /sys /newroot/sys
+mount --move /dev /newroot/dev
+mount --move /run /newroot/run
+mount --move /media /newroot/mnt/live
+
+echo 'PlayOS: iniciando userspace nativo'
+exec switch_root /newroot /sbin/init

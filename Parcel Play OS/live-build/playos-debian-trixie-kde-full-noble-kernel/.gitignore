@@ -1,0 +1,9 @@
+/cache/
+/chroot/
+/binary/
+/local/
+/.build/
+/*.iso
+/*.iso.sha256
+/config/packages.chroot/*.deb
+/manifests/noble-kernel.sha256

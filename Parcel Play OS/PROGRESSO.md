@@ -1102,3 +1102,121 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Desktop**: GNOME Core, GNOME Shell e GDM3 presentes; XFCE, LightDM, Calamares e Anaconda ausentes da consulta do manifesto.
 - **Risco operacional**: disco raiz da builder em 100%, com 58 MiB livres; não iniciar outro build antes de recuperar capacidade.
 - **Limite**: validação de boot, sessão GNOME, rede, áudio, Mesa/Vulkan e hardware permanece pendente.
+
+## [2026-09-06] - Preparação do GNOME 50 diretamente do upstream
+
+- **Decisão de baseline**: usar o ramo estável GNOME 50, não o GNOME 51 RC nem `main`.
+- **Fonte**: `gnome-build-meta` oficial fixado em `ec28a45a6fcd99195ebc39c1aeda78fd6fe27b8f`.
+- **VM**: staging anterior limpo com `lb clean --purge`; uso caiu de 100% para 11%, e o disco foi ampliado de 12 para 24 GiB.
+- **Ferramentas**: Git, Podman e nftables instalados somente na VM; imagem oficial `bst2` validada com BuildStream 2.8.0.
+- **Resultado**: alvo `core/meta-gnome-core-shell.bst` resolvido com 719 elementos.
+- **Cache**: 631 elementos em `fetch needed`, 86 em `waiting` e 2 em `buildable`; build completo não iniciado.
+- **Risco**: aproximadamente 20 GiB livres são insuficientes para uma primeira construção integral e seu cache.
+- **Arquitetura**: artefatos BuildStream/Freedesktop SDK não são pacotes Debian e não serão sobrepostos diretamente em `/usr`.
+- **Documentação**: criado `gnome-upstream/README.md` e lock reproduzível `gnome-upstream/gnome-50.lock`.
+- **Próximo gate**: providenciar volume de build de pelo menos 80 GiB e decidir entre empacotamento `.deb`, base GNOME OS ou substituição modular auditada.
+
+## [2026-09-06] - Descoberta de GNOME 50 upstream pré-compilado
+
+- **Resultado**: confirmada a ISO oficial GNOME OS 50.4 x86_64, com 3111137792 bytes e resposta HTTP final 200.
+- **Nightly**: `nightly.20260906.1` também disponível, com 3713217024 bytes, mas não selecionada por ser instável.
+- **OCI**: confirmado `quay.io/gnome_infrastructure/gnome-build-meta:core-50`; cinco camadas somam aproximadamente 8,8 GB compactados.
+- **Benefício**: ambos evitam compilar localmente os 719 elementos do GNOME Core Shell.
+- **Limite**: GNOME OS e a OCI usam a base GNOME/Freedesktop SDK; não são pacotes Debian e não preservam automaticamente o kernel Noble.
+- **Recomendação**: usar GNOME OS 50.4 como baseline pronta se a prioridade for rapidez; manter uma integração empacotada separada se Debian Trixie + kernel Noble continuar obrigatório.
+
+## [2026-09-07] - Mudança para KDE Full preservando userspace Debian
+
+- **Requisito do usuário**: userspace deve permanecer Debian; KDE neon e KDE Linux não serão usados como base.
+- **Baseline**: Debian 13 Trixie, `kde-full` 5:162, Plasma 6.3.6 e kernel Ubuntu Noble local 6.8.0-138.
+- **Perfil**: criado `live-build/playos-debian-trixie-kde-full-noble-kernel/` com SDDM, Wayland, X11 e sem instalador.
+- **Auditoria**: três checksums Noble aprovados; scripts com sintaxe válida; preflight aprovado na VM.
+- **Estimativa APT**: 2.108 pacotes novos e 2,11 GiB de downloads compactados na builder mínima.
+- **Capacidade**: pool LXD ampliado para 60 GiB e VM para 36 GiB; 34 GiB livres no começo da execução.
+- **Build**: iniciado como `playos-debian-kde-full-build.service`, invocation `a55ad781e29a4d8bb990f9c3a30679a5`.
+- **Checkpoint**: `bootstrap_debootstrap` ativo, assinatura Debian válida e nenhum erro registrado.
+- **Limite**: ISO, manifesto final e runtime KDE permanecem pendentes.
+
+## [2026-09-07] - ISO Debian Trixie KDE Full com kernel Noble concluída
+
+- **Resultado**: `live-build` concluiu os estágios Binary e Build com sucesso.
+- **Artefato**: `build/playos-debian-trixie-kde-full-noble/output/live-image-amd64.hybrid.iso`, 3755513856 bytes.
+- **Integridade**: SHA-256 `03e2482e91fdd98a3c4ada568f505ef050766c25fab023693385244057983635` aprovado na VM e após a cópia local.
+- **Boot estático**: El Torito BIOS e UEFI, GRUB 2, MBR protetora e GPT; volume `PLAYOS_D13_KDE`.
+- **Composição confirmada**: Noble 6.8.0-138, KDE Full 5:162, Plasma 6.3.6, KWin Wayland/X11, SDDM, Dolphin e Konsole.
+- **Exclusões confirmadas**: nenhum GNOME, XFCE, LightDM, Calamares, Subiquity, Curtin ou Casper no manifesto consultado.
+- **Warnings**: `grub-probe` sem `/dev` e D-Bus indisponível durante configuração no chroot; build continuou, efeito de runtime ainda não determinado.
+- **Capacidade crítica**: host em 96%, com aproximadamente 11 GiB livres; teste por cópia/importação da ISO adiado até recuperar espaço.
+- **Limite**: boot, SDDM, Plasma, Wayland/X11, rede, áudio e gráficos permanecem pendentes.
+## 2026-09-07 — PlayOS Userspace e nova Live KDE inspirada no KNOPPIX
+
+- `decision`: o rootfs não será KNOPPIX/Debian; a composição e identidade são
+  PlayOS, com bootstrap binário Ubuntu Noble nesta primeira geração.
+- `implementation`: criada a base `userspace/playos-noble/` com manifestos,
+  identidade e contrato de independência progressiva.
+- `implementation`: criado o perfil
+  `live-build/playos-ubuntu-noble-kde-full-knoppix-style/` com KDE Full, kernel
+  Noble, SquashFS, OverlayFS, SDDM e auditoria contra mirrors Debian.
+- `result`: pesquisa primária confirmou que KNOPPIX 9.1 usa Debian Bullseye,
+  `cloop` e AUFS; somente seus comportamentos Live serão reproduzidos por
+  mecanismos nativos do kernel Noble.
+- `unknown`: ISO ainda não compilada ou inicializada.
+- `risk`: host tinha aproximadamente 20 GiB livres; preflight exige 30 GiB.
+## 2026-09-07 — PlayOS Native Userspace Slackware-like e Live KNOPPIX-like
+
+- `decision`: a composição anterior com pacotes binários Ubuntu Noble foi
+  substituída como direção principal por um userspace nativo PlayOS.
+- `implementation`: criado `userspace/playos-native/` com collections base,
+  gráficos e KDE completo, identidade e contrato inicial de `sysvinit`.
+- `decision`: somente kernel e módulos Noble serão reutilizados; o rootfs final
+  não terá APT/dpkg nem pacotes Slackware copiados.
+- `decision`: comportamentos KNOPPIX serão implementados por SquashFS,
+  OverlayFS e initramfs PlayOS, sem `cloop` ou AUFS.
+- `unknown`: toolchain, receitas, pacotes `.pxz`, rootfs, ISO e runtime ainda
+  não existem.
+## 2026-09-07 — Comparação factual XFCE/KDE no modelo Live
+
+- `result`: o perfil KDE anterior difere do XFCE principalmente por lista de
+  pacotes, display manager, hooks e auditoria; a infraestrutura Live e os três
+  pacotes do kernel Noble são iguais.
+- `result`: XFCE produziu ISO de 1.388.435.456 bytes e alcançou kernel/initrd e
+  rede em boot UEFI; desktop visual permaneceu `unknown`.
+- `result`: KDE produziu ISO de 3.755.513.856 bytes com SHA-256 e estrutura
+  BIOS/UEFI aprovados; runtime permanece `unknown`.
+- `inference`: KDE é compatível com o método Live já usado, mas isso não valida
+  o novo userspace nativo, pois ambos os protótipos usavam Debian Trixie.
+## 2026-09-07 — Primeiro pacote executável do PlayOS Native Userspace
+
+- `implementation`: implementados formato `.pxz` v1, `playpkg-build`,
+  `playpkg-install`, `playpkg-remove` e banco de ownership.
+- `result`: smoke test criou, instalou, executou e removeu um pacote em rootfs
+  temporário.
+- `result`: testes adversariais rejeitaram colisão real de arquivo e symlink
+  absoluto; um defeito de staging e a ownership indevida de diretórios foram
+  encontrados e corrigidos durante os testes.
+- `implementation`: criado `playos-base-files` com identidade, `inittab` e
+  scripts `rc.d`; build/instalação/remoção passaram.
+- `unknown`: nenhum binário base foi compilado e nenhum boot ocorreu.
+
+## 2026-09-07 — PlayOS Native Stage0 inicializado em UEFI
+
+- `implementation`: criado pipeline próprio em
+  `userspace/playos-native/live/build-stage0.sh`, sem `live-build` e sem rootfs
+  Debian/Ubuntu.
+- `implementation`: BusyBox 1.37.0 estático com checksum fixado,
+  `playos-base-files` via `.pxz`, initramfs PlayOS, SquashFS/OverlayFS e GRUB
+  híbrido.
+- `result`: ISO de aproximadamente 159 MiB criada e checksum SHA-256 aprovado;
+  estrutura El Torito BIOS e UEFI confirmada.
+- `result`: boot UEFI em VM LXD/KVM alcançou shell `PlayOS Native 1` usando
+  kernel Ubuntu Noble `6.8.0-138-generic`.
+- `result`: `/dev/sr0` ficou somente leitura, `/` ficou gravável via OverlayFS
+  e o teste de escrita em `/root` passou.
+- `result`: `apt`, `dpkg` e `rpm` foram confirmados ausentes no runtime final.
+- `implementation`: corrigidos incompatibilidade opcional do BusyBox `tc`,
+  staging residual, ownership do SquashFS, applets `/sbin` ausentes no
+  initramfs, tmpfs de `/run` e formato do `inittab` Stage0.
+- `unknown`: boot BIOS em runtime, hardware real, toolchain/libc base,
+  SysVinit completo e toda a stack gráfica/KDE ainda não foram validados.
+- `next-gate`: empacotar a base nativa real e aprovar runlevel 3 antes de
+  iniciar Qt/KDE.

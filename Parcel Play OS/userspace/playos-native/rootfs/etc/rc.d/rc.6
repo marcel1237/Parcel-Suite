@@ -1,0 +1,15 @@
+#!/bin/sh
+set -u
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+
+sync
+swapoff -a 2>/dev/null || true
+umount -a -r 2>/dev/null || true
+sync
+
+case "${RUNLEVEL:-6}" in
+  0) poweroff -f ;;
+  *) reboot -f ;;
+esac

@@ -1,0 +1,14 @@
+kde-full
+plasma-workspace
+plasma-workspace-wayland
+kwin-x11
+kwin-wayland
+sddm
+dolphin
+konsole
+xdg-desktop-portal
+xdg-desktop-portal-kde
+libgl1-mesa-dri
+mesa-vulkan-drivers
+vulkan-tools
+linux-firmware

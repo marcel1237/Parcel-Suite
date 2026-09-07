@@ -31,5 +31,9 @@ DEC-029	A edição Graphics Core Noble avaliará Calamares como instalador únic
 DEC-030	A Live Noble usará XFCE 4.18 no lugar do Openbox sem inserir desktop no Graphics Core	current	high	SRC-PLAYOS-LIVE-XFCE-CORE,SRC-PLAYOS-GRAPHICS-CORE-NODE
 DEC-031	Calamares permanece o instalador candidato da Live Noble XFCE e Anaconda fica como referência RPM empresarial	current	high	SRC-PLAYOS-INSTALLER-COMPARE,SRC-PLAYOS-LIVE-CALAMARES-NODE
 DEC-032	Calamares permanece no MVP e Desktop Provision será avaliado em variante separada baseada em livecd-rootfs e Casper	current	high	SRC-PLAYOS-CALAMARES-DESKTOP-PROVISION,SRC-PLAYOS-LIVE-CALAMARES-NODE
-DEC-033	PlayOS usará somente kernel e módulos Ubuntu Noble sobre userspace e pipeline Live Debian sem misturar repositórios	current	high	SRC-PLAYOS-NOBLE-KERNEL-DEBIAN,SRC-NOBLE-BUILD
+DEC-033	PlayOS usará somente kernel e módulos Ubuntu Noble sobre userspace e pipeline Live Debian sem misturar repositórios	superseded	high	SRC-PLAYOS-NOBLE-KERNEL-DEBIAN,SRC-NOBLE-BUILD
 DEC-034	Primeira Live Debian do PlayOS usará Trixie XFCE direto e nenhum instalador com kernel Noble local	current	high	SRC-PLAYOS-LIVE-DEBIAN-XFCE-NOBLE,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
+DEC-035	Variante GNOME upstream usará GNOME 50 estável fixado e não sobreporá artefatos Freedesktop SDK diretamente no userspace Debian	current	high	SRC-PLAYOS-GNOME50-UPSTREAM,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
+DEC-036	Variante KDE Full preservará userspace Debian Trixie usando pacotes KDE integrados pelo Debian e kernel Noble local sem KDE neon como base	superseded	high	SRC-PLAYOS-LIVE-DEBIAN-KDE-FULL-NOBLE,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
+DEC-037	PlayOS Userspace 1 terá identidade e composição próprias com bootstrap binário Ubuntu Noble sem rootfs ou mirrors Debian	superseded	high	SRC-PLAYOS-USERSPACE-KDE-KNOPPIX
+DEC-038	PlayOS Native Userspace reproduzirá comportamentos Slackware por implementação própria e Live KNOPPIX por SquashFS OverlayFS usando somente kernel e módulos Noble	current	high	SRC-PLAYOS-NATIVE-SLACK-KNOPPIX-KDE

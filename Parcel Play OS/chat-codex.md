@@ -9273,31 +9273,13 @@ Validações:
 
 > Estado da .iso
 
-<details><summary>6 previous messages</summary>
+<details><summary>3 previous messages</summary>
 
 > Vou conferir o serviço do build, o final do log, o espaço da VM e procurar a ISO e o checksum produzidos. Não iniciarei outro build.
 >
-> <details><summary>Ran a command</summary>
->
-> - Ran `lxc list playos-debian-trixie-builder-vm --format table; lxc exec playos-debian-trixie-builder-vm -- systemctl status playos-debian-live-build.service --no-pager -n 30; lxc exec playos-debian-trixie-builder-vm -- tail -n 120 /root/playos-debian-trixie-xfce-noble-kernel/build.log; lxc exec playos-debian-trixie-builder-vm -- sh -lc 'find /root/playos-debian-trixie-xfce-noble-kernel -maxdepth 2 -type f \( -name "*.iso" -o -name "*.iso.sha256" -o -name "*.packages" -o -name "*.contents" \) -printf "%TY-%Tm-%Td %TH:%TM:%TS %s %p\n" | sort; df -h /'`
->
-> </details>
->
 > A ISO foi criada com sucesso em 3 de setembro. Antes de declarar o resultado como validado, vou conferir o SHA-256, a estrutura de boot, o kernel incluído, o XFCE e a ausência do Calamares diretamente nos artefatos.
 >
-> <details><summary>Ran a command</summary>
->
-> - Ran `lxc exec playos-debian-trixie-builder-vm -- sh -lc 'cd /root/playos-debian-trixie-xfce-noble-kernel && sha256sum -c live-image-amd64.hybrid.iso.sha256 && xorriso -indev live-image-amd64.hybrid.iso -report_el_torito plain 2>&1 && printf "\nPACOTES CRITICOS\n" && grep -E "^(linux-image-6\.8\.0-138-generic|linux-modules-6\.8\.0-138-generic|linux-modules-extra-6\.8\.0-138-generic|xfce4|xfce4-session|lightdm|live-boot|live-config)[[:space:]]" live-image-amd64.packages && printf "\nINSTALADORES PROIBIDOS\n" && if grep -E "^(calamares|calamares-data|calamares-settings-debian|subiquity|curtin|casper)[[:space:]]" live-image-amd64.packages; then exit 20; else echo ausentes; fi'`
->
-> </details>
->
 > A validação estática passou: checksum correto, boot El Torito para BIOS e UEFI, XFCE 4.20 presente, kernel Noble completo e instaladores proibidos ausentes. Vou apenas confirmar os arquivos `/live` e o tamanho exato; o único gate restante para chamar de funcional é inicializá-la.
->
-> <details><summary>Ran a command</summary>
->
-> - Ran `lxc exec playos-debian-trixie-builder-vm -- sh -lc 'cd /root/playos-debian-trixie-xfce-noble-kernel && stat -c "arquivo=%n bytes=%s" live-image-amd64.hybrid.iso && sha256sum live-image-amd64.hybrid.iso && xorriso -indev live-image-amd64.hybrid.iso -find /live -maxdepth 2 -type f -exec lsdl 2>/dev/null'`
->
-> </details>
 </details>
 
 A ISO foi criada com sucesso.
@@ -9337,80 +9319,1046 @@ Portanto, ela está **compilada e validada estaticamente**, mas ainda não foi t
 
 > pode fazer
 
-<details><summary>16 previous messages</summary>
+<details><summary>14 previous messages</summary>
 
 > Vou copiar a ISO e os manifestos para uma pasta dedicada em `build`, preservando a ISO antiga. Em seguida validarei novamente no host e iniciarei a nova imagem em uma VM temporária para testar o boot, kernel, OverlayFS e chegada ao ambiente gráfico.
 >
-> <details><summary>Ran a command</summary>
->
-> - Ran `sed -n '1,240p' LIVE_ISO_OUTPUT_POLICY.md 2>/dev/null || true; df -h '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS'; command -v qemu-system-x86_64 || true; find build -maxdepth 3 -type f -name '*.iso' -printf '%s %p\n' 2>/dev/null | sort -n`
->
-> </details>
->
 > Há 23 GB livres, espaço suficiente. O host não possui QEMU, então farei o teste de boot pelo próprio LXD: primeiro copio os artefatos para o projeto; depois anexo a ISO a uma VM de teste isolada. Não apagarei a ISO Calamares existente porque esta nova imagem ainda não passou no boot.
->
-> <details><summary>Ran 6 commands</summary>
->
-> - Ran `mkdir -p 'build/playos-debian-trixie-xfce-noble/output'`
-> - Ran `lxc file pull 'playos-debian-trixie-builder-vm/root/playos-debian-trixie-xfce-noble-kernel/live-image-amd64.hybrid.iso' '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output/'`
-> - Ran `lxc file pull 'playos-debian-trixie-builder-vm/root/playos-debian-trixie-xfce-noble-kernel/live-image-amd64.hybrid.iso.sha256' '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output/'`
-> - Ran `lxc file pull 'playos-debian-trixie-builder-vm/root/playos-debian-trixie-xfce-noble-kernel/live-image-amd64.packages' '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output/'`
-> - Ran `lxc file pull 'playos-debian-trixie-builder-vm/root/playos-debian-trixie-xfce-noble-kernel/live-image-amd64.contents' '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output/'`
-> - Ran `lxc file pull 'playos-debian-trixie-builder-vm/root/playos-debian-trixie-xfce-noble-kernel/build.log' '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output/'`
->
-> </details>
 >
 > Os cinco artefatos foram transferidos. Vou confirmar tamanho e checksum no projeto; depois preparo uma VM de teste com a ISO como mídia somente leitura.
 >
-> <details><summary>Ran a command</summary>
->
-> - Ran `ls -lh build/playos-debian-trixie-xfce-noble/output; cd build/playos-debian-trixie-xfce-noble/output && sha256sum -c live-image-amd64.hybrid.iso.sha256; stat -c '%s %n' live-image-amd64.hybrid.iso`
->
-> </details>
->
 > A verificação detectou que a cópia da ISO ficou incompleta: chegaram 983 MiB de 1,388 GB e o checksum falhou. Os manifestos estão íntegros, mas não usarei essa ISO truncada. Vou repetir somente a transferência da ISO para um arquivo temporário e só substituí-la após o SHA-256 passar.
->
-> <details><summary>Ran 2 commands</summary>
->
-> - Ran `ps -eo pid,etime,stat,cmd | rg 'lxc file pull.*live-image-amd64.hybrid.iso' | rg -v 'rg ' || true; df -h '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output'`
-> - Ran `lxc file pull 'playos-debian-trixie-builder-vm/root/playos-debian-trixie-xfce-noble-kernel/live-image-amd64.hybrid.iso' '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso.partial'`
->
-> </details>
 >
 > A segunda transferência terminou normalmente. Vou calcular o hash do arquivo temporário e só então promover essa cópia como ISO oficial do novo perfil.
 >
-> <details><summary>Ran 3 commands</summary>
->
-> - Ran `stat -c '%s %n' build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso.partial; sha256sum build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso.partial; sed -n '1p' build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso.sha256`
-> - Ran `mv -f build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso.partial build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso`
-> - Ran `cd build/playos-debian-trixie-xfce-noble/output && sha256sum -c live-image-amd64.hybrid.iso.sha256 && xorriso -indev live-image-amd64.hybrid.iso -report_el_torito plain 2>&1 | sed -n '1,40p'`
->
-> </details>
->
 > A cópia íntegra já está no projeto e passou novamente no SHA-256 e no teste El Torito BIOS/UEFI. Para o boot, vou usar uma VM LXD vazia; primeiro verifico o mecanismo suportado para importar a ISO como volume, evitando depender de caminhos com espaços.
->
-> <details><summary>Ran 2 commands</summary>
->
-> - Ran `lxc storage volume import --help | sed -n '1,220p'; lxc init --help | sed -n '1,120p'`
-> - Ran `lxc storage volume import default '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso' playos-d13-xfce-noble-iso --type=iso`
->
-> </details>
 >
 > A ISO foi aceita pelo LXD e está sendo importada como volume de mídia; chegou a 19%. Esse passo copia a imagem para o pool da VM e não altera o arquivo validado no projeto.
 >
-> <details><summary>Ran a command</summary>
+> A importação terminou e o volume ISO está registrado. Vou criar a VM vazia de teste com Secure Boot desativado, anexar a mídia como CD-ROM prioritário e iniciar a captura do console.
 >
-> - Ran `lxc storage volume list default --format table | rg 'playos-d13-xfce-noble-iso|TYPE|ISO'`
+> A VM de teste iniciou pela ISO. Vou aguardar o boot e examinar console, estado e agente da VM; se o sistema chegar à sessão Live, coletarei as verificações de kernel e serviços por dentro.
+>
+> A VM permanece ligada e recebeu IPv6, sinal de que o kernel e a rede já avançaram além do carregador. O comando de log serial padrão do LXD não se aplica a essa VM; vou verificar os logs QEMU e tentar comunicação pelo agente, sem assumir que o XFCE abriu apenas pelo endereço de rede.
+>
+> O console serial confirmou o carregamento UEFI do kernel e do initrd. A ISO usa boot gráfico silencioso, por isso o restante não aparece no serial, e a Live não inclui o agente LXD para comandos internos. Vou encerrar apenas a conexão do console, manter a VM rodando e verificar se há uma forma local de capturar a tela VGA para confirmar o XFCE.
+>
+> A VM agora recebeu IPv4 `10.131.47.16` e IPv6, além de permanecer estável; isso confirma que o boot chegou ao userspace e configurou a interface de rede. A confirmação visual do XFCE ainda exige abrir o console VGA, pois a Live não contém o agente LXD. Vou registrar exatamente essa diferença entre “boot confirmado” e “desktop visual ainda não confirmado”.
+>
+> <details><summary>Edited 5 files</summary>
+>
+> - Wrote `./LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md` (+8 -2)
+> - Wrote `./PROGRESSO.md` (+11 -0)
+> - Wrote `./RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md` (+94 -1)
+> - Wrote `./supervised_learning/catalog/implementations.tsv` (+1 -1)
+> - Wrote `./supervised_learning/catalog/sources.tsv` (+1 -1)
+> - Wrote `./LIVE_DEBIAN_TRIXIE_XFCE_KERNEL_NOBLE_SEM_CALAMARES.md` (+2 -1)
 >
 > </details>
 >
-> A importação terminou e o volume ISO está registrado. Vou criar a VM vazia de teste com Secure Boot desativado, anexar a mídia como CD-ROM prioritário e iniciar a captura do console.
+> O teste gráfico encontrou o único bloqueio restante: o host não possui `remote-viewer` nem `spicy`. A VM Live continua executando; o LXD forneceu o socket SPICE, mas não há cliente instalado para exibir a tela. Vou finalizar a atualização documental e validar os registros; depois deixarei apenas o comando `sudo` que precisa ser executado por você para abrir o XFCE.
+</details>
+
+A ISO foi copiada integralmente para o projeto:
+
+[playos Debian XFCE Noble ISO](<./build/playos-debian-trixie-xfce-noble/output/live-image-amd64.hybrid.iso>)
+
+Resultados:
+
+- Tamanho: **1.388.435.456 bytes**
+- SHA-256: `ed798d40e58da7bc5a0da531a6947da6263766e1fc86ea6e179492475df1c50d`
+- Checksum após a cópia: aprovado
+- BIOS e UEFI: confirmados
+- Boot UEFI na VM: confirmado
+- Kernel e initrd: carregados
+- Userspace/rede: alcançado
+- IPv4 obtido: `10.131.47.16`
+- VM de teste: `playos-d13-xfce-noble-boot-test`
+- Estado da VM: ligada
+
+Também foram copiados o log, o manifesto de pacotes e o inventário de conteúdo para:
+
+[output](<./build/playos-debian-trixie-xfce-noble/output>)
+
+O único gate bloqueado é a inspeção visual do XFCE, pois não há cliente SPICE no host. Execute:
+
+```bash
+sudo apt install virt-viewer
+```
+
+Depois posso abrir o console gráfico sem `sudo` com:
+
+```bash
+lxc console playos-d13-xfce-noble-boot-test --type=vga
+```
+
+A documentação, o progresso, os catálogos e o portal também foram atualizados. `git diff --check` e os smoke tests passaram; permanecem os 25 erros preexistentes da base supervisionada.
+
+> o kernel ta ubuntu?
+
+Sim. O kernel da ISO é do Ubuntu Noble:
+
+```text
+linux-image-6.8.0-138-generic       6.8.0-138.138
+linux-modules-6.8.0-138-generic     6.8.0-138.138
+linux-modules-extra-6.8.0-138-generic 6.8.0-138.138
+```
+
+A composição ficou assim:
+
+- Kernel e módulos: Ubuntu Noble
+- Sistema-base e bibliotecas: Debian 13 Trixie
+- XFCE 4.20.1: Debian
+- `live-build`, `live-boot` e `live-config`: Debian
+- Calamares: ausente
+
+A ISO contém diretamente:
+
+```text
+/live/vmlinuz-6.8.0-138-generic
+/live/initrd.img-6.8.0-138-generic
+```
+
+O manifesto confirmou os três pacotes Ubuntu na mesma versão/ABI. O boot UEFI carregou esse kernel e o sistema alcançou a rede. Ainda falta executar `uname -r` dentro da sessão Live para obter a confirmação final em runtime.
+
+> desliga a vm
+
+<details><summary>1 previous message</summary>
+
+> Vou desligar a VM de teste da ISO, `playos-d13-xfce-noble-boot-test`, preservando a VM builder e todos os artefatos.
+</details>
+
+A VM de teste `playos-d13-xfce-noble-boot-test` foi desligada com sucesso.
+
+Estado: **STOPPED**
+
+A VM builder e os arquivos da ISO foram preservados.
+
+> Essa vm está funcionando vamos fazer uma com o gnome no lugar do xfce
+
+<details><summary>10 previous messages</summary>
+
+> Vou criar um perfil separado, preservando integralmente a ISO XFCE: Debian 13 Trixie e kernel Ubuntu Noble permanecem iguais; substituirei XFCE/LightDM por GNOME/GDM3, manterei a Live sem instalador e farei o build na mesma VM Debian após limpar apenas o staging antigo já copiado para o projeto.
+>
+> <details><summary>Created 2 files, edited 5 files, deleted 2 files, ran 3 commands</summary>
+>
+> - Ran `cp -a live-build/playos-debian-trixie-xfce-noble-kernel live-build/playos-debian-trixie-gnome-noble-kernel; find live-build/playos-debian-trixie-gnome-noble-kernel/config -maxdepth 4 -type f -print | sort`
+> - Ran `find live-build/playos-debian-trixie-gnome-noble-kernel/config/includes.chroot -type f -print -exec sed -n '1,160p' {} \;`
+> - Ran `mv live-build/playos-debian-trixie-gnome-noble-kernel/config/package-lists/playos-xfce.list.chroot live-build/playos-debian-trixie-gnome-noble-kernel/config/package-lists/playos-gnome.list.chroot; mv live-build/playos-debian-trixie-gnome-noble-kernel/config/hooks/live/010-playos-xfce.hook.chroot live-build/playos-debian-trixie-gnome-noble-kernel/config/hooks/live/010-playos-gnome.hook.chroot`
+> - Wrote `./live-build/playos-debian-trixie-gnome-noble-kernel/auto/config` (+2 -2)
+> - Wrote `./live-build/playos-debian-trixie-gnome-noble-kernel/config/hooks/live/010-playos-gnome.hook.chroot` (+2 -2)
+> - Wrote `./live-build/playos-debian-trixie-gnome-noble-kernel/config/hooks/live/900-playos-audit.hook.chroot` (+3 -3)
+> - Wrote `./live-build/playos-debian-trixie-gnome-noble-kernel/config/includes.chroot/etc/gdm3/daemon.conf` (+11 -0)
+> - Deleted `./live-build/playos-debian-trixie-gnome-noble-kernel/config/includes.chroot/etc/lightdm/lightdm.conf.d/50-playos-live.conf` (+0 -5)
+> - Wrote `./live-build/playos-debian-trixie-gnome-noble-kernel/config/includes.chroot/etc/playos-release` (+1 -1)
+> - Wrote `./live-build/playos-debian-trixie-gnome-noble-kernel/config/package-lists/playos-gnome.list.chroot` (+5 -10)
+> - Deleted `./live-build/playos-debian-trixie-gnome-noble-kernel/README.md` (+0 -121)
+> - Wrote `./live-build/playos-debian-trixie-gnome-noble-kernel/README.md` (+93 -0)
+>
+> </details>
+>
+> O novo perfil GNOME foi criado sem alterar o perfil XFCE. Vou auditar agora se não restaram pacotes ou configurações do XFCE/LightDM, verificar os scripts e contar a nova seleção direta antes de enviá-la ao builder.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `profile='live-build/playos-debian-trixie-gnome-noble-kernel'; printf 'Pacotes diretos: '; awk 'NF && $1 !~ /^#/' "$profile/config/package-lists/playos-gnome.list.chroot" | wc -l; printf '\nGNOME/GDM:\n'; rg -n '^(gnome-core|gdm3|gnome-terminal|gnome-software)$|gdm3|desktop=gnome|PROFILE="gnome' "$profile" -g '!manifests/**'; printf '\nResíduos XFCE/LightDM fora do histórico:\n'; rg -n -i 'xfce|lightdm|lxpolkit|thunar' "$profile" -g '!manifests/**' -g '!README.md' || true; printf '\nSintaxe:\n'; sh -n "$profile/auto/config" "$profile/config/hooks/live/010-playos-gnome.hook.chroot" "$profile/config/hooks/live/900-playos-audit.hook.chroot" "$profile/tools/preflight.sh" "$profile/tools/build.sh"; git diff --check -- "$profile"`
+>
+> </details>
+>
+> A receita GNOME tem 62 pacotes diretos e não contém XFCE/LightDM na configuração executável; os nomes encontrados estão apenas nos manifestos históricos copiados como referência, não entram no APT. Agora limparei o staging XFCE dentro da VM builder — a ISO e todos os relatórios já estão preservados no projeto — para recuperar espaço antes do GNOME.
 >
 > <details><summary>Ran 2 commands</summary>
 >
-> - Ran `lxc init playos-d13-xfce-noble-boot-test --empty --vm -c limits.cpu=2 -c limits.memory=2GiB -c security.secureboot=false -d root,size=8GiB`
-> - Ran `/bin/bash -lc 'lxc config device add playos-d13-xfce-noble-boot-test install-media disk pool=default source=playos-d13-xfce-noble-iso boot.priority=10'`
-> - Auto-review: inProgress
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- sh -lc 'cd /root/playos-debian-trixie-xfce-noble-kernel && lb clean --purge'; lxc exec playos-debian-trixie-builder-vm -- df -h /`
+> - Ran `lxc file push -r '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/live-build/playos-debian-trixie-gnome-noble-kernel' playos-debian-trixie-builder-vm/root/`
 >
 > </details>
+>
+> O staging XFCE foi limpo e o espaço voltou para 11 GB. O perfil GNOME e os três pacotes do kernel foram copiados integralmente. Vou executar o preflight na VM e, se passar, iniciar o novo build como serviço persistente.
+>
+> <details><summary>Ran 3 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- sh -lc 'cd /root/playos-debian-trixie-gnome-noble-kernel && ./tools/preflight.sh && apt-cache show gnome-core gdm3 gnome-terminal gnome-software >/dev/null && echo pacotes-gnome-disponiveis && df -h /'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- systemd-run --unit=playos-debian-gnome-live-build --working-directory=/root/playos-debian-trixie-gnome-noble-kernel --property=StandardOutput=append:/root/playos-debian-trixie-gnome-noble-kernel/build.log --property=StandardError=append:/root/playos-debian-trixie-gnome-noble-kernel/build.log /root/playos-debian-trixie-gnome-noble-kernel/tools/build.sh`
+> - Ran `sleep 10; lxc exec playos-debian-trixie-builder-vm -- systemctl status playos-debian-gnome-live-build.service --no-pager -n 16; lxc exec playos-debian-trixie-builder-vm -- tail -n 30 /root/playos-debian-trixie-gnome-noble-kernel/build.log`
+>
+> </details>
+>
+> O build GNOME está ativo e passou pelo preflight, agora em `lb bootstrap`. Vou registrar o novo perfil e seu estado nos documentos e catálogos, sem esperar a compilação terminar para não confundir “iniciado” com “concluído”.
+>
+> <details><summary>Created a file, edited 6 files, ran a command</summary>
+>
+> - Wrote `./LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md` (+79 -0)
+> - Wrote `./PROGRESSO.md` (+10 -0)
+> - Wrote `./supervised_learning/INDEX.md` (+1 -0)
+> - Wrote `./supervised_learning/catalog/document_inventory.tsv` (+1 -0)
+> - Wrote `./supervised_learning/catalog/implementations.tsv` (+1 -0)
+> - Wrote `./supervised_learning/catalog/sources.tsv` (+1 -0)
+> - Wrote `./supervised_learning/catalog/topics.tsv` (+1 -0)
+> - Ran `make -C documentation-portal generate; sh -n live-build/playos-debian-trixie-gnome-noble-kernel/auto/config live-build/playos-debian-trixie-gnome-noble-kernel/config/hooks/live/010-playos-gnome.hook.chroot live-build/playos-debian-trixie-gnome-noble-kernel/config/hooks/live/900-playos-audit.hook.chroot live-build/playos-debian-trixie-gnome-noble-kernel/tools/preflight.sh live-build/playos-debian-trixie-gnome-noble-kernel/tools/build.sh; git diff --check -- LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md live-build/playos-debian-trixie-gnome-noble-kernel PROGRESSO.md supervised_learning/INDEX.md supervised_learning/catalog/sources.tsv supervised_learning/catalog/topics.tsv supervised_learning/catalog/implementations.tsv supervised_learning/catalog/document_inventory.tsv documentation-portal/generated-data.js; make -C supervised_learning query-smoke`
+>
+> </details>
+</details>
+
+A variante GNOME foi criada e o build já está em andamento.
+
+Composição:
+
+- Kernel Ubuntu Noble `6.8.0-138-generic`
+- Base Debian 13 Trixie
+- GNOME Core + GDM3
+- GNOME Terminal e GNOME Software
+- Mesa, Vulkan, PipeWire e NetworkManager
+- Sem XFCE e LightDM
+- Sem Calamares ou outro instalador
+
+Estado:
+
+- Perfil GNOME: implementado
+- 62 pacotes diretos
+- Checksums do kernel: aprovados
+- Preflight: aprovado
+- Serviço: `playos-debian-gnome-live-build.service`
+- Etapa atual: `lb bootstrap_debootstrap`
+- Espaço disponível antes do build: aproximadamente 11 GB
+- ISO GNOME: ainda em construção
+
+Documentação criada:
+
+[LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md](<./LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md>)
+
+Perfil:
+
+[playos-debian-trixie-gnome-noble-kernel](<./live-build/playos-debian-trixie-gnome-noble-kernel>)
+
+A ISO XFCE funcional foi preservada. Também atualizei catálogos, progresso e portal, agora com 120 documentos. As verificações de sintaxe, `git diff --check` e smoke tests passaram.
+
+> tail do log?
+
+<details><summary>2 previous messages</summary>
+
+> Vou consultar o estado do serviço GNOME e mostrar as últimas linhas do log, sem iniciar outro build.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- systemctl status playos-debian-gnome-live-build.service --no-pager -n 12; lxc exec playos-debian-trixie-builder-vm -- tail -n 80 /root/playos-debian-trixie-gnome-noble-kernel/build.log; lxc exec playos-debian-trixie-builder-vm -- df -h /`
+>
+> </details>
+</details>
+
+O build GNOME está funcionando normalmente.
+
+Tail atual:
+
+```text
+I: Configuring apt...
+I: Configuring bsdutils...
+I: Configuring tar...
+I: Configuring libpam-modules-bin...
+I: Configuring coreutils...
+I: Configuring dpkg...
+I: Configuring mount...
+I: Configuring libpam-modules:amd64...
+I: Configuring passwd...
+I: Configuring libpam-runtime...
+I: Configuring login...
+I: Configuring util-linux...
+I: Configuring libc-bin...
+I: Unpacking the base system...
+```
+
+Estado:
+
+- Serviço: `active (running)`
+- Tempo naquele momento: 2min46s
+- Etapa: `lb bootstrap_debootstrap`
+- Memória: 334,5 MiB
+- Pico: 358,6 MiB
+- Espaço livre: aproximadamente 11 GB
+- ISO GNOME: ainda não produzida
+- Erros: nenhum até agora
+
+O `debootstrap` está terminando a instalação e configuração da base Debian Trixie. GNOME e o kernel Noble serão instalados nas etapas seguintes.
+
+> tail em tempo real
+
+<details><summary>4 previous messages</summary>
+
+> Vou abrir o `tail -f` do build GNOME em uma sessão contínua e acompanhar as novas linhas.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- tail -n 40 -f /root/playos-debian-trixie-gnome-noble-kernel/build.log`
+>
+> </details>
+>
+> O fluxo em tempo real avançou para `lb chroot_archives`: o repositório local do kernel Noble foi reconhecido em `/packages`, e os índices Trixie, updates e security estão sendo carregados. Os avisos de `dpkg-divert` são do mecanismo normal do `live-build`; ainda não há erro.
+>
+> O `tail -f` segue ativo. O build atualizou 14 pacotes de segurança da base, agendou o kernel em `lb chroot_linux-image` e entrou em `lb chroot_firmware`, baixando os índices `Contents` do Debian. Ainda sem erro.
+</details>
+
+O `tail -f` está ativo.
+
+Estado atual:
+
+```text
+lb chroot_install-packages install
+P: Begin installing packages (install pass)...
+```
+
+O build já:
+
+- finalizou o bootstrap;
+- atualizou os pacotes de segurança;
+- agendou o kernel Noble;
+- processou os índices de firmware;
+- iniciou o download e instalação do GNOME e suas dependências.
+
+Agora está baixando centenas de pacotes, incluindo:
+
+```text
+gnome-shell
+gnome-session
+gnome-control-center
+gdm3
+nautilus
+gnome-terminal
+gnome-software
+firefox-esr
+Mesa
+Wayland
+PipeWire
+firmware
+```
+
+Ainda não apareceu erro. O fluxo em tempo real permanece conectado à sessão `tail -f`.
+
+> linha de comando para eu soltar o tail aqui
+
+Execute este comando no seu terminal:
+
+```bash
+lxc exec playos-debian-trixie-builder-vm -- \
+  tail -n 40 -f /root/playos-debian-trixie-gnome-noble-kernel/build.log
+```
+
+Para sair do acompanhamento sem interromper o build, pressione:
+
+```text
+Ctrl+C
+```
+
+Isso encerra somente o `tail`; o build continuará rodando como serviço.
+
+> Continue documentando tudo
+
+<details><summary>4 previous messages</summary>
+
+> Vou continuar registrando o andamento no documento GNOME e no histórico do projeto, incluindo o comando de `tail -f`, a instalação atual de pacotes e a separação entre encerrar o monitor e interromper o build. Primeiro capturo o estado mais recente.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- systemctl status playos-debian-gnome-live-build.service --no-pager -n 14; lxc exec playos-debian-trixie-builder-vm -- tail -n 100 /root/playos-debian-trixie-gnome-noble-kernel/build.log; lxc exec playos-debian-trixie-builder-vm -- df -h /`
+>
+> </details>
+>
+> A captura mostra instalação efetiva do stack gráfico: GTK 4, Wayland, Vulkan, Fontconfig, HarfBuzz e dependências GNOME estão sendo desempacotadas. O build usa 2,1 GB de RAM e ainda tem 8,1 GB livres. Vou encerrar apenas o meu `tail -f` duplicado e registrar esse checkpoint; o serviço de build continua intacto.
+>
+> <details><summary>Edited 2 files, ran a command</summary>
+>
+> - Wrote `./LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md` (+37 -0)
+> - Wrote `./PROGRESSO.md` (+2 -0)
+> - Ran `git diff --check -- LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md PROGRESSO.md; make -C supervised_learning query-smoke`
+>
+> </details>
+</details>
+
+Documentação atualizada:
+
+[LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md](<./LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md>)
+
+Adicionei:
+
+- comando para acompanhar o log em tempo real;
+- explicação de que `Ctrl+C` encerra somente o `tail`;
+- unidade responsável pelo build;
+- checkpoint de consumo de memória e disco;
+- etapa `lb chroot_install-packages`;
+- componentes GNOME observados;
+- interpretação dos avisos de `dpkg-divert`;
+- proibição de iniciar um segundo build simultâneo.
+
+Também atualizei o [PROGRESSO.md](<./PROGRESSO.md>).
+
+Estado documentado:
+
+- Build ativo;
+- GNOME/GDM3 sendo instalado;
+- Memória: aproximadamente 2,1 GiB;
+- Pico: aproximadamente 2,2 GiB;
+- Espaço livre: aproximadamente 8,1 GiB;
+- Nenhum erro encontrado;
+- `git diff --check`: passou;
+- Smoke tests: passaram.
+
+> Estado atual
+
+<details><summary>17 previous messages</summary>
+
+> Vou verificar o serviço, o final do log, o espaço restante e se a ISO GNOME já foi produzida.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- systemctl status playos-debian-gnome-live-build.service --no-pager -n 20; lxc exec playos-debian-trixie-builder-vm -- tail -n 100 /root/playos-debian-trixie-gnome-noble-kernel/build.log; lxc exec playos-debian-trixie-builder-vm -- sh -lc 'find /root/playos-debian-trixie-gnome-noble-kernel -maxdepth 1 -type f \( -name "*.iso" -o -name "*.iso.sha256" -o -name "*.packages" -o -name "*.contents" \) -printf "%s %p\n" | sort; df -h /'`
+>
+> </details>
+>
+> Context compaction
+>
+> Source: automatic
+> Status: completed
+>
+> A ISO GNOME terminou a compilação com sucesso. Agora vou confirmar checksum, bootloader, manifesto de pacotes e então copiar o resultado para `build/`; o único alerta importante é que o disco da VM construtora chegou a 100%.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'cd /root/playos-debian-trixie-gnome-noble-kernel && sha256sum -c live-image-amd64.hybrid.iso.sha256 && xorriso -indev live-image-amd64.hybrid.iso -report_el_torito as_mkisofs && printf "\nMANIFESTO_RELEVANTE\n" && grep -E "^(gnome-core|gdm3|gnome-shell|linux-image|linux-image-6\.8|xfce4|lightdm|calamares|anaconda)[[:space:]]" live-image-amd64.packages || true && printf "\nARQUIVOS\n" && stat -c "%n|%s bytes" live-image-amd64.hybrid.iso live-image-amd64.hybrid.iso.sha256 live-image-amd64.packages live-image-amd64.contents && printf "\nDISCO\n" && df -h /'`
+>
+> </details>
+>
+> A validação está lendo integralmente a ISO de aproximadamente 1,9 GB, por isso ainda está em execução. Até aqui não surgiu erro imediato; aguardarei o resultado antes de aceitar ou copiar o artefato.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'cd /root/playos-debian-trixie-gnome-noble-kernel && sha256sum -c live-image-amd64.hybrid.iso.sha256; xorriso -indev live-image-amd64.hybrid.iso -report_el_torito plain; grep -E "^(gnome-core|gdm3|gnome-shell|linux-image|linux-image-6\.8|xfce4|lightdm|calamares|anaconda)[[:space:]]" live-image-amd64.packages; stat -c "%n|%s bytes" live-image-amd64.hybrid.iso live-image-amd64.hybrid.iso.sha256 live-image-amd64.packages live-image-amd64.contents; df -h /'`
+>
+> </details>
+>
+> A estrutura está íntegra: checksum passou, a ISO tem boot BIOS e UEFI, volume `PLAYOS_D13_GNOME`, e o manifesto confirma GNOME/GDM sem XFCE, LightDM, Calamares ou Anaconda. Vou confirmar o pacote exato do kernel Noble e copiar os quatro artefatos para uma saída dedicada no projeto.
+>
+> <details><summary>Explored a search, ran 4 commands</summary>
+>
+> - Ran `grep -E '^(linux-(image|modules|headers)|gnome-core|gdm3|xfce4|lightdm|calamares|anaconda)[[:space:]]' /dev/null || true
+> mkdir -p 'build/playos-debian-trixie-gnome-noble/output'
+> ls -la 'build/playos-debian-trixie-gnome-noble/output'`
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- grep -E '^(linux-(image|modules|headers)|gnome-core|gdm3|xfce4|lightdm|calamares|anaconda)[[:space:]]' /root/playos-debian-trixie-gnome-noble-kernel/live-image-amd64.packages`
+>
+> <details><summary>Explored a search</summary>
+>
+> - Searched for `6\.8\.0|Noble|noble|vmlinuz|linux-image` in `playos-debian-trixie-gnome-noble-kernel`
+>
+> </details>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'cd /root/playos-debian-trixie-gnome-noble-kernel && xorriso -osirrox on -indev live-image-amd64.hybrid.iso -extract /live/filesystem.packages /tmp/gnome-filesystem.packages >/dev/null 2>&1 && grep -E "^linux-(image|modules).*(6\.8\.0-138)" /tmp/gnome-filesystem.packages && xorriso -indev live-image-amd64.hybrid.iso -find /live -type f -exec lsdl'`
+>
+> - Ran `lxc file pull playos-debian-trixie-builder-vm/root/playos-debian-trixie-gnome-noble-kernel/live-image-amd64.hybrid.iso 'build/playos-debian-trixie-gnome-noble/output/live-image-amd64.hybrid.iso.partial'`
+>
+> </details>
+>
+> A ISO contém efetivamente `vmlinuz`, `initrd` e os três pacotes Ubuntu Noble `6.8.0-138`; eles aparecem no manifesto interno `/live/filesystem.packages`. A cópia grande para o projeto está em andamento e só será renomeada de `.partial` após conferência de tamanho e hash.
+>
+> A primeira tentativa de cópia falhou sem alterar a ISO: o cliente LXD resolveu o destino relativo como `/home/marcel/build`, fora do projeto. Vou repetir usando o caminho absoluto correto.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc file pull playos-debian-trixie-builder-vm/root/playos-debian-trixie-gnome-noble-kernel/live-image-amd64.hybrid.iso '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-gnome-noble/output/live-image-amd64.hybrid.iso.partial'`
+>
+> </details>
+>
+> A transferência está progredindo normalmente (cerca de 656 MB copiados). A origem permanece intacta na VM; ainda não há arquivo final publicado no projeto, apenas o temporário.
+>
+> A cópia passou de 1,3 GB de 2,0 GB e continua sem erro. Depois dela, a conferência local do SHA-256 será a condição para promover o arquivo temporário à ISO final.
+>
+> <details><summary>Ran 4 commands</summary>
+>
+> - Ran `lxc file pull "playos-debian-trixie-builder-vm/root/playos-debian-trixie-gnome-noble-kernel/live-image-amd64.hybrid.iso.sha256" "/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-gnome-noble/output/live-image-amd64.hybrid.iso.sha256"`
+> - Ran `lxc file pull "playos-debian-trixie-builder-vm/root/playos-debian-trixie-gnome-noble-kernel/live-image-amd64.packages" "/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-gnome-noble/output/live-image-amd64.packages"`
+> - Ran `lxc file pull "playos-debian-trixie-builder-vm/root/playos-debian-trixie-gnome-noble-kernel/live-image-amd64.contents" "/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/build/playos-debian-trixie-gnome-noble/output/live-image-amd64.contents"`
+> - Ran `set -e
+> out='build/playos-debian-trixie-gnome-noble/output'
+> expected=$(cut -d' ' -f1 "$out/live-image-amd64.hybrid.iso.sha256")
+> actual=$(sha256sum "$out/live-image-amd64.hybrid.iso.partial" | cut -d' ' -f1)
+> test "$expected" = "$actual"
+> test "$(stat -c %s "$out/live-image-amd64.hybrid.iso.partial")" = 2007859200
+> mv -f "$out/live-image-amd64.hybrid.iso.partial" "$out/live-image-amd64.hybrid.iso"
+> printf 'SHA256=%s\n' "$actual"
+> stat -c '%n|%s bytes' "$out"/*`
+>
+> </details>
+>
+> A cópia terminou e o hash local é idêntico ao da VM: `3d3793…743eb`. A ISO final e seus três manifestos já estão em `build/playos-debian-trixie-gnome-noble/output/`. Vou apenas registrar esse estado como “compilada e validada estaticamente”; o boot GNOME em VM continua sendo o próximo gate.
+>
+> <details><summary>Edited 4 files, ran 2 commands</summary>
+>
+> - Ran `sed -n '1,180p' LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md
+> rg -n "GNOME|gnome-noble|playos-debian-trixie-gnome" supervised_learning/catalog/{implementations.tsv,topics.tsv,sources.tsv,document_inventory.tsv} PROGRESSO.md | tail -n 100`
+> - Wrote `./LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md` (+39 -10)
+> - Wrote `./PROGRESSO.md` (+11 -0)
+> - Wrote `./supervised_learning/catalog/implementations.tsv` (+1 -1)
+> - Wrote `./supervised_learning/catalog/sources.tsv` (+1 -1)
+> - Ran `python3 supervised_learning/tools/validate_knowledge.py
+> make -C supervised_learning query-smoke
+> git diff --check
+> git status --short -- LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md PROGRESSO.md supervised_learning/catalog/implementations.tsv supervised_learning/catalog/sources.tsv build/playos-debian-trixie-gnome-noble/output`
+>
+> </details>
+</details>
+
+Estado atual:
+
+- ISO GNOME compilada com sucesso.
+- Base: Debian 13 Trixie.
+- Kernel: Ubuntu Noble `6.8.0-138-generic`.
+- Desktop: GNOME Core + GNOME Shell + GDM3.
+- Sem XFCE, LightDM, Calamares ou Anaconda.
+- Boot estático confirmado para BIOS e UEFI.
+- SHA-256 validado na VM e novamente após a cópia:
+  `3d37930ce1db4853a4eda72152b8f5e13f99a942e9e6840ace2a84a3214743eb`
+- Tamanho: `2.007.859.200 bytes` — aproximadamente `1,87 GiB`.
+
+Arquivo final:
+
+[ISO PlayOS GNOME](~/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/build/playos-debian-trixie-gnome-noble/output/live-image-amd64.hybrid.iso)
+
+A documentação foi atualizada em [LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md](~/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md).
+
+Pendências:
+
+- Inicializar a ISO em VM.
+- Confirmar visualmente GDM e sessão GNOME.
+- Testar rede, áudio, Mesa, Vulkan e OverlayFS.
+- A VM construtora está com o disco de 12 GiB em 100%; não deve receber outro build antes de liberar ou aumentar espaço.
+
+Os testes de consulta da base e `git diff --check` passaram. O validador geral encontrou 25 erros preexistentes no catálogo/documentos supervisionados, não causados por esta atualização.
+
+> vamos fazer uma outra com o gnome direto do repositório da própria gnome mesmo
+
+<details><summary>4 previous messages</summary>
+
+> Vou tratar “repositório da própria GNOME” como o código-fonte upstream oficial do GNOME, não os pacotes Debian. Primeiro confirmarei o método oficial e a versão compatível; essa variante precisa ficar separada, porque o GNOME não oferece um repositório APT completo equivalente ao Debian e compilar todo o desktop muda bastante o pipeline.
+>
+> <details><summary>Explored 2 files, a search, searched the web</summary>
+>
+> <details><summary>Explored 2 files, a search</summary>
+>
+> - Read `./supervised_learning/README.md`
+> - Read `./supervised_learning/INDEX.md`
+> - Searched for `GNOME|live.*Noble|Debian.*GNOME` in `topics.tsv`
+>
+> </details>
+>
+> Searched the web for `site:gitlab.gnome.org GNOME build metadata gnome-build-meta BuildStream official ...`
+>
+> </details>
+>
+> A fonte oficial aponta duas rotas diferentes: `gnome-build-meta`/BuildStream para compilar a plataforma GNOME upstream, e GNOME OS Nightly como sistema completo de referência. Para manter a arquitetura PlayOS — Live Debian + kernel Noble — a rota correta é usar `gnome-build-meta`, fixado em commit/tag, e integrar os artefatos; usar GNOME OS diretamente substituiria a base Debian e provavelmente o kernel Noble. Também vou verificar se há capacidade para esse build, pois a VM atual terminou com apenas 58 MiB livres.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `df -h '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS' /tmp
+> lxc storage list
+> lxc storage info default
+> lxc list playos-debian-trixie-builder-vm --format csv -c ns4`
+>
+> </details>
+</details>
+
+É possível, mas não existe um “repositório APT oficial do GNOME”. O método upstream correto é compilar a plataforma pelo `gnome-build-meta` com BuildStream. O GNOME OS Nightly seria outra distribuição e substituiria a base Debian e possivelmente o kernel Noble. [GNOME Handbook](https://handbook.gnome.org/development/building.html), [GNOME OS](https://os.gnome.org/).
+
+Recomendo a nova variante:
+
+- Live e userspace: Debian Trixie.
+- Kernel: Ubuntu Noble `6.8.0-138-generic`.
+- Desktop: fontes oficiais GNOME via `gnome-build-meta`.
+- Versões fixadas por commit, sem usar `main` flutuante.
+- Perfil e ISO separados da versão GNOME empacotada pelo Debian.
+- Sem instalador inicialmente.
+
+Há um bloqueio físico: a VM builder está com 58 MiB livres, e o pool LXD tem somente cerca de 4,37 GiB disponíveis. Uma compilação GNOME upstream precisa de muito mais espaço.
+
+Você autoriza limpar o staging já copiado da VM e ampliar sua capacidade para prepararmos a variante `GNOME upstream + Debian Live + kernel Noble`?
+
+> sim pode fazer
+
+<details><summary>38 previous messages</summary>
+
+> Vou preservar a ISO e os manifestos já validados no projeto e remover somente o staging GNOME correspondente dentro da VM. Depois medirei o espaço recuperado antes de redimensionar; não apagarei outras VMs, imagens ou a ISO XFCE.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'test -d /root/playos-debian-trixie-gnome-noble-kernel && du -sh /root/playos-debian-trixie-gnome-noble-kernel && cd /root/playos-debian-trixie-gnome-noble-kernel && lb clean --purge'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'du -sh /root/playos-debian-trixie-gnome-noble-kernel; df -h /'
+> lxc storage info default`
+>
+> </details>
+>
+> A limpeza recuperou 10,8 GiB dentro da VM: ela caiu de 100% para 11% de uso, mantendo o perfil-fonte (161 MiB). O pool ZFS, porém, continua reportando apenas ~4,4 GiB livres; vou identificar a configuração do disco e snapshots antes de redimensionar, porque aumentar apenas o limite lógico não criaria capacidade física.
+>
+> <details><summary>Ran a command, searched the web</summary>
+>
+> - Ran `lxc config show playos-debian-trixie-builder-vm --expanded
+> lxc info playos-debian-trixie-builder-vm
+> lxc storage volume list default --format csv`
+>
+> Searched the web for `site:release.gnome.org 2026 GNOME 50 release ...`
+>
+> </details>
+>
+> A limpeza deixou 11 GiB livres na VM. Para a primeira variante reproduzível, vou fixar GNOME 50 (a versão estável atual; GNOME 51 ainda é RC até 16 de setembro) e registrar o commit exato do ramo oficial `gnome-50`. Não usarei a branch de desenvolvimento.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `git ls-remote https://gitlab.gnome.org/GNOME/gnome-build-meta.git refs/heads/gnome-50`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -e; test ! -e /root/gnome-build-meta-50-playos; git clone --filter=blob:none --no-checkout --branch gnome-50 https://gitlab.gnome.org/GNOME/gnome-build-meta.git /root/gnome-build-meta-50-playos; cd /root/gnome-build-meta-50-playos; git checkout --detach ec28a45a6fcd99195ebc39c1aeda78fd6fe27b8f; git rev-parse HEAD; du -sh .; sed -n "1,220p" README.md'`
+>
+> </details>
+>
+> A VM não possui `git`; por isso o clone não começou e nenhum checkout parcial foi criado. Vou instalar `git` apenas dentro da VM isolada (sem alterar o host) e repetir o clone fixado.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git ca-certificates'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -e; test ! -e /root/gnome-build-meta-50-playos; git clone --filter=blob:none --no-checkout --branch gnome-50 https://gitlab.gnome.org/GNOME/gnome-build-meta.git /root/gnome-build-meta-50-playos; cd /root/gnome-build-meta-50-playos; git checkout --detach ec28a45a6fcd99195ebc39c1aeda78fd6fe27b8f; printf "HEAD="; git rev-parse HEAD; du -sh .; sed -n "1,220p" README.md'`
+>
+> </details>
+>
+> O GitLab interrompeu a conexão durante o primeiro clone (`early EOF`); ficou apenas um checkout incompleto, sem fonte utilizável. Vou remover exclusivamente esse diretório parcial e repetir com `--depth 1`, reduzindo a transferência.
+>
+> <details><summary>Ran 4 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- rm -rf /root/gnome-build-meta-50-playos`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -e; git clone --depth 1 --single-branch --branch gnome-50 https://gitlab.gnome.org/GNOME/gnome-build-meta.git /root/gnome-build-meta-50-playos; cd /root/gnome-build-meta-50-playos; test "$(git rev-parse HEAD)" = ec28a45a6fcd99195ebc39c1aeda78fd6fe27b8f; printf "HEAD="; git rev-parse HEAD; du -sh .; sed -n "1,220p" README.md'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'cd /root/gnome-build-meta-50-playos; find . -maxdepth 2 -type f | sort | sed -n "1,180p"; printf "\nBST TARGETS\n"; find . -maxdepth 3 -type f \( -name "*.bst" -o -name "*.conf" \) | grep -E "gnome|image|desktop|project" | sort | sed -n "1,180p"; printf "\nTOOLS\n"; command -v bst || true; python3 --version; df -h /'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'cd /root/gnome-build-meta-50-playos; sed -n "1,260p" README.rst; printf "\nREADME_OPENQA\n"; sed -n "1,160p" README.openqa; printf "\nPROJECT\n"; sed -n "1,180p" project.conf; printf "\nCORE\n"; sed -n "1,180p" elements/core.bst; printf "\nSHELL_META\n"; sed -n "1,160p" elements/core/meta-gnome-core-shell.bst'`
+>
+> </details>
+>
+> O checkout oficial foi confirmado no commit `ec28a45…`, com 13 MiB. Ele define BuildStream ≥2.5, cache oficial GNOME e os alvos `core/meta-gnome-core-shell.bst` e `gnomeos/live-image.bst`. Antes de decidir o tamanho do disco, vou executar TRIM na VM para que o ZFS reconheça os 10,8 GiB liberados pelo `lb clean`.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- fstrim -av
+> lxc storage info default`
+>
+> </details>
+>
+> O TRIM confirmou 10,2 GiB descartados no filesystem, mas o pool loop-backed não devolveu esse espaço — ele continua com ~4,4 GiB físicos livres. Vou tentar primeiro ampliar apenas o limite da VM de 12 para 24 GiB; se o ZFS recusar, não forçarei o crescimento do arquivo do pool sem antes medir o impacto no disco do host. A VM precisará reiniciar para reconhecer o novo tamanho.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc config device set playos-debian-trixie-builder-vm root size 24GiB
+> lxc restart playos-debian-trixie-builder-vm --timeout 60
+> lxc exec playos-debian-trixie-builder-vm -- df -h /
+> lxc storage info default`
+>
+> </details>
+>
+> O redimensionamento foi aceito e, após o reinício, o ZFS finalmente liberou o espaço descartado: o pool passou a ter cerca de 12,2 GiB livres. A mensagem sobre o agente ocorreu apenas porque consultei a VM cedo demais durante o boot; vou aguardar ela ficar pronta e confirmar se o filesystem cresceu para 24 GiB.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc list playos-debian-trixie-builder-vm --format csv -c ns4
+> lxc exec playos-debian-trixie-builder-vm -- df -h /
+> lxc exec playos-debian-trixie-builder-vm -- bash -lc 'cd /root/gnome-build-meta-50-playos && git rev-parse HEAD && command -v bst || true'`
+> - Ran `sleep 10
+> lxc exec playos-debian-trixie-builder-vm -- df -h /
+> lxc exec playos-debian-trixie-builder-vm -- bash -lc 'cd /root/gnome-build-meta-50-playos && git rev-parse HEAD && command -v bst || true'`
+>
+> </details>
+>
+> A VM está pronta: filesystem de 24 GiB, 22 GiB livres, e o checkout GNOME 50 permaneceu exatamente no commit fixado. O próximo passo é instalar BuildStream ≥2.5 e seus plugins dentro da VM; antes, vou verificar o método disponível no Debian e as dependências declaradas pelo próprio projeto.
+>
+> <details><summary>Ran 2 commands, searched the web</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'apt-cache policy buildstream buildstream-doc pipx podman; cd /root/gnome-build-meta-50-playos; grep -RInE "buildstream|bst-plugins|pipx|requirements" .gitlab-ci utils docs | head -n 160'`
+>
+> Searched the web for `site:docs.buildstream.build/2.6 install BuildStream pip dependencies official ...`
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'apt-cache search "^buildbox"; apt-cache policy python3-venv python3-dev python3-pip g++ bubblewrap fuse3 lzip patch; grep -RIn "origin: pip\|bst-plugins" /root/gnome-build-meta-50-playos/project.conf /root/gnome-build-meta-50-playos/include /root/gnome-build-meta-50-playos/elements | head -n 120'`
+>
+> </details>
+>
+> O pacote Debian chamado `buildstream` é 1.6.9 e incompatível com o mínimo 2.5 exigido pelo GNOME 50; portanto não será usado. Vou seguir exatamente a rota recomendada pelo próprio `gnome-build-meta`: executar o ambiente oficial `bst2` em contêiner. Primeiro instalarei Podman somente na VM e validarei a versão, sem iniciar ainda a compilação completa.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends podman fuse-overlayfs uidmap slirp4netns'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'podman pull registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 && podman run --rm registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst --version && podman images --format "{{.Repository}}|{{.Tag}}|{{.ID}}|{{.Size}}" && df -h /'`
+>
+> </details>
+>
+> O Podman foi instalado na VM. A imagem oficial `bst2` está sendo baixada agora; ainda não há compilação GNOME em curso. Após validar o BuildStream, executarei primeiro apenas a resolução do grafo (`bst show`) para detectar incompatibilidades sem consumir todo o disco.
+>
+> O download ainda está ativo e não apresentou erro; são camadas grandes do SDK oficial. Estou mantendo a operação isolada na VM e acompanhando o espaço para não repetir a saturação do build anterior.
+>
+> O pull terminou com código 129 e sem diagnóstico adicional, portanto não vou considerar a imagem válida. Vou verificar se alguma camada foi concluída, o consumo de disco e os logs do Podman antes de decidir entre retomar o pull ou usar instalação nativa do BuildStream.
+>
+> <details><summary>Ran 4 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'podman images --format "{{.Repository}}|{{.Tag}}|{{.ID}}|{{.Size}}"; podman system df; df -h /; journalctl -n 80 --no-pager | grep -Ei "podman|conmon|oom|killed" || true'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- df -h /`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- podman images`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- podman run --rm registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst --version`
+>
+> </details>
+>
+> A imagem `bst2` foi baixada corretamente (1,64 GB). O código 129 ocorreu na etapa seguinte: o Podman tentou criar sua rede, mas `nft` não estava instalado porque usamos `--no-install-recommends`. Vou adicionar apenas `nftables` na VM e repetir o teste.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends nftables && podman run --rm registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst --version'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- podman image inspect registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 --format '{{json .Config}}'`
+>
+> </details>
+>
+> BuildStream 2.8.0 está funcionando no ambiente oficial e atende ao mínimo 2.5. Vou resolver o alvo upstream `core/meta-gnome-core-shell.bst` com cache persistente e checkout somente leitura; isso confirmará o grafo real do desktop antes de qualquer compilação pesada.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -e; mkdir -p /root/gnome-build-meta-50-cache; podman run --rm --network host -v /root/gnome-build-meta-50-playos:/src:ro -v /root/gnome-build-meta-50-cache:/root/.cache/buildstream -w /src registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst show --format "%{name}" core/meta-gnome-core-shell.bst | tee /root/gnome50-core-shell-elements.txt; printf "ELEMENT_COUNT="; wc -l < /root/gnome50-core-shell-elements.txt; df -h /'`
+>
+> </details>
+>
+> A primeira resolução falhou por uma proteção que eu mesmo apliquei: o checkout foi montado somente leitura, mas o BuildStream precisa criar `.bst/` para carregar junctions. Nenhum elemento foi compilado. Vou repetir com escrita limitada ao checkout da VM e `pipefail`, para que qualquer falha não seja mascarada pelo `tee`.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -euo pipefail; cd /root/gnome-build-meta-50-playos; podman run --rm --network host -v /root/gnome-build-meta-50-playos:/src -v /root/gnome-build-meta-50-cache:/root/.cache/buildstream -w /src registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst show --format "%{name}" core/meta-gnome-core-shell.bst | tee /root/gnome50-core-shell-elements.txt; printf "ELEMENT_COUNT="; wc -l < /root/gnome50-core-shell-elements.txt; df -h /'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'ls -l /dev/fuse; cd /root/gnome-build-meta-50-playos; grep -RInE "podman run|docker run|--device.*/dev/fuse|bst2" README.rst .gitlab-ci docs utils | head -n 160'`
+>
+> </details>
+>
+> A segunda tentativa avançou até buscar o Freedesktop SDK, mas o sandbox FUSE morreu porque o contêiner não recebeu `/dev/fuse`. Isso é uma limitação da execução via Podman, não do GNOME. Como estamos dentro de uma VM isolada dedicada, vou fornecer o dispositivo FUSE e as capacidades de sandbox necessárias somente a esse contêiner efêmero e repetir a resolução.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -euo pipefail; cd /root/gnome-build-meta-50-playos; podman run --rm --network host --device /dev/fuse --cap-add SYS_ADMIN --security-opt seccomp=unconfined -v /root/gnome-build-meta-50-playos:/src -v /root/gnome-build-meta-50-cache:/root/.cache/buildstream -w /src registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst show --format "%{name}" core/meta-gnome-core-shell.bst | tee /root/gnome50-core-shell-elements.txt; printf "ELEMENT_COUNT="; wc -l < /root/gnome50-core-shell-elements.txt; df -h /'`
+>
+> </details>
+>
+> O acesso ao dispositivo ainda não bastou; o FUSE stager precisa do conjunto de namespaces/mounts que Toolbox normalmente concede. Vou fazer uma última resolução com `--privileged`, limitada ao contêiner efêmero dentro da VM builder. Se falhar, abandonarei Podman e mudarei para Toolbox/BuildStream nativo, registrando a incompatibilidade.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -euo pipefail; cd /root/gnome-build-meta-50-playos; podman run --rm --privileged --network host -v /root/gnome-build-meta-50-playos:/src -v /root/gnome-build-meta-50-cache:/root/.cache/buildstream -w /src registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst show --format "%{name}" core/meta-gnome-core-shell.bst | tee /root/gnome50-core-shell-elements.txt; printf "ELEMENT_COUNT="; wc -l < /root/gnome50-core-shell-elements.txt; df -h /'`
+>
+> </details>
+>
+> O grafo upstream foi resolvido com sucesso: são 719 elementos para o shell completo, incluindo toolchain Freedesktop SDK, GTK, Mutter, GDM, GNOME Shell, Wayland/Xwayland, PipeWire e dependências. Esse resultado confirma que “GNOME direto do GNOME” não é apenas trocar quatro pacotes. Agora verificarei quantos desses 719 artefatos existem no cache oficial; isso determina se os 20 GiB livres bastam ou se seria necessário compilar centenas de componentes.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -euo pipefail; cd /root/gnome-build-meta-50-playos; podman run --rm --privileged --network host -v /root/gnome-build-meta-50-playos:/src -v /root/gnome-build-meta-50-cache:/root/.cache/buildstream -w /src registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2 bst show --format "%{state}" core/meta-gnome-core-shell.bst | sort | uniq -c | tee /root/gnome50-core-shell-states.txt; df -h /'`
+>
+> </details>
+>
+> O cache oficial não possui artefatos utilizáveis para este commit: 631 elementos precisam buscar fontes, 86 aguardam dependências e apenas 2 estão imediatamente compiláveis. Com somente 20 GiB livres, iniciar agora seria uma compilação previsivelmente interrompida. Vou registrar o pipeline reproduzível, o commit, o alvo e o diagnóstico; também separarei claramente duas fases: construir GNOME 50 upstream e, depois, integrá-lo sem sobrepor cegamente bibliotecas Debian incompatíveis.
+>
+> <details><summary>Created 2 files, edited 6 files, explored 5 files, ran a command</summary>
+>
+> - Wrote `./PROGRESSO.md` (+13 -0)
+> - Wrote `./gnome-upstream/README.md` (+79 -0)
+> - Wrote `./gnome-upstream/gnome-50.lock` (+6 -0)
+>
+> <details><summary>Explored 5 files</summary>
+>
+> - Read `./supervised_learning/catalog/sources.tsv`
+> - Read `./supervised_learning/catalog/topics.tsv`
+> - Read `./supervised_learning/catalog/implementations.tsv`
+> - Read `./supervised_learning/catalog/document_inventory.tsv`
+> - Read `./supervised_learning/catalog/decisions.tsv`
+>
+> </details>
+>
+> - Wrote `./supervised_learning/catalog/decisions.tsv` (+1 -0)
+> - Wrote `./supervised_learning/catalog/document_inventory.tsv` (+1 -0)
+> - Wrote `./supervised_learning/catalog/implementations.tsv` (+1 -0)
+> - Wrote `./supervised_learning/catalog/sources.tsv` (+1 -0)
+> - Wrote `./supervised_learning/catalog/topics.tsv` (+1 -0)
+>
+> - Ran `python3 supervised_learning/tools/validate_knowledge.py
+> make -C supervised_learning query-smoke
+> git diff --check
+> git status --short -- gnome-upstream PROGRESSO.md supervised_learning/catalog`
+>
+> </details>
+</details>
+
+A variante GNOME upstream foi iniciada e preparada corretamente, mas a compilação completa ainda não começou por falta de espaço.
+
+Concluído:
+
+- VM limpa: uso caiu de 100% para 11%.
+- Disco da VM ampliado de 12 para 24 GiB.
+- 20 GiB permanecem livres.
+- GNOME 50 estável selecionado.
+- `gnome-build-meta` oficial fixado no commit:
+  `ec28a45a6fcd99195ebc39c1aeda78fd6fe27b8f`
+- Podman e ambiente oficial `bst2` instalados na VM.
+- BuildStream 2.8.0 validado.
+- Grafo do GNOME Core Shell resolvido com sucesso:
+  - 719 elementos;
+  - 631 precisam buscar fontes;
+  - 86 aguardam dependências;
+  - 2 estão imediatamente compiláveis.
+- Nenhuma sobreposição insegura foi feita no Debian.
+- Nenhuma nova ISO foi criada ainda.
+
+O GNOME 50 é a versão estável atual; GNOME 51 ainda está em desenvolvimento neste momento. [GNOME 50](https://release.gnome.org/50/), [calendário oficial](https://release.gnome.org/calendar/).
+
+Documentação e lock reproduzível:
+
+- [gnome-upstream/README.md](~/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/gnome-upstream/README.md)
+- [gnome-50.lock](~/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/gnome-upstream/gnome-50.lock)
+- [PROGRESSO.md](~/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/PROGRESSO.md)
+
+A fonte oficial confirma que `gnome-build-meta` é o mecanismo usado para construir a pilha GNOME, seus runtimes e o GNOME OS. [GNOME Build Handbook](https://handbook.gnome.org/development/building.html).
+
+Próximo bloqueio: precisamos disponibilizar pelo menos 80 GiB para cache e compilação. O host possui somente cerca de 24 GiB livres, portanto iniciar os 719 elementos agora provavelmente saturaria o disco. Será necessário liberar espaço no pool LXD, mover o cache para outro disco ou adicionar armazenamento antes de continuar.
+
+> Verifique se já tem um gnome compilado, em vez de ficar fazendo compilação
+
+<details><summary>6 previous messages</summary>
+
+> Vou verificar três fontes de binários já prontos: o cache remoto do `gnome-build-meta`, as imagens OCI oficiais do GNOME e a ISO estável do GNOME OS. Depois separarei o que pode ser reutilizado no PlayOS do que substituiria o Debian ou o kernel Noble.
+>
+> <details><summary>Ran a command, searched the web</summary>
+>
+> Searched the web for `site:gitlab.gnome.org/GNOME/gnome-build-meta prebuilt artifacts stable GNOME 50 OCI core-50 ...`
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set +e; printf "OCI_CORE_50\n"; podman manifest inspect quay.io/gnome_infrastructure/gnome-build-meta:core-50 | sed -n "1,80p"; printf "\nGNOME_OS_STABLE_50\n"; curl -ILsS --max-time 30 -o /dev/null -w "http=%{http_code}\nurl=%{url_effective}\nsize=%{size_download}\ncontent_type=%{content_type}\n" https://os.gnome.org/download/stable/50/gnome_os_installer_x86_64.iso; printf "\nGNOME_OS_LATEST\n"; curl -ILsS --max-time 30 -o /dev/null -w "http=%{http_code}\nurl=%{url_effective}\ncontent_type=%{content_type}\n" https://os.gnome.org/download/latest/gnome_os_installer.iso'`
+>
+> </details>
+>
+> Já encontrei um binário pronto importante: `quay.io/gnome_infrastructure/gnome-build-meta:core-50` existe e seu manifesto soma cerca de 8,8 GB compactados em camadas. Isso elimina a compilação dos 719 elementos, mas a imagem é um runtime GNOME/Freedesktop SDK, não pacotes Debian. Vou confirmar também as ISOs oficiais GNOME OS por requisições sem download.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set +e; for url in https://os.gnome.org/download/stable/50/gnome_os_installer_x86_64.iso https://os.gnome.org/download/latest/gnome_os_installer.iso; do printf "URL=%s\n" "$url"; wget --server-response --spider --max-redirect=10 "$url" 2>&1 | grep -Ei "HTTP/|Location:|Content-Length:|Content-Type:" | tail -n 12; done'`
+>
+> </details>
+>
+> A verificação fechou: há duas opções GNOME já compiladas — a ISO estável GNOME OS 50.4 com 3.111.137.792 bytes e o runtime OCI `core-50` com aproximadamente 8,8 GB compactados. A ISO nightly também existe, mas é maior e instável. Vou registrar esses achados e indicar qual evita compilação sem criar uma falsa mistura Debian/GNOME OS.
+>
+> <details><summary>Edited 2 files, ran a command</summary>
+>
+> - Wrote `./PROGRESSO.md` (+9 -0)
+> - Wrote `./gnome-upstream/README.md` (+42 -0)
+> - Ran `git diff --check
+> make -C supervised_learning query-smoke >/tmp/playos-query-smoke.log && tail -n 8 /tmp/playos-query-smoke.log
+> git status --short -- gnome-upstream PROGRESSO.md`
+>
+> </details>
+</details>
+
+Sim, já existe GNOME 50 completamente compilado. Não precisamos compilar os 719 elementos localmente.
+
+Opções encontradas:
+
+- GNOME OS 50.4 estável:
+  - ISO oficial pronta;
+  - tamanho: `3.111.137.792 bytes` — aproximadamente `2,90 GiB`;
+  - melhor alternativa para começar rapidamente;
+  - [download oficial](https://os.gnome.org/download/stable/50/gnome_os_installer_x86_64.iso).
+
+- Imagem OCI GNOME Core 50:
+  - `quay.io/gnome_infrastructure/gnome-build-meta:core-50`;
+  - aproximadamente `8,8 GB` compactados;
+  - contém o runtime GNOME/Freedesktop SDK já construído;
+  - não é um pacote Debian nem um repositório APT.
+
+- GNOME OS nightly:
+  - versão `nightly.20260906.1`;
+  - aproximadamente `3,46 GiB`;
+  - não recomendada porque é uma versão de desenvolvimento.
+
+A melhor solução é usar a ISO GNOME OS 50.4 como nova baseline. Contudo, ela não é Debian Trixie e não contém automaticamente nosso kernel Ubuntu Noble. Podemos baixar essa ISO, testá-la e depois estudar a substituição controlada do kernel pelo Noble.
+
+A opção OCI evita compilação, mas não pode ser extraída diretamente sobre `/usr` do Debian porque substituiria bibliotecas como GLib, GTK, systemd, Mesa e PipeWire fora do controle do `dpkg`.
+
+Documentei a descoberta em:
+
+- [gnome-upstream/README.md](~/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/gnome-upstream/README.md)
+- [PROGRESSO.md](~/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/PROGRESSO.md)
+
+Minha recomendação: baixar e testar primeiro a ISO GNOME OS 50.4; depois criar uma variante separada com o kernel Noble, sem misturá-la silenciosamente com a Live Debian atual.
+
+> Vamos mudar então, verifique para colocar o kde-full com a própria kde, no lugar do gnome.
+
+<details><summary>30 previous messages</summary>
+
+> Vou substituir a investigação GNOME por uma rota KDE upstream, procurando primeiro imagens oficialmente compiladas pelo próprio projeto KDE. Vou comparar KDE neon, KDE Linux e artefatos de desenvolvimento, preservando a distinção entre “KDE completo oficial” e o metapacote Ubuntu `kde-full`.
+>
+> <details><summary>Ran 3 commands, searched the web</summary>
+>
+> Searched the web for `site:kde.org official KDE operating system KDE Linux ISO 2026 ...`
+>
+> Searched the web for `https://neon.kde.org/download`
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -e; wget -qO- https://neon.kde.org/download | grep -Eo "https?://[^\"[:space:]]+\.iso([^\"[:space:]]*)?" | head -n 20'`
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'url=https://files.kde.org/neon/images/desktop/user/20260903-0454/neon-user-desktop-20260903-0454.iso; wget --server-response --spider "$url" 2>&1 | grep -Ei "HTTP/|Content-Length:|Last-Modified:|Content-Type:"; printf "\nCHECKSUM_FILES\n"; wget -qO- https://files.kde.org/neon/images/desktop/user/20260903-0454/ | grep -E "SHA256|\.iso(\.sig|\.torrent)?" | head -n 40'`
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'wget -qO- https://files.kde.org/neon/images/desktop/user/20260903-0454/ | grep -Ei "manifest|packages|sha256|md5|\.list" | head -n 80'`
+>
+> </details>
+>
+> A melhor candidata é a KDE neon User Edition: ela é produzida pelo projeto KDE, usa Ubuntu 24.04 Noble e traz Plasma/KDE compilados e publicados pelo KDE. A ISO atual tem cerca de 3,07 GiB. Vou auditar o manifesto oficial para confirmar Plasma, Frameworks, aplicações, instalador e kernel exato antes de substituir a direção GNOME.
+>
+> <details><summary>Ran 5 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'base=https://files.kde.org/neon/images/desktop/user/20260903-0454; wget -qO /tmp/neon-user.manifest "$base/neon-user-desktop-20260903-0454.manifest"; wget -qO /tmp/neon-user.sha256 "$base/neon-user-desktop-20260903-0454.sha256sum"; printf "SHA256\n"; cat /tmp/neon-user.sha256; printf "\nRELEVANT_PACKAGES\n"; grep -E "^(linux-image|linux-generic|plasma-desktop|plasma-workspace|kwin-wayland|sddm|neon-desktop|kde-standard|kde-full|calamares|ubiquity|systemsettings|dolphin|konsole|discover|plasma-discover)[[:space:]]" /tmp/neon-user.manifest; printf "\nCOUNTS\n"; wc -l /tmp/neon-user.manifest; grep -Ec "^(libkf6|kf6|plasma|kde|kwin|dolphin|konsole|okular|gwenview)" /tmp/neon-user.manifest'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'printf "KERNEL\n"; grep -E "^(linux-|linux-base|linux-firmware)" /tmp/neon-user.manifest | head -n 100; printf "\nDISPLAY_INSTALLER_SESSION\n"; grep -Ei "^(sddm|calamares|ubiquity|plasma-workspace-wayland|xwayland|wayland|xserver-xorg)[[:space:]]" /tmp/neon-user.manifest; printf "\nKDE_APPS_SAMPLE\n"; grep -E "^(ark|dolphin|gwenview|kate|kcalc|kdeconnect|kdenlive|konsole|okular|spectacle|elisa|kmail|kontact|korganizer)[[:space:]]" /tmp/neon-user.manifest'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- grep -Ei 'sddm|plasma.*wayland|display-manager' /tmp/neon-user.manifest | head -n 80`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'grep -Ei "(greetd|lightdm|sddm|gdm3|display-manager|plasma-login|kwin-x11|kwin-wayland|plasma-workspace)" /tmp/neon-user.manifest | head -n 100'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- grep -Ei 'login-manager|greeter|display' /tmp/neon-user.manifest | head -n 100`
+>
+> </details>
+>
+> A auditoria indica que KDE neon User Edition é a substituição correta: é um projeto KDE, usa Ubuntu 24.04 Noble, entrega Plasma 6.7.4 e KDE Gear 26.08 já compilados, além de Wayland/X11 e Calamares. Ela já usa o kernel Ubuntu HWE `7.0.0-30-generic`, não o Noble GA 6.8. Vou baixar essa baseline oficial para uma área separada, validar SHA-256 e mantê-la intacta antes de qualquer personalização PlayOS.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `mkdir -p 'build/playos-kde-neon-user-noble/source'
+> wget -O 'build/playos-kde-neon-user-noble/source/neon-user-desktop-20260903-0454.iso.partial' 'https://files.kde.org/neon/images/desktop/user/20260903-0454/neon-user-desktop-20260903-0454.iso'`
+>
+> </details>
+>
+> O download está ativo e já passou de 8%; o espelho brasileiro estimou cerca de cinco minutos. O arquivo permanece com sufixo `.partial` e só será aceito após atingir exatamente 3.300.917.248 bytes e passar no SHA-256 oficial.
+>
+> A transferência chegou a 24% e segue íntegra. Já confirmei pelo manifesto remoto que essa imagem é Noble com Plasma 6.7.4, KDE Gear 26.08 e kernel HWE Ubuntu 7.0.0-30; portanto ela substitui tanto o GNOME quanto a necessidade de compilar KDE.
+>
+> O download atingiu 41%. A referência escolhida é a User Edition estável; descartei KDE Linux porque ainda é Alpha, exige somente UEFI, usa base image-based derivada de Arch e sua ISO atual tem cerca de 7,8 GB.
+>
+> Não está sendo usado o userspace debian?
+>
+> Não. A ISO KDE neon usa userspace Ubuntu 24.04 Noble, não Debian Trixie. Escolhi-a porque é o KDE já compilado pelo próprio projeto e também já traz kernel Ubuntu HWE 7.0; ela seria uma mudança de baseline, não apenas uma troca de desktop.
+>
+> Se o requisito continuar sendo “userspace Debian + KDE oficial”, a ISO neon não pode virar nossa base diretamente. Nesse caso, teremos de manter a Live Debian e consumir/reempacotar os binários KDE neon com muito cuidado — os pacotes foram construídos para Noble e não são ABI garantida no Trixie. O download está em andamento como baseline de referência, sem substituir ou apagar a ISO Debian existente.
+>
+> O download da referência KDE neon chegou a 71%. Vou terminá-lo e validar o hash, mas não o tratarei como PlayOS Debian. Para preservar a decisão anterior, a arquitetura recomendada continua sendo: Debian Live/Trixie no userspace, kernel Ubuntu escolhido separadamente e KDE obtido por uma cadeia compatível com Debian.
+>
+> Tem que ser com o userspace do debian
+>
+> Entendido: requisito obrigatório passa a ser userspace Debian. Vou cancelar o download da ISO KDE neon, porque ela é Ubuntu Noble e não serve como base final. Manteremos Debian Trixie + mecanismo Debian Live; KDE neon será apenas referência de versões, não fonte binária direta.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `rm -f 'build/playos-kde-neon-user-noble/source/neon-user-desktop-20260903-0454.iso.partial'
+> rmdir 'build/playos-kde-neon-user-noble/source' 'build/playos-kde-neon-user-noble' 2>/dev/null || true
+> lxc exec playos-debian-trixie-builder-vm -- bash -lc 'apt-cache policy kde-full kde-standard plasma-desktop plasma-workspace kwin-wayland sddm; printf "\nKDE_FULL\n"; apt-cache show kde-full | sed -n "1,100p"'`
+>
+> </details>
+>
+> Confirmado: para manter userspace Debian sem compilar, a solução tecnicamente correta é `kde-full` do Debian Trixie. Ele instala Plasma 6.3.6 e os módulos oficiais KDE de administração, educação, jogos, gráficos, multimídia, rede, PIM e utilitários. O código é KDE, mas o empacotamento e a integração são mantidos pelo Debian — não existe um repositório binário oficial KDE compatível com Debian Trixie.
+>
+> O download parcial da KDE neon foi cancelado e removido; nenhum arquivo final incorreto ficou no projeto. Agora vou preparar um perfil Debian Live separado, trocando GNOME/GDM por `kde-full`/SDDM e preservando o kernel Ubuntu Noble local.
+>
+> <details><summary>Explored 3 files, ran 2 commands</summary>
+>
+> - Ran `find live-build/playos-debian-trixie-gnome-noble-kernel -maxdepth 5 -type f -printf '%P\n' | sort
+> printf '\nPACKAGE_LIST\n'
+> sed -n '1,220p' live-build/playos-debian-trixie-gnome-noble-kernel/config/package-lists/playos-gnome.list.chroot
+> printf '\nHOOKS\n'
+> for f in live-build/playos-debian-trixie-gnome-noble-kernel/config/hooks/live/*.hook.chroot; do echo "FILE:$f"; sed -n '1,240p' "$f"; done
+> printf '\nAUTO_CONFIG\n'
+> sed -n '1,180p' live-build/playos-debian-trixie-gnome-noble-kernel/auto/config`
+>
+> - Ran `find live-build/playos-debian-trixie-xfce-noble-kernel/config/includes.chroot -type f -maxdepth 6 -print -exec sed -n '1,160p' {} \;
+> sed -n '1,220p' live-build/playos-debian-trixie-gnome-noble-kernel/tools/{preflight.sh,build.sh,import-noble-kernel.sh}`
+>
+> <details><summary>Explored 3 files</summary>
+>
+> - Read `./live-build/playos-debian-trixie-gnome-noble-kernel/.gitignore`
+> - Read `./live-build/playos-debian-trixie-gnome-noble-kernel/manifests/noble-kernel.sha256`
+> - Read `./live-build/playos-debian-trixie-gnome-noble-kernel/config/includes.chroot/etc/playos-release`
+>
+> </details>
+>
+> </details>
+>
+> Vou materializar agora o perfil correto: `Debian 13 Trixie + kde-full Debian + SDDM + kernel Noble 6.8 local`, em diretório separado. Ele não dependerá do GNOME nem dos repositórios KDE neon. A versão direta disponível será Plasma 6.3.6, integrada e atualizável pelo APT Debian.
+>
+> <details><summary>Created 12 files, ran 2 commands</summary>
+>
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/.gitignore` (+9 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/README.md` (+31 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/auto/config` (+27 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/config/hooks/live/010-playos-kde.hook.chroot` (+9 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/config/hooks/live/900-playos-audit.hook.chroot` (+27 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/config/includes.chroot/etc/playos-release` (+5 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/config/includes.chroot/etc/sddm.conf.d/50-playos-live.conf` (+7 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/config/package-lists/playos-kde-full.list.chroot` (+77 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/config/packages.chroot/README.md` (+9 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/tools/build.sh` (+21 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/tools/import-noble-kernel.sh` (+26 -0)
+> - Wrote `./live-build/playos-debian-trixie-kde-full-noble-kernel/tools/preflight.sh` (+31 -0)
+> - Ran `chmod +x live-build/playos-debian-trixie-kde-full-noble-kernel/auto/config live-build/playos-debian-trixie-kde-full-noble-kernel/tools/*.sh
+> for name in linux-image-6.8.0-138-generic_6.8.0-138.138_amd64.deb linux-modules-6.8.0-138-generic_6.8.0-138.138_amd64.deb linux-modules-extra-6.8.0-138-generic_6.8.0-138.138_amd64.deb; do ln live-build/playos-debian-trixie-gnome-noble-kernel/config/packages.chroot/"$name" live-build/playos-debian-trixie-kde-full-noble-kernel/config/packages.chroot/"$name"; done
+> ln live-build/playos-debian-trixie-gnome-noble-kernel/manifests/noble-kernel.sha256 live-build/playos-debian-trixie-kde-full-noble-kernel/manifests/noble-kernel.sha256
+> find live-build/playos-debian-trixie-kde-full-noble-kernel -maxdepth 5 -type f -printf '%m %P\n' | sort
+> sh -n live-build/playos-debian-trixie-kde-full-noble-kernel/auto/config live-build/playos-debian-trixie-kde-full-noble-kernel/config/hooks/live/*.hook.chroot live-build/playos-debian-trixie-kde-full-noble-kernel/tools/*.sh`
+> - Ran `mkdir -p live-build/playos-debian-trixie-kde-full-noble-kernel/manifests
+> ln live-build/playos-debian-trixie-gnome-noble-kernel/manifests/noble-kernel.sha256 live-build/playos-debian-trixie-kde-full-noble-kernel/manifests/noble-kernel.sha256
+> chmod +x live-build/playos-debian-trixie-kde-full-noble-kernel/config/hooks/live/*.hook.chroot
+> sh -n live-build/playos-debian-trixie-kde-full-noble-kernel/auto/config live-build/playos-debian-trixie-kde-full-noble-kernel/config/hooks/live/*.hook.chroot live-build/playos-debian-trixie-kde-full-noble-kernel/tools/*.sh
+> (cd live-build/playos-debian-trixie-kde-full-noble-kernel/config/packages.chroot && sha256sum -c ../../manifests/noble-kernel.sha256)`
+>
+> </details>
+>
+> O novo perfil já foi criado e os três pacotes Noble passaram novamente nos checksums. Vou copiá-lo para a VM e executar apenas o preflight: confirmar ferramentas, disponibilidade do `kde-full`, ausência de GNOME/instaladores e consistência do kernel. Não iniciarei o build até estimar o espaço, pois `kde-full` é substancialmente maior que `gnome-core`.
+>
+> <details><summary>Ran 3 commands</summary>
+>
+> - Ran `lxc file push -r '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/live-build/playos-debian-trixie-kde-full-noble-kernel' playos-debian-trixie-builder-vm/root/`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'set -e; cd /root/playos-debian-trixie-kde-full-noble-kernel; ./tools/preflight.sh; apt-get -s --no-install-recommends install kde-full sddm kde-config-sddm plasma-nm powerdevil bluedevil | tail -n 25; printf "\nDEPENDENCY_COUNTS\n"; apt-get -s install kde-full sddm kde-config-sddm plasma-nm powerdevil bluedevil 2>/dev/null | awk "/^Inst /{n++} END{print \"packages_to_install=\" n}"; df -h /'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'apt-get -s install kde-full sddm kde-config-sddm plasma-nm powerdevil bluedevil > /tmp/kde-sim.txt 2>&1; status=$?; printf "status=%s\n" "$status"; grep -E "^(The following|[0-9]+ upgraded|Need to get|After this operation|E:|  kde|  plasma|  sddm)" /tmp/kde-sim.txt | tail -n 80; awk "/^Inst /{n++} END{print \"packages_to_install=\" n+0}" /tmp/kde-sim.txt; tail -n 20 /tmp/kde-sim.txt; df -h /'`
+>
+> </details>
+>
+> O preflight passou: três pacotes Noble íntegros, `kde-full` e SDDM selecionados, sem GNOME, XFCE ou instalador. A simulação do APT ainda está resolvendo o conjunto completo — ela é grande porque `kde-full` inclui todas as famílias de aplicativos KDE, não apenas o Plasma.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'apt-get --print-uris --yes install kde-full sddm kde-config-sddm plasma-nm powerdevil bluedevil 2>/tmp/kde-uri.err | awk '\''/^'\''\''http/{bytes+=$3; n++} END{printf "archives=%d\ndownload_bytes=%.0f\ndownload_GiB=%.2f\n",n,bytes,bytes/1073741824}'\''; tail -n 10 /tmp/kde-uri.err'`
+>
+> </details>
+>
+> A simulação confirmou `2.108` pacotes novos. Isso é coerente com “KDE Full”, mas torna a ISO e o staging bem maiores que a edição GNOME Core. Vou calcular o volume real dos arquivos APT antes de autorizar o build no disco de 24 GiB.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'apt-get --print-uris --yes install kde-full sddm kde-config-sddm plasma-nm powerdevil bluedevil > /tmp/kde-full-uris.txt 2>/tmp/kde-full-uris.err'`
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- awk '/^'"'"'http/{bytes+=$3; n++} END{printf "archives=%d\ndownload_bytes=%.0f\ndownload_GiB=%.2f\n", n, bytes, bytes/1073741824}' /tmp/kde-full-uris.txt`
+>
+> </details>
+>
+> O KDE Full exige cerca de 2,11 GiB apenas de downloads compactados; instalado e combinado com o kernel, SquashFS e árvore binária, o staging pode aproximar-se do limite atual. Como a direção GNOME upstream foi substituída, vou remover da VM somente a imagem BuildStream/Podman e caches GNOME temporários — toda documentação e a ISO GNOME já validada permanecem no projeto — e devolver esse espaço ao pool antes do build KDE.
+>
+> <details><summary>Ran 2 commands</summary>
+>
+> - Ran `lxc exec playos-debian-trixie-builder-vm -- bash -lc 'podman rmi registry.gitlab.com/freedesktop-sdk/infrastructure/freedesktop-sdk-docker-images/bst2; podman system prune -f; rm -rf /root/gnome-build-meta-50-playos /root/gnome-build-meta-50-cache /root/gnome50-core-shell-elements.txt /root/gnome50-core-shell-states.txt /root/playos-debian-trixie-gnome-noble-kernel; fstrim -av; df -h /'
+> lxc storage info default`
+> - Ran `lxc storage get default size
+> lxc config device get playos-debian-trixie-builder-vm root size
+> df -h '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS'`
+>
+> </details>
+>
+> Após remover os temporários GNOME, a VM voltou a 22 GiB livres e o host a 30 GiB livres. Para evitar outra saturação, vou ampliar o pool LXD de 45 para 60 GiB e o disco lógico da builder de 24 para 36 GiB. Isso cria margem para o staging KDE Full sem tocar nas outras ISOs ou VMs.
+>
+> <details><summary>Ran a command</summary>
+>
+> - Ran `lxc storage set default size 60GiB
+> lxc config device set playos-debian-trixie-builder-vm root size 36GiB
+> lxc restart playos-debian-trixie-builder-vm --timeout 60
+> lxc storage info default
+> df -h '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS'`
+>
+> </details>
+>
+> System error
+>
+> You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 6:04 PM.
 </details>

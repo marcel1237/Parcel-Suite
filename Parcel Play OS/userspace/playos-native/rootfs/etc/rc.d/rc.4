@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+
+while :; do
+  if command -v sddm >/dev/null 2>&1; then
+    sddm
+  else
+    echo 'PlayOS: SDDM não está instalado; retornando ao console.' >&2
+    exit 1
+  fi
+  sleep 1
+done
