@@ -249,3 +249,57 @@ hardware real. BusyBox ainda é bootstrap e não comprova libc/toolchain,
 SysVinit completo, D-Bus, elogind, polkit, Mesa, áudio, rede gerenciada,
 Wayland/X11, SDDM ou KDE. O próximo gate técnico é substituir o bootstrap por
 pacotes nativos versionados e obter o runlevel 3 antes de iniciar a árvore KDE.
+
+## Stage1 nativo concluído e inicializado
+
+Foi criado `userspace/playos-native/buildroot/` para produzir uma toolchain e
+um rootfs Stage1 por cross-compilação de fontes. Buildroot 2026.02 está fixado
+pelo SHA-256
+`d54b7ffece06ff28cbb81e28e3de74ea405ca6b77c38fbe8b18fa57bef585f8b`.
+Ele é ferramenta de bootstrap, não identidade, repositório binário ou
+gerenciador de pacotes do produto.
+
+A configuração efetiva seleciona glibc, headers 6.8, C++, localidades
+`pt_BR.UTF-8`/`en_US.UTF-8`, SysVinit, eudev, Bash, ferramentas GNU, util-linux,
+e2fsprogs, kmod, shadow, procps-ng, D-Bus, polkit e certificados. Um overlay
+adiciona os scripts `rc.d`, identidade e `playpkg`; o pós-build rejeita APT,
+dpkg e RPM.
+
+O staging ficou isolado em
+`/home/marcel/kernel-work/playos-native-stage1`, porque `/tmp` possui somente
+2,6 GiB e o caminho do projeto contém espaços. O build retomável roda como
+`playos-native-stage1-build.service`; o log é
+`build/playos-native-stage1/build.log`.
+
+### Resultado do rootfs
+
+- `result`: `build/playos-native-stage1/output/playos-native-stage1-rootfs.tar`
+  foi produzido com 49.715.200 bytes e SHA-256
+  `c1816a65ab97bc794a140585bb9992dd65cffbf16794a39a0eeabcd7f88f2fcd`;
+- `result`: a identidade do rootfs é `PlayOS Native Stage1` (`ID=playos`);
+- `result`: APT, dpkg e RPM estão ausentes;
+- `implementation`: as interfaces nativas presentes são
+  `playpkg-install` e `playpkg-remove`, com banco em `/var/lib/playpkg`.
+
+### ISO e teste UEFI
+
+A composição Live reutiliza exclusivamente o `vmlinuz`, o initramfs e os
+módulos do kernel Noble já validados. O restante do rootfs vem do Stage1
+cross-compilado. O script reproduzível é
+`userspace/playos-native/live/build-stage1-iso.sh`.
+
+- `result`: ISO criada em
+  `build/playos-native-stage1-iso/output/playos-native-stage1-noble-amd64.iso`;
+- `result`: tamanho 316.071.936 bytes; SHA-256
+  `0368dd13c443673f3788d67aa46fff4593cae7bf06ff286a8fa198c023c65a1a`;
+- `result`: El Torito BIOS e UEFI passaram na inspeção estática;
+- `result`: boot UEFI em VM chegou ao login do runlevel 3;
+- `result`: runtime confirmou kernel `6.8.0-138-generic`, PID 1 `init`, eudev,
+  D-Bus, módulos Noble e root gravável por OverlayFS;
+- `result`: escrita em `/root` passou; APT, dpkg e RPM continuaram ausentes no
+  runtime.
+
+O teste não valida BIOS em runtime, hardware físico, Secure Boot, rede
+gerenciada, áudio ou gráficos. O próximo gate é a camada Stage2 com DRM/Mesa,
+libinput, X.Org/Wayland, PipeWire/WirePlumber e Qt 6; KDE vem depois que essa
+base iniciar e for testada isoladamente.

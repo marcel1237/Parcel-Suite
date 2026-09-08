@@ -1,0 +1,6 @@
+PRETTY_NAME="PlayOS Native Stage2 Graphics"
+NAME="PlayOS"
+VERSION_ID="1-stage2"
+VERSION="1 Stage2 (Native Graphics Userspace)"
+ID=playos
+HOME_URL="https://playos.invalid/"

@@ -1,0 +1,6 @@
+PRETTY_NAME="PlayOS Native Stage1"
+NAME="PlayOS"
+VERSION_ID="1-stage1"
+VERSION="1 Stage1 (Native Userspace)"
+ID=playos
+HOME_URL="https://playos.invalid/"

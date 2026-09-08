@@ -2,8 +2,9 @@
 
 Fonte canônica: [`../../PLAYOS_USERSPACE_SLACKLIKE_KNOPPIX_LIVE_KDE_FULL.md`](../../PLAYOS_USERSPACE_SLACKLIKE_KNOPPIX_LIVE_KDE_FULL.md).
 
-Esta árvore contém somente especificações e manifestos iniciais. Ainda não há
-rootfs nativo compilado.
+O Stage0 de console já foi compilado e inicializado em UEFI. A implementação
+do Stage1 nativo está em `buildroot/` e gera toolchain/rootfs a partir de
+fontes, sem importar um rootfs de outra distribuição.
 
 ## Layout
 
@@ -14,6 +15,7 @@ pkgtools/      gerenciador de pacotes PlayOS
 rootfs/        overlays próprios e scripts de init
 live/          initramfs e composição da mídia
 locks/         versões e checksums aprovados
+buildroot/     bootstrap reproduzível da base nativa Stage1
 ```
 
 Não adicionar pacotes `.deb`, `.txz` Slackware ou binários sem proveniência.

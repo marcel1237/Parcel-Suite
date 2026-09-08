@@ -1,0 +1,6 @@
+#!/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+sync
+swapoff -a 2>/dev/null || true
+umount -a -r 2>/dev/null || true
+reboot -f

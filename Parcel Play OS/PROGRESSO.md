@@ -1220,3 +1220,82 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
   SysVinit completo e toda a stack gráfica/KDE ainda não foram validados.
 - `next-gate`: empacotar a base nativa real e aprovar runlevel 3 antes de
   iniciar Qt/KDE.
+
+## 2026-09-07 — Compilação Native Stage1 iniciada
+
+- `implementation`: criado bootstrap Buildroot 2026.02 com checksum fixado,
+  glibc, headers 6.8, SysVinit, eudev, Bash/GNU, util-linux, kmod, D-Bus e
+  polkit.
+- `implementation`: overlay Stage1 fornece identidade, `rc.d` e `playpkg`; o
+  pós-build rejeita interfaces APT/dpkg/RPM.
+- `result`: configuração efetiva aceita e compilação das ferramentas host
+  iniciada; downloads recebidos pelo fallback Buildroot passaram seus hashes.
+- `implementation`: staging movido de `/tmp` (tmpfs de 2,6 GiB) para
+  `/home/marcel/kernel-work/playos-native-stage1`.
+- `implementation`: build retomável ativo na unidade de usuário
+  `playos-native-stage1-build.service`, com log em
+  `build/playos-native-stage1/build.log`.
+- `unknown`: rootfs Stage1 e boot em runlevel 3 permanecem pendentes até a
+  unidade concluir; gráficos e KDE ainda não entraram nesta compilação.
+
+## 2026-09-07 — Rootfs Native Stage1 concluído
+
+- `result`: Buildroot concluiu e gerou
+  `build/playos-native-stage1/output/playos-native-stage1-rootfs.tar`, com
+  49.715.200 bytes.
+- `result`: SHA-256
+  `c1816a65ab97bc794a140585bb9992dd65cffbf16794a39a0eeabcd7f88f2fcd`
+  aprovado.
+- `result`: identidade corrigida e confirmada como `PlayOS Native Stage1`;
+  APT, dpkg e RPM ausentes.
+- `implementation`: corrigidos o caminho relocável do pós-build e o preflight
+  diferenciado para build novo/retomada.
+- `result`: o rootfs foi posteriormente integrado e inicializado; o estado
+  pendente acima foi encerrado pelo teste descrito a seguir.
+
+## 2026-09-07 — ISO Native Stage1 e boot UEFI aprovados
+
+- `implementation`: criado
+  `userspace/playos-native/live/build-stage1-iso.sh`, que verifica os hashes do
+  Stage0, rootfs Stage1 e pacotes Noble, integra todos os módulos e produz uma
+  ISO híbrida GRUB com SquashFS e OverlayFS.
+- `result`: ISO de 316.071.936 bytes gerada em
+  `build/playos-native-stage1-iso/output/playos-native-stage1-noble-amd64.iso`;
+  SHA-256
+  `0368dd13c443673f3788d67aa46fff4593cae7bf06ff286a8fa198c023c65a1a`.
+- `result`: inspeção El Torito confirmou entradas BIOS e UEFI.
+- `result`: boot UEFI em VM chegou ao login `PlayOS Native Stage1` no runlevel
+  3 com kernel Noble `6.8.0-138-generic`, PID 1 SysV `init`, eudev e D-Bus
+  ativos, diretório de módulos correto e raiz OverlayFS gravável.
+- `result`: APT, dpkg e RPM ausentes no runtime; `playpkg-install` e
+  `playpkg-remove` presentes como interfaces nativas.
+- `warning`: mensagem não fatal `INIT: No inittab.d directory found`; não
+  impediu runlevel 3. BIOS em runtime, hardware, rede, áudio, gráficos e KDE
+  ainda não foram validados.
+- `next-gate`: construir e testar Stage2 gráfico antes de integrar Qt/KDE.
+
+## 2026-09-07 — Stage2 gráfico nativo iniciado
+
+- `implementation`: criado `playos-stage2-graphics_defconfig` com
+  NetworkManager, UPower, udisks, ALSA, PipeWire/WirePlumber, libinput,
+  DRM/Mesa/OpenGL/Vulkan, X.Org, Xwayland, Weston e Qt 6.
+- `decision`: KDE permanece fora deste gate; primeiro serão comprovados DRM,
+  sessão Wayland/X11, áudio e uma aplicação Qt no userspace nativo.
+- `result`: `validate-stage2-config.sh` resolveu e confirmou todos os símbolos
+  obrigatórios da configuração efetiva.
+- `implementation`: `build-stage2-graphics.sh` promove incrementalmente o
+  staging Stage1 para reduzir consumo de disco, preservando o tar e a ISO
+  finais do Stage1.
+- `result`: compilação iniciada na unidade de usuário
+  `playos-native-stage2-graphics-build.service`; log em
+  `build/playos-native-stage2-graphics/build.log`.
+- `warning`: drivers Mesa Iris/Radeonsi solicitados não foram resolvidos sem
+  LLVM; o primeiro teste usará softpipe/virgl e Vulkan virtio. Suporte amplo a
+  GPU física é um gate posterior e continua `unknown`.
+- `unknown`: rootfs Stage2, ISO, boot gráfico e KDE ainda não estão concluídos.
+- `result`: a primeira execução alcançou Qt 6.9.1 e revelou uma inconsistência
+  incremental reproduzível: o PCRE2 herdado do Stage1 continha somente ABI de
+  8 bits, enquanto Qt exige também `libpcre2-16`.
+- `implementation`: o build Stage2 agora detecta a biblioteca de 16 bits
+  ausente, invalida somente o pacote PCRE2 e o recompila com a configuração
+  promovida antes de retomar Qt; não é necessário refazer a toolchain.
