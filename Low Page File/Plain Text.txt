@@ -1,0 +1,3 @@
+Low Page File to interact with swap and ram memory.
+
+O propósito desse software é diminuir o lag que comumente ocorre com uso mais constante da swap. (Ou grandes quantidades de swap).
