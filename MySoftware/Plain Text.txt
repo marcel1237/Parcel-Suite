@@ -1,4 +1,7 @@
-Binary Software community. (Samples: Youtube, Github). Uma mistura de Youtube com Github para arquivo binários. :D
+Binary Software community. (Samples: Youtube, Github). Uma mistura de Youtube com Github para arquivo binários. :D Usando o modelo Robin Hood.
 
 MySoftware.net
 MineSoftware.net
+
+MySoftware.com
+MineSoftware.com
