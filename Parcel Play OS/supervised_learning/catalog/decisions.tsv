@@ -35,5 +35,5 @@ DEC-033	PlayOS usará somente kernel e módulos Ubuntu Noble sobre userspace e p
 DEC-034	Primeira Live Debian do PlayOS usará Trixie XFCE direto e nenhum instalador com kernel Noble local	current	high	SRC-PLAYOS-LIVE-DEBIAN-XFCE-NOBLE,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
 DEC-035	Variante GNOME upstream usará GNOME 50 estável fixado e não sobreporá artefatos Freedesktop SDK diretamente no userspace Debian	current	high	SRC-PLAYOS-GNOME50-UPSTREAM,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
 DEC-036	Variante KDE Full preservará userspace Debian Trixie usando pacotes KDE integrados pelo Debian e kernel Noble local sem KDE neon como base	superseded	high	SRC-PLAYOS-LIVE-DEBIAN-KDE-FULL-NOBLE,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
-DEC-037	PlayOS Userspace 1 terá identidade e composição próprias com bootstrap binário Ubuntu Noble sem rootfs ou mirrors Debian	superseded	high	SRC-PLAYOS-USERSPACE-KDE-KNOPPIX
+DEC-037	PlayOS Userspace 1 terá identidade e composição próprias com bootstrap binário Ubuntu Noble sem rootfs ou mirrors Debian	current	high	SRC-PLAYOS-USERSPACE-KDE-KNOPPIX
 DEC-038	PlayOS Native Userspace reproduzirá comportamentos Slackware por implementação própria e Live KNOPPIX por SquashFS OverlayFS usando somente kernel e módulos Noble	current	high	SRC-PLAYOS-NATIVE-SLACK-KNOPPIX-KDE

@@ -1299,3 +1299,65 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - `implementation`: o build Stage2 agora detecta a biblioteca de 16 bits
   ausente, invalida somente o pacote PCRE2 e o recompila com a configuração
   promovida antes de retomar Qt; não é necessário refazer a toolchain.
+
+## 2026-09-16 — Baseline Ubuntu Noble para Graphics Core com KDE
+
+- `decision`: a composição escolhida para o Graphics Core completo com KDE usará
+  userspace Ubuntu Noble, sem userspace Debian Trixie ou KDE neon.
+- `implementation`: o perfil de referência é
+  `live-build/playos-ubuntu-noble-kde-full-knoppix-style/`, com `kde-full`,
+  Plasma X11/Wayland, KWin, SDDM, Mesa/Vulkan, PipeWire e NetworkManager.
+- `proposal`: a arquitetura Live usa SquashFS e OverlayFS inspirada no KNOPPIX,
+  mas não copia `cloop`, AUFS, rootfs ou scripts proprietários.
+- `unknown`: o build e o runtime gráfico desta composição ainda não foram
+  executados; o host precisa recuperar espaço antes do preflight de 30 GiB.
+- `next-gate`: liberar staging isolado, executar preflight/build e validar SDDM,
+  Plasma X11/Wayland, DRM/Mesa/Vulkan, áudio e rede em VM.
+
+## 2026-09-16 — Plano de implementação do KDE Full Ubuntu Noble
+
+- `implementation`: o plano executável foi consolidado em
+  `PLAYOS_USERSPACE_KDE_FULL_LIVE_KNOPPIX_STYLE.md`.
+- `decision`: a implementação será feita em duas referências: primeiro
+  Ubuntu Noble + KDE Full com kernel Ubuntu genérico; depois integração do kernel
+  PlayOS mantendo fallback.
+- `proposal`: persistência, pacote `playos-base-files`, repositório APT próprio
+  e testes de hardware ficam após os gates de boot, X11 e Wayland.
+- `unknown`: tempo de build, tamanho final da ISO e comportamento gráfico ainda
+  dependem da execução no staging.
+
+## 2026-09-16 — Inicialização do staging Ubuntu Noble KDE Full
+
+- `result`: preflight aprovado com aproximadamente 53 GiB livres e todas as
+  ferramentas necessárias encontradas (`lb`, `debootstrap`, `mksquashfs`,
+  `xorriso`, GRUB e `isohybrid`).
+- `implementation`: staging criado em
+  `/home/marcel/playos-ubuntu-noble-kde-full-knoppix-style`, sem espaços no
+  caminho.
+- `implementation`: `lb clean --purge` e `lb config` concluídos com sucesso.
+- `implementation`: removida a opção `--updates true`, incompatível com a
+  versão local do `live-build`; atualizações Noble continuam sendo resolvidas
+  pelos suites/mirrors configurados.
+- `unknown`: o build não iniciou a fase de bootstrap porque `lb build` exige
+  privilégios de root; a tentativa terminou antes de criar a raiz do chroot.
+- `next-gate`: executar o build dentro da VM/ambiente autorizado com root,
+  preservando o staging e o log completo.
+
+## 2026-09-16 — Build Ubuntu Noble KDE Full iniciado em VM
+
+- `implementation`: criada a VM isolada
+  `playos-ubuntu-noble-kde-builder-vm` com Ubuntu 24.04 Noble, 4 vCPUs,
+  4 GiB de memória e disco lógico de 40 GiB.
+- `result`: ferramentas `live-build`, `debootstrap`, SquashFS, Xorriso e GRUB
+  foram instaladas somente dentro da VM.
+- `implementation`: perfil transferido para
+  `/root/playos-ubuntu-noble-kde-full-knoppix-style`.
+- `result`: preflight, limpeza e configuração `lb config` passaram dentro da
+  VM.
+- `result`: build iniciado como unidade
+  `playos-ubuntu-noble-kde-build.service`, invocation
+  `948c8b04c6a6459ba6422f5ee7ab313f`.
+- `result`: bootstrap Noble começou com assinatura do Release validada; a VM
+  tinha aproximadamente 36 GiB livres no início.
+- `unknown`: ISO, tamanho final, checksum, boot e sessão KDE ainda não foram
+  produzidos ou validados.

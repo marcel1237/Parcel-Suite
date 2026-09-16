@@ -21,7 +21,6 @@ lb config noauto \
   --linux-flavours generic \
   --apt-recommends true \
   --security true \
-  --updates true \
   --backports false \
   --memtest none \
   --iso-application "PlayOS Noble KDE Full Live" \

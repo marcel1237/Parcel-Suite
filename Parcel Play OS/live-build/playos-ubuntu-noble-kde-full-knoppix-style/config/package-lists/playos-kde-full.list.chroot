@@ -42,6 +42,7 @@ usbutils
 
 # Live diagnostics and media verification.
 squashfs-tools
+syslinux-utils
 procps
 kmod
 less
