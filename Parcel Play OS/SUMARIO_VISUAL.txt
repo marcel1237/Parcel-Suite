@@ -1,0 +1,297 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║          ANÁLISE VISUAL: ARQUIVOS MARKDOWN DO PLAYOS 2026-09-16           ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌─ CAMADA 1: GOVERNANÇA ─────────────────────────────────────────────────┐
+│                                                                           │
+│  AGENTS.md (Diretriz Principal)                                         │
+│  ├─ Entrada obrigatória para qualquer IA                               │
+│  ├─ Regra: evidência > build/teste > docs > análise > inferência      │
+│  ├─ Vocabulário: fact|inference|decision|proposal|implementation|...   │
+│  ├─ Rejeição direta: ULE, Jails, VFS, mbufs, locks, Newbus           │
+│  └─ Baselines imutáveis: FreeBSD 15.1-p2, Linux 6.8.4, Linux 7.1.8   │
+│                                                                           │
+│  EVIDENCE_POLICY.md (Hierarquia)                                       │
+│  ├─ Hierarquia 6 níveis: código > build > docs > análise > inf > prop │
+│  ├─ Confiança: high|medium|low|unknown                                 │
+│  ├─ Proibições: inventar benchmarks, confundir Resolute, prometer sem  │
+│  └─ Atualização: sempre citar, preservar fontes, marcar superseded     │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ CAMADA 2: CONHECIMENTO BSD (PRIORIDADE 1) ────────────────────────────┐
+│                                                                           │
+│  KB-FBSD-IDENTITY                          [fact, high, 2026-08-19]    │
+│  ├─ FreeBSD 15.1-RELEASE-p2 (commit aadd58...)                        │
+│  ├─ 108.960 arquivos, 2.2 GiB                                          │
+│  ├─ ✅ ULE, 4BSD, SMP, NUMA                                            │
+│  ├─ ✅ Jails/VIMAGE, RACCT/RCTL                                        │
+│  ├─ ✅ Capsicum, MAC, audit                                            │
+│  ├─ ✅ epoch/SMR, UMA, mutexes adaptativos                             │
+│  ├─ ✅ sendfile, kTLS, TCP/IP, IPsec, PF, IPFW                        │
+│  ├─ ✅ OpenZFS, UFS, GEOM, CAM, NVMe                                   │
+│  ├─ ✅ bhyve/vmm, VirtIO, Xen, Hyper-V, Linuxulator                   │
+│  └─ ⚠️ Presença ≠ execução validada em hardware                       │
+│                                                                           │
+│  KB-FBSD-SYSKERN                           [fact, high, 248 arquivos]   │
+│  ├─ Não será biblioteca; é acoplado a kernel BSD                       │
+│  ├─ Matriz decisões (Boot, Isolamento, Privilege, ...)               │
+│  ├─ Fluxo: definir comportamento → encontrar nativo → baseline → patch │
+│  └─ Regra: extrair princípios, não copiar subsistemas                 │
+│                                                                           │
+│  KB-FBSD-SECURITY                         [fact, high, 2026-08-19]     │
+│  ├─ Jails: isolamento + hierarquia (prison0 = raiz)                   │
+│  ├─ ≠ Namespace Linux (mais complexo: hierarquia + VNET + RACCT)      │
+│  ├─ Capsicum ≠ Landlock (diferentes escopo e semântica)               │
+│  ├─ Contrato PlayOS: backends nativos por OS                           │
+│  └─ Critério: isolamento PID/rede/mount + limites + policy + logs     │
+│                                                                           │
+│  KB-FBSD-IO                                [fact, high, 2026-08-19]     │
+│  ├─ ✅ Rede: sendfile, kTLS, IPsec, BPF, Netgraph                     │
+│  ├─ ✅ Armazenamento: OpenZFS, GEOM, CAM, iSCSI, NFS                  │
+│  ├─ ✅ Virtualização: bhyve, VirtIO, Xen, Hyper-V, Linuxulator       │
+│  ├─ ⚠️ AF_XDP/io_uring ≠ BSD (mecanismos Linux próprios)              │
+│  └─ ⚠️ GPU, áudio, suspend/resume ainda não testados                   │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ CAMADA 3: CONHECIMENTO LINUX (PRIORIDADE 5) ──────────────────────────┐
+│                                                                           │
+│  KB-LINUX-BUILDS                          [result, high, 2026-08-19]   │
+│  ├─────────────────────────────────────────────────────────────────    │
+│  │ UBUNTU NOBLE 6.8.4-playos-freebsd-lab1+                            │
+│  ├─ ✅ bzImage compilado                                               │
+│  ├─ ✅ 6.467 módulos em staging                                        │
+│  ├─ ✅ BTF + kTLS (módulo) + AppArmor + Landlock                       │
+│  ├─ ✅ initramfs 286 MiB                                               │
+│  ├─ ❌ Sem boot QEMU/hardware                                          │
+│  └─ ❌ Rust desativado (v1.93 ≠ v1.75 exigido)                        │
+│  ├─────────────────────────────────────────────────────────────────    │
+│  │ LINUX 7.1.8-playos-freebsd-lab1                                     │
+│  ├─ ✅ kernel + 14 módulos                                             │
+│  ├─ ✅ NTSYNC + kTLS + BTF                                             │
+│  ├─ ✅ sched_ext habilitado                                            │
+│  ├─ ✅ initramfs gerado                                                │
+│  └─ ❌ Sem boot QEMU/hardware                                          │
+│  ├─────────────────────────────────────────────────────────────────    │
+│  │ CRÍTICO: compilabilidade ≠ correção runtime                         │
+│  │         Nenhum é release de produção                                │
+│  └─ QEMU não instalável (sudo interativo)                              │
+│                                                                           │
+│  KB-LINUX-NTSYNC-NOBLE                   [implementation, high, no-runtime]
+│  ├─ Driver 7.1.8 integrado a Noble 6.8.4                               │
+│  ├─ ✅ ntsync.ko com BTF                                               │
+│  ├─ ✅ Kselftest compilou                                              │
+│  ├─ ❌ /dev/ntsync não existe em kernel host                           │
+│  ├─ ✅ Módulo reversível (CONFIG_NTSYNC=m)                             │
+│  └─ ⚠️ sched_ext não será copiado (risco ABI > benefício)             │
+│                                                                           │
+│  KB-PLAYOS-KERNEL-718                    [implementation, high, in-progress]
+│  ├─ Baseline: Linux vanilla 7.1.8 + política Ubuntu Noble              │
+│  ├─ Identidade: 7.1.8-playos-kernel2                                   │
+│  ├─ ✅ Passou git apply --check (7.1.8 limpo)                          │
+│  ├─ ✅ AppArmor, Landlock, seccomp, cgroup, kTLS, NTSYNC              │
+│  ├─ ✅ BTF + sched_ext habilitado                                      │
+│  ├─ ❌ Rust fora, fault injection fora                                 │
+│  └─ Gates: build ✅ → initramfs → pacote → boot → runtime             │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ CAMADA 4: MAPEAMENTO FREEBSD↔LINUX ──────────────────────────────────┐
+│                                                                           │
+│  MATRIZ OPERACIONAL (decision, high)                                    │
+│  ├────────────┬──────────────┬───────────┬──────────────────────────   │
+│  │ Meta       │ FreeBSD      │ Linux     │ Ação PlayOS                 │
+│  ├────────────┼──────────────┼───────────┼──────────────────────────   │
+│  │ Boot       │ SYSINIT      │ initcalls │ medir boottrace             │
+│  │ Isolamento │ Jails/VNET   │ ns+cgroup │ contrato userspace          │
+│  │ Privilege  │ Capsicum/MAC │ sec/LSM   │ combinar nativos            │
+│  │ Recursos   │ RCTL         │ cgroup v2 │ mapear política             │
+│  │ Scheduler  │ ULE          │ CFS/EEVDF │ benchmark (não copiar)      │
+│  │ Zero-copy  │ sendfile/kTLS│ sendfile  │ throughput/CPU/latência    │
+│  │ Memória    │ UMA          │ SLUB      │ estudar algoritmo           │
+│  │ Concorrência│ mutex/epoch  │ mutex/RCU │ usar Linux nativo           │
+│  │ Dispositivo│ Newbus/KOBJ  │ driver    │ rejeitar wrapper ABI        │
+│  │ VFS        │ vnode/namei  │ inode     │ rejeitar porte              │
+│  │ Rede interna│ mbuf/VNET    │ sk_buff   │ rejeitar porte              │
+│  │ Tracing    │ DTrace/SDT   │ ftrace    │ alinhar eventos             │
+│  │ Virtualiz. │ bhyve        │ KVM       │ manter isolados             │
+│  └────────────┴──────────────┴───────────┴──────────────────────────   │
+│                                                                           │
+│  FLUXO DE DECISÃO                                                       │
+│  1. Definir comportamento desejado e métrica                            │
+│  2. Procurar equivalente nativo no alvo                                 │
+│  3. Criar baseline sem patch                                            │
+│  4. Implementar menor mudança possível                                  │
+│  5. Testar correção, regressão, segurança, desempenho                  │
+│  6. Rejeitar se não superar mecanismo existente                         │
+│                                                                           │
+│  DIREÇÃO REVERSA (Linux→FreeBSD)                                        │
+│  ├─ PSI, io_uring, NTSYNC, BPF, sanitizers podem inspirar wrappers    │
+│  ├─ ❌ Não copiar código GPL indiscriminadamente                       │
+│  └─ LinuxKPI: escopo específico, não conversor universal               │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ CAMADA 5: DECISÕES E ESTADO PLAYOS ───────────────────────────────────┐
+│                                                                           │
+│  KB-PLAYOS-STATUS                         [decision, high, 2026-08-19]  │
+│                                                                           │
+│  DIREÇÃO VIGENTE                                                        │
+│  ├─ PlayOS ≠ kernel que mistura FreeBSD+Linux diretamente             │
+│  ├─ Opção 1: família/edições com kernels separados                     │
+│  ├─ Opção 2: host Linux (desktop) + FreeBSD Core em KVM                │
+│  ├─ Opção 3: contratos userspace comuns + backends nativos             │
+│  └─ Opção 4: patchsets experimentais pequenos (traduzir, não transplantar)
+│                                                                           │
+│  IDENTIDADES CRÍTICAS                                                   │
+│  ├─ ✅ Kernels/ubuntu 26 resolute kernel = Noble Linux 6.8.4           │
+│  ├─ ✅ Kernels/kernel linux-7.1.8 = vanilla 7.1.8                      │
+│  ├─ ✅ FreeBSD 15.1-p2 = externo, 15.1-p2 apenas leitura               │
+│  └─ ⚠️ Ubuntu Resolute oficial = Linux 7.0 (ainda sem fonte)           │
+│                                                                           │
+│  ESTADO DAS IMPLEMENTAÇÕES                                              │
+│  ├─ ✅ Patchset Noble: compilado Generic, SEM BOOT                    │
+│  ├─ ✅ Patchset Linux 7.1.8: compilado, SEM BOOT                      │
+│  ├─ 📋 Patchset Linux→FreeBSD: propostas estáticas, não kernel func. │
+│  ├─ 🧪 NitroCore: protótipos experimentais (não produção)             │
+│  ├─ 📋 FreeBSD compat: arquitetura (testes reais pendentes)           │
+│  └─ 📋 Live CD: análise (não mídia validada)                          │
+│                                                                           │
+│  REGRA CRÍTICA                                                          │
+│  └─ "criado" ≠ "proposto" ≠ "compilado" ≠ "boot" ≠ "produção"        │
+│                                                                           │
+│  38 DECISÕES REGISTRADAS                                               │
+│  ├─ 2 rejeitadas (cópia direta, Xorg no kernel)                        │
+│  ├─ 21 vigentes (DEC-002, 005, 008, 011, 016, 021-028, 034, 038)     │
+│  ├─ 4 planejadas (FreeBSD guest, ideias Linux inversa)                │
+│  └─ 2 adiadas (sched_ext, DRM Panic)                                   │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ CAMADA 6: GLOSSÁRIO E FAMILIA BSD ────────────────────────────────────┐
+│                                                                           │
+│  EQUIVALÊNCIAS QUE EXIGEM CUIDADO                                       │
+│  ├─ Jail ≠ namespace (mais complexo: hierarquia + VNET + RACCT)        │
+│  ├─ Namespace ≠ Jail (apenas isolamento de PID/rede/mount)            │
+│  ├─ Capsicum ≠ Landlock (fd-capabilities vs LSM filesystem)            │
+│  ├─ RCTL ≠ cgroup v2 (políticas distintas)                             │
+│  ├─ mbuf ≠ sk_buff (estruturas internas incompatíveis)                │
+│  ├─ vnode ≠ inode+dentry (abstrações distintas)                       │
+│  ├─ UMA ≠ SLUB (algoritmos distintos)                                  │
+│  ├─ bhyve ≠ KVM (interfaces diferentes)                                │
+│  ├─ Linuxulator ≠ kernel Linux real (emulação no BSD)                 │
+│  ├─ AF_XDP ≠ bpf_zerocopy (mecanismos Linux próprios)                 │
+│  └─ ARC/dbuf ≠ page cache Linux (não devem ser misturados)            │
+│                                                                           │
+│  REGRA: Compare metas, semântica, invariantes, resultados              │
+│         Não apenas nomes!                                               │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ CAMADA 7: PLAYOS GRAPHICS PLATFORM ───────────────────────────────────┐
+│                                                                           │
+│  38 DECISÕES ESPECÍFICAS DE DESKTOP/GRAPHICS                           │
+│  ├─ DEC-020: ❌ Xorg e compositor Wayland NÃO no kernel               │
+│  ├─ DEC-021: ✅ Sessões X11 + Wayland via metapacote Graphics Stack   │
+│  ├─ DEC-022: ✅ Graphics Platform = produto único + componentes mod.  │
+│  ├─ DEC-023: ✅ Inicialização em camadas + X11 como fallback          │
+│  ├─ DEC-024: ✅ Catálogo freedesktop + seleção PlayOS core            │
+│  ├─ DEC-025: ✅ XFCE + GNOME + KDE sobre base comum + 1 display mgr  │
+│  ├─ DEC-026: ✅ Kernel gráfico PlayOS SEM XFCE/GNOME/KDE             │
+│  ├─ DEC-027: ✅ Graphics Core = componentes não-desktop                │
+│  ├─ DEC-028: ✅ Vulkan como runtime userspace + DRM/Mesa/X11          │
+│  ├─ DEC-029: ✅ Calamares = instalador único independent              │
+│  ├─ DEC-030: ✅ Live usa XFCE 4.18, não Openbox no Core              │
+│  ├─ DEC-031: ✅ Calamares candidato, Anaconda como ref. RPM            │
+│  └─ DEC-032: ✅ Calamares no MVP, Desktop Provision em variante       │
+│                                                                           │
+│  ARQUITETURA MULTI-DESKTOP                                             │
+│  ├─ Graphics Core (kernel + X11 + Wayland + libs)                      │
+│  ├─ XFCE variant (XFCE 4.18 + base)                                    │
+│  ├─ GNOME variant (GNOME 50 upstream + base)                           │
+│  ├─ KDE variant (KDE Plasma + base)                                    │
+│  └─ All variants share: kernel Noble, display manager único, policy    │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ IMPLEMENTAÇÕES CONSTRUÍDAS ──────────────────────────────────────────┐
+│                                                                           │
+│  LIVE ISOs (Estáticas + Runtime)                                       │
+│  ├─ Live Debian Trixie XFCE + kernel Noble 6.8.4                       │
+│  │  Status: ✅ Built + ✅ Validated BIOS/UEFI                          │
+│  │  Testes: ✅ boot, ✅ userspace, ✅ rede, ✅ XFCE visual             │
+│  │  Pending: hardware real                                              │
+│  ├─ Live Debian Trixie GNOME + kernel Noble 6.8.4                      │
+│  │  Status: ✅ Built + ✅ Validated estático                           │
+│  │  Pending: boot QEMU, hardware                                        │
+│  ├─ Live Debian Trixie KDE Full + kernel Noble 6.8.4                   │
+│  │  Status: ✅ Built + ✅ Validated estático                           │
+│  │  Pending: boot QEMU, hardware                                        │
+│  └─ Live Ubuntu Noble GNOME Calamares                                   │
+│     Status: ✅ Built estático, Calamares integrado                     │
+│     Pending: boot, instalador runtime                                   │
+│                                                                           │
+│  USERSPACE E EXPERIMENTAL                                              │
+│  ├─ GNOME 50 Upstream (buildstream)                                     │
+│  │  Status: 🔨 Partial (719 elementos, graph resolvido)               │
+│  │  Gates: build em progresso, integração pendente                      │
+│  ├─ Native Userspace Slackware-like                                     │
+│  │  Status: 🔨 Partial (stage0-1 UEFI pass, stage2 graphics config)   │
+│  │  Gates: stage2 build em execução, KDE final pendente               │
+│  └─ KDE Full KNOPPIX-style (Noble)                                      │
+│     Status: 🔨 Partial (profile/shell válido, bloqueado por <30GB)     │
+│     Gates: espaço disco, build, hardware                                │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+┌─ GATES BLOQUEADORES (CRÍTICOS) ────────────────────────────────────────┐
+│                                                                           │
+│  BOOT RUNTIME                                                           │
+│  ├─ ❌ Nenhum PlayOS Kernel testado em QEMU                            │
+│  ├─ ❌ Nenhum PlayOS Kernel testado em hardware                        │
+│  ├─ ❌ QEMU não instalável (sudo interativo)                           │
+│  └─ ⏸️  Bloqueia: regressão, validação, release                        │
+│                                                                           │
+│  SEGURANÇA E ASSINATURA                                                │
+│  ├─ ❌ Nenhuma chave PlayOS Secure Boot                                │
+│  ├─ ❌ Chaves Canonical removidas                                      │
+│  ├─ ❌ Módulos sem assinatura                                          │
+│  └─ ⏸️  Bloqueia: produção, distribuição                               │
+│                                                                           │
+│  QUALIDADE                                                             │
+│  ├─ ❌ Regressão kselftest vs Noble Generic                            │
+│  ├─ ❌ Sem benchmarks vs baselines                                     │
+│  ├─ ❌ Sem testes hardware (GPU, áudio, suspend, passthrough)          │
+│  └─ ⏸️  Bloqueia: confiança em produção                                │
+│                                                                           │
+│  EMPACOTAMENTO                                                         │
+│  ├─ ❌ Nenhum `.deb` final                                             │
+│  ├─ ❌ DKMS não integrado                                              │
+│  ├─ ❌ GRUB não integrado                                              │
+│  └─ ⏸️  Bloqueia: instalação, updates                                  │
+│                                                                           │
+│  COMPATIBILIDADE                                                       │
+│  ├─ ❌ Sem testes de compatibilidade apps                              │
+│  ├─ ❌ Wine/Proton em sandbox não validados                            │
+│  ├─ ❌ Linuxulator em Jail não testado                                 │
+│  └─ ⏸️  Bloqueia: claims de compatibilidade                            │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                           RESUMO EXECUTIVO                                ║
+╠════════════════════════════════════════════════════════════════════════════╣
+║                                                                            ║
+║ Fase:         Integração kernel/userspace, compilado, SEM boot            ║
+║ Maturidade:   3/10 para produção (faltam gates críticos)                 ║
+║ Força:        Documentação rigorosa, hierarquia evidência, rejeição       ║
+║               de portes diretos                                           ║
+║ Risco:        Confundir compilável com pronto, prometer compatibilidade  ║
+║               sem teste                                                   ║
+║ Próximo:      Boot em QEMU dos kernels PlayOS Noble/7.1.8               ║
+║                                                                            ║
+║ 📖 Leitura:   ANALISE_MARKDOWN_PLAYOS_2026-09-16.md                      ║
+║               (salvo em session-state/files/)                             ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
