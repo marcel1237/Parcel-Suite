@@ -3,7 +3,7 @@
 **Data:** 2026-09-16  
 **Baseado em:** chat-codex.md (11,746 linhas), 81 menções de VM/QEMU/LXD  
 **Fonte:** Chat Codex Sessions 1-6, observação do ambiente local  
-**Validação:** Execução de `lxc list`, verificação de binários, análise de artefatos build  
+**Validação:** Execução de `lxc list`, `lxc storage info/show`, `lxc storage volume info`, verificação de binários e análise de artefatos build  
 
 ---
 
@@ -11,14 +11,15 @@
 
 O projeto PlayOS possui **infraestrutura de virtualização híbrida** baseada em **LXD** (contêineres + VMs), com dois blocos críticos:
 
-1. **QEMU não está instalado** no host — impede boot visual de ISO e teste em máquina virtual isolada
-2. **LXD está disponível** com 3 máquinas configuradas (1 container, 2 VMs paradas)
+1. **QEMU standalone não está disponível no host** — impede o fluxo direto de boot visual descrito no chat; o LXD continua possuindo seu backend próprio para VMs
+2. **LXD está disponível** com 3 instâncias configuradas (1 container ligado, 2 VMs desligadas)
 3. **ISO real foi compilada** (2.73 GiB, Noble 6.8.0-138), mas boot nunca foi validado em VM
 
 | Componente | Status | Validação | Bloqueador |
 |-----------|--------|-----------|-----------|
-| QEMU | ❌ Ausente | - | Boot de ISO |
+| QEMU standalone | ❌ Não localizado | `which` sem resultado | Boot direto de ISO |
 | LXD | ✅ Instalado | `lxc list` | Sim, parcial |
+| Pool LXD/ZFS | ✅ Criado | driver `zfs`, pool `default` | Capacidade limitada |
 | ISO PlayOS | ✅ Existente | 2,928,986,112 bytes | Sim, não testada |
 | Kernel 6.8.4 | ✅ Compilado | vmlinuz + initramfs | Não bootado |
 | Kernel 7.1.8 | ✅ Compilado | vmlinuz + initramfs | Não bootado |
@@ -100,6 +101,7 @@ Criada: Nova máquina "livefs-builder-noble" com disco thin-provisioned.
 - Kernel Noble 6.8.0-138 (gawk 5.3, flex 2.6, bison 3.8)
 - Ferramentas live-build, squashfs-tools, GRUB presentes
 - Toolchain de build isolado
+- Volume LXD: `100 GiB` provisionados, `13,45 GiB` usados
 
 #### 2. `playos-noble-graphics-builder` — RUNNING (CONTAINER)
 
@@ -115,6 +117,8 @@ Objetivo: ISO de 1.9–3.5 GiB com suporte a GPU/Wayland
               a ISO Noble sem alterar o host."
 ```
 
+- Volume LXD: `30 GiB` provisionados, `850,05 MiB` usados
+
 #### 3. `playos-noble-graphics-vm` — STOPPED (VIRTUAL-MACHINE)
 
 **Propósito:** Teste de boot de ISO compilada  
@@ -126,6 +130,42 @@ Tentativa anterior: VM recebeu IPv6 (fd42:b014:8447:2ddc:216:3eff:feb5:c895)
 Indicador: Kernel iniciou e rede respondeu, mas GUI não confirmada
 Bloqueador: Sem QEMU no host, não havia ferramenta para visualizar framebuffer
 ```
+
+- Volume LXD: `20 GiB` provisionados, `9,03 GiB` usados
+
+### Pool ZFS e backing file — medição atual
+
+O pool `default` é gerenciado pelo LXD com driver `zfs` e está configurado assim:
+
+```text
+source: /var/snap/lxd/common/lxd/disks/default.img
+zfs.pool_name: default
+capacidade configurada: 60 GiB
+capacidade reportada pelo LXD: 57,85 GiB
+uso reportado pelo LXD: 25,51 GiB
+disponível reportado pelo LXD: 32,34 GiB
+```
+
+Uso lógico reportado pelos volumes:
+
+| Volume | Tipo | Capacidade lógica | Uso lógico |
+|---|---|---:|---:|
+| `livefs-builder-noble` | VM/block | 100 GiB | 13,45 GiB |
+| `playos-noble-graphics-vm` | VM/block | 20 GiB | 9,03 GiB |
+| `playos-noble-graphics-builder` | container/filesystem | 30 GiB | 850,05 MiB |
+| **Total** |  | **150 GiB** | **~23,33 GiB** |
+
+**Interpretação (`result`):** os volumes são thin-provisioned. A capacidade lógica
+total de `150 GiB` não corresponde ao espaço físico reservado. O uso lógico
+somado é aproximadamente `23,33 GiB`, enquanto o pool informa `25,51 GiB`;
+uma diferença de aproximadamente `2,18 GiB` é compatível com metadados, datasets,
+imagens-base e overhead do ZFS/LXD.
+
+**Limitação (`unknown`):** o acesso direto ao arquivo
+`/var/snap/lxd/common/lxd/disks/default.img` falhou com `Permission denied`, e
+os comandos `zfs`/`zpool` não estão disponíveis no PATH desta sessão. Portanto,
+o tamanho físico do arquivo de backing e a ocupação interna do pool foram
+confirmados pelo LXD, mas não por inspeção direta do host.
 
 ---
 
@@ -519,4 +559,3 @@ Bootloader:     ✅ GRUB presente — nunca observado em boot
 ---
 
 **Próximo gate técnico:** Instalar QEMU, confirmar boot de ISO PlayOS XFCE e validar framebuffer.
-
