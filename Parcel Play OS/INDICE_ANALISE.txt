@@ -3,7 +3,7 @@
 ║                                   2026-09-16                                  ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
-Três documentos de análise foram gerados (salvo em session-state/files/):
+Quatro documentos de análise foram gerados (salvo em raiz do projeto):
 
 1️⃣  ANALISE_MARKDOWN_PLAYOS_2026-09-16.md (20 KB, 508 linhas)
     └─ Análise estruturada completa com 10 camadas temáticas:
@@ -38,6 +38,19 @@ Três documentos de análise foram gerados (salvo em session-state/files/):
        ├─ Definição de sucesso = readiness
        └─ Riscos e contingências
 
+4️⃣  ANALISE_VMS_INFRAESTRUTURA_2026-09-16.md (17 KB, 350+ linhas)
+    └─ Estado completo da infraestrutura de virtualização:
+       ├─ Resumo executivo: Matriz de status QEMU/LXD/ISOs/kernels
+       ├─ QEMU: ❌ não instalado — bloqueador crítico
+       ├─ LXD: ✅ instalado com 3 VMs configuradas
+       ├─ ISOs compiladas: 3 (GNOME 1.9 GB, KDE 3.5 GB, XFCE 1.3 GB) — nunca testadas
+       ├─ Kernels: 6.8.4 (Ubuntu Noble) e 7.1.8 (vanilla + overlay) — compilados, não bootados
+       ├─ Bloqueadores críticos: QEMU, FreeBSD em VM, Calamares, GPU virtual
+       ├─ Arquitetura proposta: Ubuntu host + FreeBSD 15.1 guest em KVM/libvirt
+       ├─ Fase 1: Desbloquear QEMU (snap install)
+       ├─ Fase 2-4: Boot ISO → Calamares → FreeBSD 15.1
+       └─ Matriz de decisão com esforço/risco/prioridade por objetivo
+
 ═══════════════════════════════════════════════════════════════════════════════
 
 📊 COBERTURA ANALISADA
@@ -63,6 +76,7 @@ Para novo colaborador:
   2. Leia SUMARIO_VISUAL.txt (visão geral)
   3. Leia ANALISE_MARKDOWN_PLAYOS_2026-09-16.md (detalhes)
   4. Consulte RECOMENDACOES_PROXIMOS_PASSOS.md (ações)
+  5. Leia ANALISE_VMS_INFRAESTRUTURA_2026-09-16.md (ambiente de testes)
 
 Para planejamento técnico:
   1. Prioridades em RECOMENDACOES_PROXIMOS_PASSOS.md
@@ -93,6 +107,9 @@ Para auditoria/compliance:
   • Nenhuma regressão vs baselines
   • Compatibilidade de apps não validada
   • QEMU não instalável no environment local (sudo interativo)
+  • FreeBSD 15.1 nunca testado em VM (critério BSD não validado)
+  • Calamares não validado em instalação real em disco
+  • GPU virtual (Wayland/X.Org) nunca testada em VM
 
 🚨 RISCOS A EVITAR
   • Confundir "compilado" com "pronto para produção"
@@ -104,14 +121,27 @@ Para auditoria/compliance:
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-⏭️ PRÓXIMO PASSO IMEDIATO
+⏭️ PRÓXIMOS PASSOS IMEDIATOS
 
-PRIORIDADE 1: Boot em QEMU
-  └─ Instalar QEMU em máquina separada ou container
-  └─ Testar PlayOS Kernel 6.8.4 (Noble) com kselftest
-  └─ Registrar resultado como KB-LINUX-BOOTS-QEMU em supervised_learning/
+PRIORIDADE 1: Desbloquear QEMU (1-2 dias)
+  └─ snap install qemu --classic
+  └─ Validar: qemu-system-x86_64 -version
+  └─ Risco: Baixo; isolado em snap
 
-Estimativa: 3-5 dias
+PRIORIDADE 2: Boot de ISO PlayOS (2-3 dias)
+  └─ Testar XFCE (1.3 GB) em QEMU com -enable-kvm
+  └─ Conectar via VNC para visualizar framebuffer
+  └─ Validação: GRUB → kernel descompacta → SquashFS → X.Org inicia
+
+PRIORIDADE 3: Calamares em disco virtual (3-4 dias)
+  └─ ISO em QEMU → particionamento → instalação
+  └─ Artefato: QCow2 de 20 GB com PlayOS testado
+
+PRIORIDADE 4: FreeBSD 15.1 em KVM (1-2 semanas)
+  └─ virt-install + libvirt (ou LXD)
+  └─ Validação: bsdinstall → kernel inicia → Jails funcionam
+
+Estimativa total: 2 semanas
 Bloqueio: Sem boot, nenhuma outra validação é confiável
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -136,7 +166,7 @@ Este Índice:
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-Versão: 1.0
-Data: 2026-09-16 12:50
+Versão: 1.1
+Data: 2026-09-16 14:35
 Agente: Copilot CLI
-Status: ✅ Análise concluída
+Status: ✅ Análise concluída (inclui infraestrutura de VMs)
