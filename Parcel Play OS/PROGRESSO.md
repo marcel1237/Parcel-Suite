@@ -1361,3 +1361,22 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
   tinha aproximadamente 36 GiB livres no início.
 - `unknown`: ISO, tamanho final, checksum, boot e sessão KDE ainda não foram
   produzidos ou validados.
+
+## 2026-09-17 — Recuperação da geração da ISO Ubuntu Noble KDE Full
+
+- `implementation`: ajustado o perfil para `--build-with-chroot false`, pois o
+  chroot preservado usa a árvore direta `chroot/`, não `chroot/chroot/`.
+- `result`: o SquashFS foi gerado com 6.024 MiB comprimidos a partir de
+  aproximadamente 9.394 MiB, sem recursão de artefatos anteriores.
+- `warning`: a execução padrão do `live-build` também exigia `genisoimage`;
+  essa dependência foi instalada na VM de build.
+- `result`: uma ISO de aproximadamente 6,1 GiB foi criada manualmente com
+  ISO9660 nível 3 e entrada El Torito GRUB2; `xorriso -toc` confirmou a sessão
+  e o catálogo de boot.
+- `warning`: `isohybrid` rejeitou a imagem GRUB2 por ausência de assinatura
+  `isolinux.bin`; a imagem ainda não é validada como híbrida USB/BIOS.
+- `unknown`: checksum, boot BIOS/UEFI, SDDM, Plasma X11/Wayland, Mesa,
+  Vulkan, áudio, rede e integração do kernel PlayOS permanecem pendentes.
+- `next-gate`: preservar a ISO como artefato intermediário, gerar checksum e
+  validar boot em VM antes de decidir entre manter ISO >4 GiB ou reduzir a
+  composição para o limite ISO9660 convencional.
