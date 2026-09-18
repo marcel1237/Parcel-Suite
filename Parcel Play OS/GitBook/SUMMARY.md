@@ -10,7 +10,10 @@
 - [Builds e artefatos](builds/README.md)
   - [Mapa da pasta build](builds/mapa-build.md)
   - [ISO Ubuntu Noble + KDE](builds/iso-ubuntu-kde.md)
+  - [Native Userspace](builds/native-userspace.md)
+  - [Live ISOs alternativas](builds/live-isos.md)
 - [Evidências](evidencia/README.md)
   - [Estados e gates](evidencia/estados-e-gates.md)
 - [Referências GitBook](ferramentas/gitbook.md)
-
+- [Operação](operacao.md)
+- [Referências](referencias.md)
