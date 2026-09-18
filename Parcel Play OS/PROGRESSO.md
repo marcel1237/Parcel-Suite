@@ -2,6 +2,14 @@
 
 Este arquivo documenta as ações realizadas durante o desenvolvimento do projeto.
 
+## [2026-09-18] - mdBook PlayOS criado e validado
+- **Implementação**: Criado `mdbook/` com `book.toml`, sumário, capítulos em português, tema CSS e instruções locais.
+- **Conteúdo**: O livro reúne arquitetura kernel/userspace, Graphics Core, Ubuntu Noble + KDE, inventário de builds, evidências, gates e operação.
+- **Pesquisa**: A estrutura foi baseada na documentação oficial do mdBook 0.5.4, incluindo `book.toml`, `SUMMARY.md`, temas e comandos de teste/build.
+- **Correção**: Removida a chave `multilingual`, incompatível com mdBook 0.5.4; URLs de repositório e site foram removidas por serem placeholders.
+- **Validação**: `mdbook test` passou para todos os capítulos e `mdbook build` gerou `mdbook/book/`.
+- **Estado**: `implementation` local; a documentação não comprova boot ou runtime gráfico das ISOs.
+
 ## [2026-08-19] - Portal documental automatizado pelos catálogos
 - **Geração**: `generate_portal.py` transforma o inventário e metadados supervisionados em `generated-data.js` determinístico.
 - **Cobertura**: O portal deixou de conter somente 22 cartões manuais e passou a incluir todo documento inventariado.
