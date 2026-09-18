@@ -10,6 +10,13 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Validação**: `mdbook test` passou para todos os capítulos e `mdbook build` gerou `mdbook/book/`.
 - **Estado**: `implementation` local; a documentação não comprova boot ou runtime gráfico das ISOs.
 
+## [2026-09-18] - Estrutura GitBook PlayOS criada
+- **Pesquisa**: Consultada a documentação oficial do GitBook sobre Quickstart, sites, seções, grupos, páginas, Markdown, Git Sync, publicação, CLI e Agent skills.
+- **Implementação**: Criada `GitBook/` com README, `SUMMARY.md`, páginas de arquitetura, builds, evidências, publicação e referências do GitBook.
+- **Modelo**: A pasta é um repositório local docs-as-code preparado para Git Sync; não é uma instância hospedada nem contém credenciais.
+- **Validação**: Estrutura do sumário, links relativos e `git diff --check` foram verificados.
+- **Estado**: `implementation` local; sincronização, preview e publicação externa permanecem `unknown` até configuração autorizada no GitBook.
+
 ## [2026-08-19] - Portal documental automatizado pelos catálogos
 - **Geração**: `generate_portal.py` transforma o inventário e metadados supervisionados em `generated-data.js` determinístico.
 - **Cobertura**: O portal deixou de conter somente 22 cartões manuais e passou a incluir todo documento inventariado.

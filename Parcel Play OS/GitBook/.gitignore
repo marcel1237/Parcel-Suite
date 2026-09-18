@@ -1,0 +1,7 @@
+# Artefatos locais e credenciais nunca devem ser versionados.
+.env
+.DS_Store
+node_modules/
+dist/
+site/
+

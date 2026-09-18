@@ -127,3 +127,4 @@ DOC-118	PLAYOS_USERSPACE_SLACKLIKE_KNOPPIX_LIVE_KDE_FULL.md	architecture	playos-
 DOC-119	userspace/playos-native/README.md	architecture	playos-native-userspace-layout	current
 DOC-120	live-build/playos-ubuntu-noble-kde-full-knoppix-style/README.md	build	playos-ubuntu-noble-kde-full-live-profile-current-state	current
 DOC-121	mdbook/README.md	documentation	playos-mdbook-project-and-usage	current
+DOC-122	GitBook/README.md	documentation	playos-gitbook-git-sync-project-and-usage	current
