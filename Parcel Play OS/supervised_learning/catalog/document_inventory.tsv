@@ -121,7 +121,8 @@ DOC-112	RELATORIO_EXECUCAO_BUILD_LIVE_DEBIAN_XFCE_NOBLE_2026-09-03.md	build	debi
 DOC-113	LIVE_DEBIAN_TRIXIE_GNOME_KERNEL_NOBLE_SEM_INSTALADOR.md	build	debian-trixie-gnome-noble-live-profile	current
 DOC-114	gnome-upstream/README.md	build	gnome50-upstream-build-and-integration-plan	current
 DOC-115	LIVE_DEBIAN_TRIXIE_KDE_FULL_KERNEL_NOBLE.md	build	debian-trixie-kde-full-noble-live-profile	current
-DOC-116	PLAYOS_USERSPACE_KDE_FULL_LIVE_KNOPPIX_STYLE.md	architecture	playos-userspace-kde-full-noble-knoppix-live	current
+DOC-116	PLAYOS_USERSPACE_KDE_FULL_LIVE_KNOPPIX_STYLE.md	build	playos-userspace-kde-full-noble-knoppix-live	current
 DOC-117	userspace/playos-noble/README.md	architecture	playos-userspace-noble-contract	current
 DOC-118	PLAYOS_USERSPACE_SLACKLIKE_KNOPPIX_LIVE_KDE_FULL.md	architecture	playos-native-userspace-slacklike-knoppix-live-kde	current
 DOC-119	userspace/playos-native/README.md	architecture	playos-native-userspace-layout	current
+DOC-120	live-build/playos-ubuntu-noble-kde-full-knoppix-style/README.md	build	playos-ubuntu-noble-kde-full-live-profile-current-state	current
