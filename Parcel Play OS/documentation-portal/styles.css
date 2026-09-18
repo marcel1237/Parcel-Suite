@@ -82,17 +82,21 @@ h1 { max-width: 880px; margin: 0; font-size: clamp(3.2rem, 7vw, 7.2rem); }
 .markdown-viewer { width: min(1100px, calc(100% - 2rem)); max-height: min(90vh, 960px); padding: 0; border: 1px solid var(--line); background: var(--paper); color: var(--ink); box-shadow: 0 2rem 8rem rgba(0, 0, 0, .55); }
 .markdown-viewer::backdrop { background: rgba(0, 0, 0, .78); backdrop-filter: blur(5px); }
 .markdown-viewer-shell { display: flex; max-height: min(90vh, 960px); flex-direction: column; }
-.markdown-viewer-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding: 1.5rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--line); background: var(--panel); }
-.markdown-viewer-header .eyebrow { margin-bottom: .5rem; }
-.markdown-viewer-header h2 { max-width: 760px; margin: 0; font-size: clamp(1.7rem, 4vw, 3rem); }
-.markdown-viewer-path { max-width: 760px; margin: .6rem 0 0; overflow-wrap: anywhere; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .72rem; }
-.markdown-close { flex: 0 0 auto; border: 1px solid var(--line); padding: .65rem .8rem; background: transparent; color: var(--ink); cursor: pointer; font: inherit; }
-.markdown-close:hover, .markdown-close:focus-visible { border-color: var(--acid); color: var(--acid); }
+.markdown-viewer-actions { position: absolute; top: .8rem; right: .8rem; z-index: 2; display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; opacity: .35; transition: opacity .18s ease; }
+.markdown-viewer-actions:hover, .markdown-viewer-actions:focus-within { opacity: 1; }
+.markdown-fullscreen, .markdown-close { border: 1px solid var(--line); padding: .65rem .8rem; background: transparent; color: var(--ink); cursor: pointer; font: inherit; }
+.markdown-fullscreen:hover, .markdown-fullscreen:focus-visible, .markdown-close:hover, .markdown-close:focus-visible { border-color: var(--acid); color: var(--acid); }
+.markdown-viewer:fullscreen { width: 100%; height: 100%; max-width: none; max-height: none; border: 0; }
+.markdown-viewer:fullscreen .markdown-viewer-shell { max-height: 100vh; height: 100vh; }
+.markdown-viewer:fullscreen .markdown-viewer-actions { display: none; }
+.markdown-viewer.fullscreen-fallback { width: calc(100% - 2rem); height: calc(100% - 2rem); max-width: none; max-height: none; }
+.markdown-viewer.fullscreen-fallback .markdown-viewer-shell { max-height: calc(100vh - 2rem); height: 100%; }
 .markdown-status { margin: 1rem clamp(1rem, 4vw, 3rem) 0; padding: .85rem 1rem; border: 1px solid var(--warning); color: var(--warning); font-size: .9rem; }
 .markdown-status.error { border-color: var(--danger); color: #ffb0b0; }
 .markdown-content { overflow: auto; padding: 2rem clamp(1rem, 5vw, 4rem) 4rem; }
 .markdown-content > :first-child { margin-top: 0; }
 .markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5, .markdown-content h6 { margin: 2rem 0 .75rem; color: var(--ink); }
+.markdown-content h1 { display: none; }
 .markdown-content h1 { font-size: clamp(2rem, 5vw, 4rem); }
 .markdown-content h2 { font-size: clamp(1.6rem, 4vw, 2.7rem); }
 .markdown-content h3 { font-size: 1.6rem; }

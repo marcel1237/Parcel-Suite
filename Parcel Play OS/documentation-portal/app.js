@@ -19,11 +19,10 @@ const count = document.querySelector("#result-count");
 const empty = document.querySelector("#empty-state");
 const filters = [...document.querySelectorAll(".filter")];
 const markdownViewer = document.querySelector("#markdown-viewer");
-const markdownTitle = document.querySelector("#markdown-title");
-const markdownPath = document.querySelector("#markdown-path");
 const markdownStatus = document.querySelector("#markdown-status");
 const markdownContent = document.querySelector("#markdown-content");
 const markdownClose = document.querySelector("#markdown-close");
+const markdownFullscreen = document.querySelector("#markdown-fullscreen");
 let activeFilter = "all";
 
 function normalize(value) {
@@ -193,9 +192,7 @@ function showMarkdownStatus(message, error = false) {
   markdownStatus.textContent = message;
 }
 
-async function openMarkdownViewer(url, linkText) {
-  markdownTitle.textContent = linkText || "Documento Markdown";
-  markdownPath.textContent = url.pathname || url.href;
+async function openMarkdownViewer(url) {
   markdownContent.replaceChildren();
   markdownStatus.hidden = true;
   markdownViewer.showModal();
@@ -233,7 +230,7 @@ function handleMarkdownLink(event) {
   const url = new URL(rawHref, window.location.href);
   if (url.origin === window.location.origin && url.pathname.toLowerCase().endsWith(".md")) {
     event.preventDefault();
-    openMarkdownViewer(url, event.currentTarget.textContent.trim());
+    openMarkdownViewer(url);
   }
 }
 
@@ -245,11 +242,30 @@ document.addEventListener("click", (event) => {
   const url = new URL(link.href, window.location.href);
   if (url.origin === window.location.origin && url.pathname.toLowerCase().endsWith(".md")) {
     event.preventDefault();
-    openMarkdownViewer(url, link.textContent.trim());
+    openMarkdownViewer(url);
   }
 });
 
 markdownClose.addEventListener("click", () => markdownViewer.close());
+markdownFullscreen.addEventListener("click", async () => {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else if (markdownViewer.requestFullscreen) {
+      await markdownViewer.requestFullscreen();
+    } else {
+      markdownViewer.classList.toggle("fullscreen-fallback");
+    }
+  } catch (error) {
+    markdownViewer.classList.toggle("fullscreen-fallback");
+    showMarkdownStatus(`Tela cheia indisponível neste navegador: ${error.message}`, true);
+  }
+});
+document.addEventListener("fullscreenchange", () => {
+  const active = document.fullscreenElement === markdownViewer;
+  markdownFullscreen.textContent = active ? "Sair da tela cheia ⛶" : "Tela cheia ⛶";
+  markdownFullscreen.setAttribute("aria-label", active ? "Sair da tela cheia" : "Ativar tela cheia");
+});
 markdownViewer.addEventListener("click", (event) => {
   if (event.target === markdownViewer) {
     markdownViewer.close();

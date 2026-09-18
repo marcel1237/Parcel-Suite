@@ -19,6 +19,7 @@ Linux e PlayOS. Ele é estático, local e não foi publicado.
 - indicadores de fontes, documentos, entradas e QA;
 - todos os documentos do inventário com links diretos;
 - visualizador interno de Markdown com conversão para HTML no navegador;
+- botão de tela cheia durante a leitura dos documentos;
 - busca sem dependências;
 - filtros FreeBSD, família BSD, BSD–Linux, PlayOS e evidências;
 - painel de estado real dos kernels;

@@ -24,6 +24,19 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Compatibilidade**: Em `file://`, o portal informa que o navegador pode bloquear `fetch` local e fornece o comando HTTP recomendado.
 - **Validação**: Sintaxe JavaScript e `git diff --check` passaram; o validador do portal permanece bloqueado pelo ID duplicado preexistente `DOC-073`.
 
+## [2026-09-18] - Tela cheia no visualizador Markdown
+- **Implementação**: Adicionado botão `Tela cheia` ao cabeçalho do visualizador Markdown do portal.
+- **Comportamento**: Usa a Fullscreen API, alterna o rótulo para `Sair da tela cheia` e oferece fallback visual quando a API não está disponível.
+
+## [2026-09-18] - Leitor Markdown sem títulos e sem moldura em tela cheia
+- **Implementação**: Removidos o rótulo, nome, descrição, caminho e chamada de ação do cabeçalho textual do leitor.
+- **Tela cheia**: O botão transforma a área em uma visualização exclusiva do conteúdo Markdown; os controles ficam ocultos durante a tela cheia e podem ser encerrados com `Esc`.
+- **Conteúdo**: Títulos Markdown `h1` a `h6` também ficam ocultos na visualização, conforme solicitado.
+
+## [2026-09-18] - Subtítulos Markdown reativados
+- **Ajuste**: `h2` até `h6` voltaram a ser exibidos normalmente no leitor web.
+- **Estado**: Somente o título principal `h1` permanece oculto para evitar repetição do título do arquivo.
+
 ## [2026-08-19] - Portal documental automatizado pelos catálogos
 - **Geração**: `generate_portal.py` transforma o inventário e metadados supervisionados em `generated-data.js` determinístico.
 - **Cobertura**: O portal deixou de conter somente 22 cartões manuais e passou a incluir todo documento inventariado.

@@ -109,16 +109,12 @@
     </section>
   </main>
 
-  <dialog class="markdown-viewer" id="markdown-viewer" aria-labelledby="markdown-title">
+  <dialog class="markdown-viewer" id="markdown-viewer">
     <div class="markdown-viewer-shell">
-      <header class="markdown-viewer-header">
-        <div>
-          <p class="eyebrow">DOCUMENTO MARKDOWN</p>
-          <h2 id="markdown-title">Carregando documento…</h2>
-          <p class="markdown-viewer-path" id="markdown-path"></p>
-        </div>
+      <div class="markdown-viewer-actions">
+        <button class="markdown-fullscreen" id="markdown-fullscreen" type="button" aria-label="Ativar tela cheia">Tela cheia ⛶</button>
         <button class="markdown-close" id="markdown-close" type="button" aria-label="Fechar visualização">Fechar ×</button>
-      </header>
+      </div>
       <div class="markdown-status" id="markdown-status" role="status" hidden></div>
       <article class="markdown-content" id="markdown-content"></article>
     </div>
