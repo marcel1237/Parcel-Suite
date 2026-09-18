@@ -100,6 +100,104 @@ atualizações e política de segurança.
   Xwayland, Mesa/Vulkan, áudio, input, rede e kernel PlayOS ainda não foram
   validados em runtime.
 
+### Perfil efetivamente construído
+
+O manifesto versionado em
+`live-build/playos-ubuntu-noble-kde-full-knoppix-style/config/package-lists/playos-kde-full.list.chroot`
+inclui:
+
+- `live-boot`, `live-config`, systemd, initramfs-tools, locales e console;
+- `kde-full`, Plasma Workspace, Plasma Wayland, KWin X11, KWin Wayland e SDDM;
+- Dolphin e Konsole;
+- NetworkManager, udisks2, UPower, PolicyKit e portais XDG/KDE;
+- PipeWire, `pipewire-audio`, WirePlumber e ALSA;
+- Mesa DRI, drivers Vulkan Mesa e `vulkan-tools`;
+- firmware Linux, `pciutils` e `usbutils`;
+- SquashFS, `syslinux-utils`, `procps`, `kmod`, `curl` e certificados.
+
+O hook `010-playos-live.chroot`:
+
+1. escreve a identidade Live em `/etc/issue`;
+2. adiciona `overlay`, `squashfs` e `iso9660` ao initramfs;
+3. define `graphical.target`;
+4. habilita SDDM e NetworkManager;
+5. regenera todos os initramfs.
+
+O hook `900-playos-audit.chroot` falha se encontrar repositórios Debian,
+instaladores proibidos ou desktops/display managers não autorizados, e imprime
+as versões dos pacotes KDE, Live, rede, áudio e kernel. A auditoria estática
+não substitui boot ou teste visual.
+
+### Sequência operacional reproduzida
+
+O fluxo realizado na VM foi:
+
+```sh
+lb clean --purge
+./auto/config
+./tools/preflight.sh
+lb build 2>&1 | tee build.log
+```
+
+Após falhas nas etapas finais, o rootfs pronto foi preservado e somente a etapa
+binária foi repetida. O modo final foi:
+
+```sh
+./auto/config
+lb clean --binary
+lb binary 2>&1 | tee binary-retry6.log
+```
+
+Como a versão instalada do `live-build` não concluiu a última chamada de
+`genisoimage`, a imagem foi fechada manualmente com:
+
+```sh
+genisoimage -J -l -cache-inodes -allow-multidot \
+  -allow-limited-size -iso-level 3 \
+  -A "PlayOS Noble KDE Full Live" \
+  -V PLAYOS_NOBLE_KDE \
+  -no-emul-boot -boot-load-size 4 -boot-info-table \
+  -r -b boot/grub/grub_eltorito \
+  -o binary.hybrid.iso binary
+```
+
+Esse comando criou a sessão ISO 9660 com catálogo El Torito GRUB2. A execução
+posterior de `isohybrid binary.hybrid.iso` não foi aceita, pois `isohybrid`
+esperava uma assinatura de boot `isolinux.bin`, inexistente no layout GRUB2.
+
+### Artefatos e hashes
+
+| Artefato | Estado | Evidência |
+|---|---|---|
+| `binary/live/filesystem.squashfs` | `result` | 6.024 MiB comprimidos; 227.974 inodes |
+| `binary/live/vmlinuz-6.8.0-139-generic` | `result` | kernel Ubuntu Noble empacotado |
+| `binary/live/initrd.img-6.8.0-139-generic` | `result` | initramfs correspondente empacotado |
+| `binary/live/filesystem.packages` | `result` | manifesto gerado pelo live-build |
+| `binary.hybrid.iso` | `result` | 6.458.335.232 bytes; ISO 9660 bootável |
+| `playos-ubuntu-noble-kde-full-live.iso` | `result` | cópia em `build/`, hash conferido |
+| `*.iso.sha256` | `result` | `03863ec2c98d10cce3d33c3112bcb71f5a1b7fc2410c5170e780e42da50c5075` |
+
+O nome `binary.hybrid.iso` foi mantido por compatibilidade com o perfil, mas
+não deve ser interpretado como prova de híbrido USB/BIOS. A própria ferramenta
+reportou a rejeição da assinatura híbrida.
+
+### Matriz de tentativas e recuperação
+
+| Tentativa | Sintoma | Causa | Ação |
+|---|---|---|---|
+| configuração inicial | opção `--updates true` rejeitada | opção inexistente na versão local | remover a opção |
+| build no host | exigência de root | `lb build` precisa montar/chrootar como root | mover para VM Noble |
+| binário inicial | `isohybrid: not found` | utilitário ausente no chroot | adicionar `syslinux-utils` |
+| retry binário | `binary` não vazio | saída residual da tentativa anterior | limpar somente etapa binária |
+| retry seguinte | SquashFS acima de 4 GiB | `binary*` anterior foi incluído recursivamente | remover artefatos residuais |
+| retry seguinte | `flash-kernel` já existe | link residual `/bin/true` | remover somente esse link |
+| retry com chroot padrão | `Cannot stat source directory chroot` | modo esperava `chroot/chroot` | fixar `--build-with-chroot false` |
+| ISO padrão | `genisoimage: not found` | dependência ausente na VM | instalar `genisoimage` |
+| fechamento manual | `isohybrid` rejeitado | GRUB2 não fornece assinatura isolinux | manter como ISO El Torito intermediária |
+
+Nenhum kernel foi instalado no host, nenhuma entrada de boot foi alterada e as
+duas VMs foram desligadas ao final.
+
 Falhas recuperadas durante a execução:
 
 1. `lb config` rejeitou `--updates true`.

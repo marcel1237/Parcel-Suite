@@ -37,6 +37,28 @@ Ubuntu Noble isolada porque `lb build` exige root. O artefato produzido está em
 de aproximadamente 6,1 GiB, com checksum registrado, mas ainda não passou por
 boot/runtime KDE nem foi comprovado como híbrido USB/BIOS.
 
+## Estado dos hooks
+
+`config/hooks/010-playos-live.chroot` configura o target gráfico, SDDM,
+NetworkManager e initramfs com OverlayFS/SquashFS. O hook
+`config/hooks/900-playos-audit.chroot` verifica identidade Ubuntu Noble,
+ausência de mirrors Debian, presença dos pacotes centrais e ausência de
+instaladores, GNOME, XFCE e LightDM.
+
+## Evidência do artefato
+
+O kernel empacotado na execução foi `6.8.0-139-generic`. A ISO contém
+SquashFS, initramfs, kernel, manifesto de pacotes e entrada El Torito GRUB2.
+O checksum do artefato em `build/` é:
+
+```text
+03863ec2c98d10cce3d33c3112bcb71f5a1b7fc2410c5170e780e42da50c5075
+```
+
+O tamanho superior a 4 GiB exigiu ISO9660 nível 3. A imagem não deve ser
+classificada como híbrida USB/BIOS até que uma ferramenta compatível com o
+layout GRUB2 valide esse modo e um boot real seja executado.
+
 ## Parâmetros Live inspirados no KNOPPIX
 
 O boot normal usa `boot=live components`. Para testes manuais no menu GRUB:

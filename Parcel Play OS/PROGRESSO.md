@@ -1401,3 +1401,30 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
   kernel PlayOS.
 - `next-gate`: inicializar a ISO em uma VM com console gráfico e registrar os
   gates de boot, SDDM, X11, Wayland, áudio, rede e Vulkan separadamente.
+
+## 2026-09-17 — Registro operacional detalhado do KDE Full
+
+- `implementation`: o manifesto final inclui `kde-full`, Plasma X11/Wayland,
+  KWin X11/Wayland, SDDM, Dolphin, Konsole, Mesa DRI, Vulkan, NetworkManager,
+  PipeWire, WirePlumber, firmware, `live-boot`, SquashFS e `syslinux-utils`.
+- `implementation`: o hook Live define `graphical.target`, habilita SDDM e
+  NetworkManager, adiciona OverlayFS/SquashFS/ISO9660 ao initramfs e regenera
+  initramfs.
+- `implementation`: o hook de auditoria verifica Noble, rejeita mirrors
+  Debian, rejeita Calamares/Subiquity/Curtin/Casper, GNOME, XFCE e LightDM,
+  e imprime versões dos pacotes críticos.
+- `result`: a execução produziu kernel `6.8.0-139-generic`, initramfs,
+  manifesto de pacotes e SquashFS com 227.974 inodes.
+- `result`: a ISO foi composta com sessão ISO9660 nível 3, catálogo El Torito
+  e entrada GRUB2 `boot/grub/grub_eltorito`.
+- `warning`: o nome de arquivo `.hybrid.iso` é legado do perfil; a ferramenta
+  `isohybrid` recusou a imagem por ausência de assinatura `isolinux.bin`.
+- `implementation`: foram preservados somente os artefatos finais necessários
+  em `build/`; caches, chroot e saídas intermediárias da VM não foram copiados
+  para o repositório.
+- `fact`: não houve instalação de kernel, módulo, bootloader ou entrada GRUB no
+  host durante o trabalho.
+- `fact`: as VMs foram desligadas após a cópia e conferência do artefato.
+- `next-gate`: testar a ISO em ambiente com VGA/console gráfico; registrar
+  separadamente boot, SDDM, Plasma X11, Plasma Wayland, Xwayland, Mesa/Vulkan,
+  input, áudio, rede, logout e shutdown.
