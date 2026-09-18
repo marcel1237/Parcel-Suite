@@ -16,7 +16,7 @@
 - [Evidências e validação](evidencia/README.md)
   - [Categorias de estado](evidencia/estados.md)
   - [Gates de validação](evidencia/gates.md)
-  - [Checksums e reprodutibilidade](evidencia/reproducibilidade.md)
+  - [Checksums e reprodutibilidade](evidencia/checksums.md)
 - [mdBook no PlayOS](ferramentas/mdbook.md)
   - [Estrutura e comandos](ferramentas/estrutura-mdbook.md)
 - [Operação](operacao.md)
