@@ -12,6 +12,44 @@ inventário. A presença de uma ISO, kernel, log ou diretório de staging não
 prova, sozinha, boot, funcionamento gráfico, compatibilidade de hardware ou
 prontidão para distribuição.
 
+## O que é a pasta `build/`
+
+`build/` é o espaço de trabalho de compilação, empacotamento e preservação de
+resultados do PlayOS. Ela não é uma árvore-fonte única e não representa uma
+única distribuição. Existem várias linhas de trabalho simultâneas:
+
+1. kernels Noble e Linux 7.1.8;
+2. Live ISOs Debian Trixie com kernel Noble;
+3. Graphics Core Noble com XFCE e Calamares;
+4. usuários nativos Stage0, Stage1 e Stage2;
+5. Ubuntu Noble + KDE Full;
+6. protótipos históricos Resolute e branding;
+7. logs, manuais, caches, rootfs e auditorias de armazenamento.
+
+Por isso, dois diretórios com nomes parecidos podem usar userspaces, kernels,
+instaladores e níveis de validação diferentes. Uma ISO Debian Trixie KDE não é
+a mesma baseline que a ISO Ubuntu Noble KDE Full, e um kernel em `output/` não
+é automaticamente o kernel usado por todas as ISOs.
+
+## Como interpretar os tipos de conteúdo
+
+Uma pasta de build normalmente passa por estas etapas:
+
+```text
+fonte/download
+    -> staging/rootfs
+    -> kernel ou filesystem comprimido
+    -> ISO/tarball
+    -> checksum e manifesto
+    -> boot/runtime
+```
+
+Os arquivos de `build/` podem registrar qualquer uma dessas etapas. Um
+`*.packages` é um manifesto, não uma prova de que todos os pacotes funcionam.
+Um `*.contents` descreve o conteúdo da mídia, não comprova boot. Um checksum
+confirma integridade da cópia, não funcionalidade. Um `build.log` confirma o
+que o processo reportou, mas não substitui um teste de execução.
+
 ## Regras de leitura
 
 - `result`: artefato ou medição efetivamente encontrado no disco.
@@ -49,6 +87,86 @@ prontidão para distribuição.
 
 O tamanho total de `build/` inclui a soma das árvores acima, inclusive
 arquivos descompactados e caches que não são distribuídos.
+
+## Mapa de decisão: qual diretório consultar
+
+| Pergunta | Diretório principal |
+|---|---|
+| Onde está a ISO Ubuntu Noble + KDE Full? | `playos-ubuntu-noble-kde-full-knoppix-style/` |
+| Onde estão as ISOs Debian com kernel Noble? | `playos-debian-trixie-*` |
+| Onde está a Live XFCE com Calamares? | `playos-graphics-core-noble/` |
+| Onde estão os kernels compilados? | `playos-noble/`, `playos-noble-generic/`, `playos-7.1.8/` |
+| Onde está o Native Userspace inicial? | `playos-native-stage0/`, `playos-native-stage1/` |
+| Onde estão os logs do Graphics Stage2? | `playos-native-stage2-graphics/` |
+| Onde estão rootfs e caches históricos? | `work/` e `resolute-mvp/work/` |
+| Onde estão os manuais de ISO? | `manuals/` |
+
+## Explicação dos arquivos comuns
+
+### ISOs
+
+Arquivos `*.iso` são imagens de mídia. O nome pode conter `hybrid` por
+convenção do pipeline, mas a propriedade híbrida precisa ser confirmada por
+ferramentas de imagem e por boot BIOS/UEFI real.
+
+### Checksums
+
+Arquivos `*.sha256` e `SHA256SUMS` registram hashes. Eles são usados para:
+
+- detectar cópia incompleta;
+- comparar o artefato da VM com a cópia no host;
+- preservar uma identidade do arquivo;
+- impedir que uma ISO seja substituída silenciosamente.
+
+O checksum não informa se a ISO inicializa ou se o desktop funciona.
+
+### Manifestos
+
+- `*.packages`: pacotes instalados ou selecionados;
+- `*.contents`: arquivos e caminhos presentes na mídia;
+- `minimal.standard.live.manifest`: seleção de pacotes de uma composição Live;
+- `filesystem.packages`: manifesto do filesystem Live.
+
+Manifestos são evidência de composição estática. Não são evidência de
+compatibilidade universal.
+
+### Kernels
+
+- `vmlinuz-*`: imagem comprimida do kernel;
+- `initramfs-*`: initramfs associado a uma versão;
+- `System.map-*`: mapa de símbolos;
+- `config-*`: configuração usada para compilar;
+- `SHA256SUMS`: hashes dos artefatos do kernel.
+
+Kernel, initramfs e módulos precisam ser da mesma ABI para uma integração
+coerente. A simples presença de um `vmlinuz` em `build/` não demonstra que uma
+ISO específica o utiliza.
+
+### Rootfs, tarballs e staging
+
+- `rootfs/`: raiz de filesystem em construção;
+- `work/`: árvore de trabalho descompactada;
+- `source/` e `sources/`: fontes e arquivos auxiliares;
+- `download/` e `downloads/`: arquivos baixados;
+- `output/`: resultados promovidos pelo pipeline;
+- `cache/`: conteúdo reutilizável, quando presente.
+
+Esses diretórios podem conter arquivos temporários, permissões de root,
+links simbólicos e dados que não devem ser copiados diretamente para uma
+distribuição.
+
+### Logs
+
+Logs preservam a sequência operacional. Os mais importantes são:
+
+- `build.log`: execução principal de compilação;
+- `bootstrap.log`: criação inicial de um userspace;
+- `*.first-attempt.log`: tentativa anterior, normalmente útil para diagnóstico;
+- `*-build.log`: execução de uma ISO específica;
+- `*-checksum.log`: conferência de integridade;
+- `query-smoke.log`: teste da base de conhecimento;
+- `validate-knowledge.log`: validação de catálogos e documentos;
+- `git-diff-check.log`: verificação de whitespace no Git.
 
 ## ISOs encontradas
 
@@ -104,6 +222,24 @@ A existência desses arquivos demonstra que artefatos foram produzidos, mas não
 comprova boot em hardware, regressão completa, compatibilidade universal ou
 integração com todas as ISOs presentes.
 
+## Relação entre kernels e ISOs
+
+Há três relações diferentes no conteúdo atual:
+
+1. **Kernel produzido separadamente:** os diretórios
+   `playos-noble*` e `playos-7.1.8` guardam imagens de kernel que podem ser
+   usadas por outros pipelines, mas não são automaticamente incorporadas às
+   ISOs.
+2. **Kernel selecionado pelo live-build:** as ISOs Debian Trixie foram
+   compostas com um kernel Noble conforme seus próprios perfis e manifestos.
+3. **Kernel empacotado durante a composição Ubuntu Noble KDE:** a ISO mais
+   recente contém o kernel Ubuntu Noble `6.8.0-139-generic`, registrado no
+   manifesto da execução, e não os artefatos `vmlinuz-*` dos diretórios de
+   kernel separados.
+
+Essa distinção evita afirmar que a ISO KDE já executa o kernel PlayOS. A
+integração do kernel PlayOS é um gate posterior.
+
 ## Native Userspace
 
 ### `playos-native-stage0/`
@@ -150,6 +286,22 @@ Contém logs do estágio gráfico:
 O Stage2 gráfico não deve ser classificado como concluído apenas pela presença
 dos logs.
 
+### Fluxo dos estágios nativos
+
+O fluxo Native Userspace é progressivo:
+
+```text
+Stage0 -> Stage1 -> Stage1 ISO -> Stage2 Graphics
+```
+
+- **Stage0:** base inicial, ferramentas mínimas, BusyBox, rootfs e ISO;
+- **Stage1:** userspace mais completo, Buildroot e rootfs tar;
+- **Stage1 ISO:** empacotamento do tar/rootfs em mídia inicializável;
+- **Stage2 Graphics:** tentativa de adicionar a pilha gráfica e Qt.
+
+Um estágio posterior não invalida os artefatos anteriores. Ao mesmo tempo, um
+log de Stage2 não transforma Stage1 em desktop gráfico funcional.
+
 ## Live Debian com kernel Noble
 
 Os três diretórios abaixo preservam resultados de composições Live com
@@ -163,6 +315,18 @@ Cada um possui um subdiretório `output/` com ISO, checksum e outros arquivos
 produzidos pelo `live-build`. Os resultados são distintos da composição mais
 recente Ubuntu Noble + KDE Full e não devem ser tratados como a mesma baseline.
 
+### Diferenças entre as variantes Debian
+
+- **XFCE:** desktop menor, usado para validar uma Live gráfica de menor custo;
+- **GNOME:** desktop GNOME/GDM ou composição equivalente registrada no
+  manifesto;
+- **KDE Full:** composição KDE mais pesada, com SDDM e pacotes KDE integrados
+  ao userspace Debian Trixie.
+
+Todas são experiências separadas da decisão posterior de usar Ubuntu Noble
+como userspace do KDE Full. Os nomes `*-noble` nesses diretórios indicam o
+kernel Noble ou a composição do projeto; não significam userspace Ubuntu Noble.
+
 ## Graphics Core Noble
 
 `playos-graphics-core-noble/` contém:
@@ -174,6 +338,11 @@ recente Ubuntu Noble + KDE Full e não devem ser tratados como a mesma baseline.
 O diretório registra uma composição Live diferente do perfil Ubuntu Noble KDE
 Full. A presença de Calamares também diferencia esse resultado do perfil KDE
 Full sem instalador.
+
+O Graphics Core é uma camada de composição gráfica e não deve ser confundido
+com um desktop KDE completo. A variante encontrada combina uma Live Noble com
+XFCE e Calamares; o perfil Ubuntu Noble KDE Full deliberadamente não inclui
+Calamares, Subiquity ou Casper.
 
 ## Resolute MVP
 
@@ -189,6 +358,12 @@ O tamanho aproximado de 6,0 GiB é dominado por `work/`. Esse diretório não é
 uma ISO pronta por si só. O checksum presente sem o arquivo ISO correspondente
 deve ser tratado como referência histórica ou artefato incompleto até nova
 verificação.
+
+Esse diretório é histórico e precisa ser lido com a identidade técnica
+registrada no projeto: a pasta local chamada Resolute não deve ser tomada
+automaticamente como fonte Ubuntu Resolute oficial. A versão real do kernel,
+dos pacotes e da distribuição deve ser confirmada nos manifestos e logs de cada
+execução.
 
 ## ISO Ubuntu Noble + KDE Full
 
@@ -208,6 +383,22 @@ O artefato foi identificado como ISO 9660 bootável com catálogo El Torito
 GRUB2. `isohybrid` rejeitou a imagem por ausência da assinatura `isolinux.bin`;
 portanto, o nome `.iso` é seguro, mas a classificação como híbrida USB/BIOS
 continua pendente.
+
+### O que essa ISO representa
+
+Essa é a composição mais recente do trabalho descrito nesta documentação:
+
+- userspace Ubuntu Noble;
+- `kde-full`;
+- Plasma X11 e Wayland;
+- KWin, SDDM, Mesa/Vulkan, PipeWire e NetworkManager;
+- Live baseada em SquashFS e OverlayFS;
+- kernel genérico Ubuntu Noble;
+- sem instalador.
+
+Ela é uma **ISO intermediária estruturalmente construída**, não uma release
+validada. O próximo passo é inicializá-la com uma VM que ofereça console gráfico
+e separar os resultados de boot, login, renderização, áudio, rede e shutdown.
 
 ## Manuais e registros auxiliares
 
@@ -239,6 +430,57 @@ Na listagem de artefatos-chave do inventário não foram localizados:
 Essas ausências não provam que os artefatos nunca existiram fora de `build/`;
 significam somente que não foram encontrados no inventário atual.
 
+## O que pode ser removido e o que deve ser preservado
+
+Sem uma decisão explícita, preserve:
+
+- todas as ISOs e seus checksums;
+- kernels, initramfs, configurações e `System.map`;
+- logs de build e validação;
+- manifestos `*.packages` e `*.contents`;
+- rootfs e tarballs de estágios Native;
+- fontes baixadas que tenham checksum e sejam necessárias à reprodução.
+
+Itens candidatos a limpeza, depois de conferência:
+
+- caches duplicados;
+- árvores de trabalho recriáveis;
+- logs de tentativas antigas já incorporados em relatório;
+- arquivos temporários sem checksum ou sem referência no pipeline.
+
+Não remova por padrão `build/work`, `resolute-mvp/work` ou rootfs de estágios:
+eles podem conter a única cópia local de uma composição ainda não promovida
+para um artefato final.
+
+## Como auditar a pasta novamente
+
+Comandos de leitura recomendados:
+
+```sh
+du -h -d 2 build | sort -h
+find build -maxdepth 3 -type f -printf '%p\t%s bytes\n' | sort
+find build -type f -name '*.sha256' -exec sh -c 'echo === "$1"; cat "$1"' sh {} \;
+find build -type f \( -name '*.iso' -o -name 'vmlinuz*' -o -name 'initrd*' \)
+```
+
+Para conferir uma ISO cujo checksum está no mesmo diretório:
+
+```sh
+cd build/<projeto>/output
+sha256sum -c <arquivo>.sha256
+```
+
+O comando deve ser executado no diretório esperado pelo arquivo de checksum,
+porque alguns registros usam `./nome.iso` e outros usam somente `nome.iso`.
+
+## Limites deste documento
+
+Este arquivo explica o estado observado em `build/` e relaciona os artefatos
+com seus pipelines conhecidos. Ele não reconstrói automaticamente o histórico
+completo de cada build, não reexecuta os pipelines e não prova boot. Para uma
+conclusão de runtime, são necessários logs de inicialização, console da VM,
+manifesto da sessão e testes reproduzíveis.
+
 ## Política de preservação
 
 - Não apagar `build/` recursivamente para liberar espaço sem inventariar e
@@ -265,4 +507,3 @@ com console gráfico e registrar, em relatórios separados:
 7. input, áudio e rede;
 8. logout e shutdown;
 9. comparação com o kernel PlayOS.
-
