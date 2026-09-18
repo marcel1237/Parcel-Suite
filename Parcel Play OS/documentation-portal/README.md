@@ -18,6 +18,7 @@ Linux e PlayOS. Ele é estático, local e não foi publicado.
 - apresentação da base supervisionada;
 - indicadores de fontes, documentos, entradas e QA;
 - todos os documentos do inventário com links diretos;
+- visualizador interno de Markdown com conversão para HTML no navegador;
 - busca sem dependências;
 - filtros FreeBSD, família BSD, BSD–Linux, PlayOS e evidências;
 - painel de estado real dos kernels;
@@ -42,15 +43,18 @@ todos os caminhos usados pelo portal.
 
 ## Limites atuais
 
-- Markdown ainda abre como arquivo, sem renderização dentro do portal;
+- a renderização usa Markdown básico e não cobre todos os blocos específicos de
+  GitBook;
+- ao abrir o portal diretamente com `file://`, navegadores podem bloquear
+  `fetch` de arquivos locais; sirva o repositório por HTTP para usar o
+  visualizador;
 - não existe roteamento por documento ou busca full-text semântica;
 - portal não foi publicado nem testado visualmente em múltiplos navegadores.
 
 ## Próxima evolução
 
-1. renderizar Markdown em páginas internas;
-2. adicionar grafo de relações e breadcrumb;
-3. exibir fontes, confiança e estado em cada documento;
-4. criar busca full-text e build estático reproduzível;
-5. executar testes de acessibilidade e responsividade;
-6. publicar somente após revisão do conteúdo sensível e dos caminhos locais.
+1. adicionar grafo de relações e breadcrumb;
+2. exibir fontes, confiança e estado em cada documento;
+3. criar busca full-text e build estático reproduzível;
+4. executar testes de acessibilidade e responsividade;
+5. publicar somente após revisão do conteúdo sensível e dos caminhos locais.

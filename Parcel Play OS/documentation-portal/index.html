@@ -109,6 +109,21 @@
     </section>
   </main>
 
+  <dialog class="markdown-viewer" id="markdown-viewer" aria-labelledby="markdown-title">
+    <div class="markdown-viewer-shell">
+      <header class="markdown-viewer-header">
+        <div>
+          <p class="eyebrow">DOCUMENTO MARKDOWN</p>
+          <h2 id="markdown-title">Carregando documento…</h2>
+          <p class="markdown-viewer-path" id="markdown-path"></p>
+        </div>
+        <button class="markdown-close" id="markdown-close" type="button" aria-label="Fechar visualização">Fechar ×</button>
+      </header>
+      <div class="markdown-status" id="markdown-status" role="status" hidden></div>
+      <article class="markdown-content" id="markdown-content"></article>
+    </div>
+  </dialog>
+
   <footer>
     <div class="brand footer-brand"><span class="brand-mark">P</span><span><strong>PlayOS</strong><small>Knowledge Core</small></span></div>
     <p>Documentação viva. Evidência acima de promessa.</p>

@@ -17,6 +17,13 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Validação**: Estrutura do sumário, links relativos e `git diff --check` foram verificados.
 - **Estado**: `implementation` local; sincronização, preview e publicação externa permanecem `unknown` até configuração autorizada no GitBook.
 
+## [2026-09-18] - Visualizador Markdown integrado ao portal
+- **Implementação**: Links locais para arquivos `.md` em `documentation-portal/index.html` agora abrem um diálogo interno com renderização HTML.
+- **Recursos**: Títulos, parágrafos, listas, tarefas, citações, tabelas, código, links e navegação entre Markdown são convertidos sem dependência externa.
+- **Segurança**: HTML de origem é escapado; URLs são filtradas; links Markdown externos não são interceptados.
+- **Compatibilidade**: Em `file://`, o portal informa que o navegador pode bloquear `fetch` local e fornece o comando HTTP recomendado.
+- **Validação**: Sintaxe JavaScript e `git diff --check` passaram; o validador do portal permanece bloqueado pelo ID duplicado preexistente `DOC-073`.
+
 ## [2026-08-19] - Portal documental automatizado pelos catálogos
 - **Geração**: `generate_portal.py` transforma o inventário e metadados supervisionados em `generated-data.js` determinístico.
 - **Cobertura**: O portal deixou de conter somente 22 cartões manuais e passou a incluir todo documento inventariado.

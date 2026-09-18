@@ -78,6 +78,38 @@ h1 { max-width: 880px; margin: 0; font-size: clamp(3.2rem, 7vw, 7.2rem); }
 .doc-meta .priority { color: var(--acid); }
 .doc-card h3 { margin: 2rem 0 .7rem; font-family: var(--serif); font-size: 1.55rem; font-weight: 400; line-height: 1.15; }
 .doc-card p { margin: 0 0 1.5rem; color: var(--muted); font-size: .9rem; }
+.doc-open { margin-top: auto; color: var(--acid); font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.markdown-viewer { width: min(1100px, calc(100% - 2rem)); max-height: min(90vh, 960px); padding: 0; border: 1px solid var(--line); background: var(--paper); color: var(--ink); box-shadow: 0 2rem 8rem rgba(0, 0, 0, .55); }
+.markdown-viewer::backdrop { background: rgba(0, 0, 0, .78); backdrop-filter: blur(5px); }
+.markdown-viewer-shell { display: flex; max-height: min(90vh, 960px); flex-direction: column; }
+.markdown-viewer-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding: 1.5rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--line); background: var(--panel); }
+.markdown-viewer-header .eyebrow { margin-bottom: .5rem; }
+.markdown-viewer-header h2 { max-width: 760px; margin: 0; font-size: clamp(1.7rem, 4vw, 3rem); }
+.markdown-viewer-path { max-width: 760px; margin: .6rem 0 0; overflow-wrap: anywhere; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .72rem; }
+.markdown-close { flex: 0 0 auto; border: 1px solid var(--line); padding: .65rem .8rem; background: transparent; color: var(--ink); cursor: pointer; font: inherit; }
+.markdown-close:hover, .markdown-close:focus-visible { border-color: var(--acid); color: var(--acid); }
+.markdown-status { margin: 1rem clamp(1rem, 4vw, 3rem) 0; padding: .85rem 1rem; border: 1px solid var(--warning); color: var(--warning); font-size: .9rem; }
+.markdown-status.error { border-color: var(--danger); color: #ffb0b0; }
+.markdown-content { overflow: auto; padding: 2rem clamp(1rem, 5vw, 4rem) 4rem; }
+.markdown-content > :first-child { margin-top: 0; }
+.markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5, .markdown-content h6 { margin: 2rem 0 .75rem; color: var(--ink); }
+.markdown-content h1 { font-size: clamp(2rem, 5vw, 4rem); }
+.markdown-content h2 { font-size: clamp(1.6rem, 4vw, 2.7rem); }
+.markdown-content h3 { font-size: 1.6rem; }
+.markdown-content p, .markdown-content li { color: #c2cdd1; }
+.markdown-content a { color: var(--cyan); }
+.markdown-content ul, .markdown-content ol { padding-left: 1.5rem; }
+.markdown-content li + li { margin-top: .35rem; }
+.markdown-content blockquote { margin: 1.2rem 0; padding: .2rem 1rem; border-left: 3px solid var(--acid); color: var(--muted); }
+.markdown-content hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--line); }
+.markdown-content code { padding: .12rem .3rem; background: var(--panel-2); color: var(--acid); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
+.markdown-content pre { overflow: auto; margin: 1.2rem 0; padding: 1rem; border: 1px solid var(--line); background: #050a0c; }
+.markdown-content pre code { padding: 0; background: transparent; color: #d9e6ea; }
+.markdown-content table { width: 100%; margin: 1.2rem 0; border-collapse: collapse; }
+.markdown-content th, .markdown-content td { padding: .65rem .75rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.markdown-content th { color: var(--acid); background: var(--panel); }
+.markdown-content input[type="checkbox"] { accent-color: var(--acid); }
+.markdown-fallback { display: inline-block; margin-top: 1rem; color: var(--cyan); }
 .doc-open { margin-top: auto; color: var(--cyan); font-size: .78rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
 .empty-state { padding: 3rem; border: 1px solid var(--line); text-align: center; }
 .empty-state p { color: var(--muted); }
