@@ -2,7 +2,7 @@
 
 - ID: `PLAYOS-USERSPACE-KDE-KNOPPIX-001`
 - tipo: `implementation-plan`
-- estado: userspace e perfil Live estruturados; preflight, build e runtime pendentes
+- estado: userspace e perfil Live estruturados; ISO intermediária construída; runtime pendente
 - confiança: alta para arquitetura; média para primeiro build; runtime `unknown`
 - data: 2026-09-07
 
@@ -63,6 +63,56 @@ precisa de um pacote `playos-base-files`, repositório APT assinado, publicaçã
 de fontes correspondentes, rebuilds dos pacotes modificados, infraestrutura de
 atualizações e política de segurança.
 
+## Resultado da execução de 2026-09-16/17
+
+- `result`: preflight inicial passou com aproximadamente 53 GiB livres no
+  staging do host.
+- `implementation`: o perfil foi executado em uma VM Ubuntu 24.04 Noble
+  isolada chamada `playos-ubuntu-noble-kde-builder-vm`, com 4 vCPUs, 4 GiB de
+  RAM e disco lógico de 40 GiB.
+- `result`: o bootstrap Ubuntu Noble e a composição `kde-full` foram gerados
+  no chroot preservado da VM.
+- `implementation`: `--updates true` foi removido do `auto/config` porque a
+  versão local do `live-build` não aceita essa opção; Noble, Noble Updates e
+  Noble Security permaneceram nos mirrors configurados.
+- `implementation`: `syslinux-utils` foi adicionado ao manifesto para prover
+  `isohybrid` no chroot; `genisoimage` precisou ser instalado na VM para a
+  etapa final.
+- `implementation`: `--build-with-chroot false` foi fixado no perfil para
+  reutilizar corretamente a árvore direta `chroot/` preservada.
+- `result`: o SquashFS final teve 6.024 MiB comprimidos, a partir de cerca de
+  9.394 MiB descomprimidos.
+- `result`: a ISO foi criada em
+  `build/playos-ubuntu-noble-kde-full-knoppix-style/playos-ubuntu-noble-kde-full-live.iso`,
+  com 6.458.335.232 bytes e SHA-256
+  `03863ec2c98d10cce3d33c3112bcb71f5a1b7fc2410c5170e780e42da50c5075`.
+- `result`: `file` identificou uma imagem ISO 9660 bootável e `xorriso -toc`
+  confirmou volume `PLAYOS_NOBLE_KDE`, catálogo El Torito e entrada
+  `boot/grub/grub_eltorito`.
+- `warning`: a tentativa de `isohybrid` falhou porque a imagem GRUB2 não
+  possui a assinatura `isolinux.bin`; portanto, a propriedade híbrida
+  USB/BIOS ainda não foi comprovada.
+- `result`: a cópia da ISO da VM para `build/` foi conferida contra o mesmo
+  SHA-256.
+- `result`: as VMs `playos-ubuntu-noble-kde-builder-vm` e
+  `playos-noble-graphics-builder` foram desligadas após a transferência.
+- `unknown`: boot BIOS/UEFI, SDDM, Plasma X11, Plasma Wayland, KWin,
+  Xwayland, Mesa/Vulkan, áudio, input, rede e kernel PlayOS ainda não foram
+  validados em runtime.
+
+Falhas recuperadas durante a execução:
+
+1. `lb config` rejeitou `--updates true`.
+2. `lb build` no host exigiu root; o build foi movido para VM isolada.
+3. A primeira etapa binária não encontrou `isohybrid`.
+4. Uma tentativa reutilizou `binary` residual e falhou por diretório não vazio.
+5. Artefatos binários residuais foram incluídos recursivamente no SquashFS,
+   ultrapassando o limite ISO9660 convencional.
+6. A reexecução encontrou o link residual `chroot/usr/sbin/flash-kernel`.
+7. O modo de chroot foi corrigido e a geração do SquashFS passou.
+8. A etapa padrão não encontrou `genisoimage`; a dependência foi instalada e
+   a ISO foi gerada manualmente com ISO9660 nível 3.
+
 ## Estado de capacidade
 
 Após a limpeza da VM anterior, o host apresentou aproximadamente 20 GiB
@@ -73,14 +123,13 @@ não perder resultados únicos.
 
 ## Gates
 
-1. liberar pelo menos 30 GiB e executar o preflight;
-2. construir em staging sem espaços no caminho;
-3. confirmar que todos os repositórios são Ubuntu Noble;
-4. validar identidade PlayOS e versões reais dos pacotes;
-5. verificar SquashFS, OverlayFS, initramfs, BIOS e UEFI;
-6. inicializar em VM e testar SDDM, Plasma X11/Wayland, rede, áudio e Vulkan;
-7. implementar persistência somente após o modo Live imutável funcionar;
-8. empacotar a identidade em `playos-base-files` antes de uma release.
+1. verificar a composição e os metadados da ISO intermediária;
+2. obter uma rota de teste com console gráfico e inicializar em VM;
+3. validar BIOS e UEFI, distinguindo boot El Torito de ISO híbrida USB;
+4. testar SDDM, Plasma X11/Wayland, rede, áudio e Vulkan;
+5. repetir os gates com o kernel PlayOS mantendo o kernel Ubuntu como fallback;
+6. implementar persistência somente após o modo Live imutável funcionar;
+7. empacotar a identidade em `playos-base-files` antes de uma release.
 
 ## Plano de implementação
 

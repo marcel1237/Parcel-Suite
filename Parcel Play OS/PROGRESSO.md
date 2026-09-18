@@ -1380,3 +1380,24 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - `next-gate`: preservar a ISO como artefato intermediário, gerar checksum e
   validar boot em VM antes de decidir entre manter ISO >4 GiB ou reduzir a
   composição para o limite ISO9660 convencional.
+
+## 2026-09-17 — Documentação e armazenamento da ISO Ubuntu Noble KDE Full
+
+- `result`: a ISO foi copiada da VM para
+  `build/playos-ubuntu-noble-kde-full-knoppix-style/playos-ubuntu-noble-kde-full-live.iso`.
+- `result`: o checksum foi salvo em
+  `build/playos-ubuntu-noble-kde-full-knoppix-style/playos-ubuntu-noble-kde-full-live.iso.sha256`
+  e conferido contra a origem:
+  `03863ec2c98d10cce3d33c3112bcb71f5a1b7fc2410c5170e780e42da50c5075`.
+- `implementation`: o README do perfil e o relatório canônico foram
+  atualizados com o procedimento real, as falhas recuperadas e os limites da
+  validação.
+- `implementation`: o catálogo classificou o perfil como
+  `built-intermediate`, não como runtime validado.
+- `result`: as VMs de build foram desligadas:
+  `playos-ubuntu-noble-kde-builder-vm` e `playos-noble-graphics-builder`.
+- `unknown`: ainda não há evidência de boot BIOS/UEFI, sessão KDE funcional,
+  Plasma X11/Wayland, aceleração Mesa/Vulkan, áudio, rede ou integração do
+  kernel PlayOS.
+- `next-gate`: inicializar a ISO em uma VM com console gráfico e registrar os
+  gates de boot, SDDM, X11, Wayland, áudio, rede e Vulkan separadamente.

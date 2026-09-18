@@ -31,8 +31,11 @@ lb config
 lb build
 ```
 
-O preflight exige 30 GiB livres. A saída padrão é
-`live-image-amd64.hybrid.iso`. O build ainda não foi executado.
+O preflight exige 30 GiB livres. A execução de referência foi feita em uma VM
+Ubuntu Noble isolada porque `lb build` exige root. O artefato produzido está em
+`build/playos-ubuntu-noble-kde-full-knoppix-style/`; ele é uma ISO intermediária
+de aproximadamente 6,1 GiB, com checksum registrado, mas ainda não passou por
+boot/runtime KDE nem foi comprovado como híbrido USB/BIOS.
 
 ## Parâmetros Live inspirados no KNOPPIX
 
