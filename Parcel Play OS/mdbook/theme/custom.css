@@ -1,0 +1,23 @@
+:root {
+  --fg: #20242b;
+  --bg: #ffffff;
+  --links: #1769aa;
+}
+
+.content main {
+  max-width: 980px;
+}
+
+.content main h1,
+.content main h2 {
+  letter-spacing: -0.02em;
+}
+
+.content main code {
+  border-radius: 4px;
+}
+
+.content main blockquote {
+  border-left: 4px solid #2f9e7a;
+  color: #4b5563;
+}

@@ -1,0 +1,25 @@
+[book]
+title = "PlayOS — Documentação de Engenharia"
+authors = ["PlayOS Project"]
+language = "pt-BR"
+multilingual = false
+src = "src"
+description = "Arquitetura, builds, evidências e operação do PlayOS."
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/"
+site-url = "/"
+additional-css = ["theme/custom.css"]
+
+[output.html.search]
+enable = true
+
+[output.html.fold]
+enable = true
+level = 1
