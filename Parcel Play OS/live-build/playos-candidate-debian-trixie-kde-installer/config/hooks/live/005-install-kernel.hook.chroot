@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "INSTALANDO KERNEL NOBLE LOCAL..."
+dpkg -i /opt/kernel/*.deb
+# Limpar após instalar para não ocupar espaço na ISO final
+rm -rf /opt/kernel

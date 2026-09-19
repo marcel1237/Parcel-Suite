@@ -15,8 +15,7 @@ lb config noauto \
   --debian-installer live \
   --initramfs live-boot \
   --initsystem systemd \
-  --linux-packages linux-image \
-  --linux-flavours 6.8.0-138-generic \
+  --linux-packages none \
   --apt-recommends true \
   --apt-secure false \
   --memtest none \

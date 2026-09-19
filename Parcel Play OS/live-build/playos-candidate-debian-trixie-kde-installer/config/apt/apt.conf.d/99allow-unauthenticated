@@ -1,0 +1,4 @@
+APT::Get::AllowUnauthenticated "true";
+Acquire::AllowInsecureRepositories "true";
+Acquire::AllowDowngradeToInsecureRepositories "true";
+Binary::apt::APT::Get::AllowUnauthenticated "true";
