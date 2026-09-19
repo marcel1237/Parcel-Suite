@@ -18,6 +18,8 @@ kde-config-sddm
 plasma-nm
 powerdevil
 bluedevil
+calamares
+calamares-settings-debian
 
 # Debian services and desktop integration
 dbus-user-session

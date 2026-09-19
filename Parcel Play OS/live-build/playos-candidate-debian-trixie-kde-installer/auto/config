@@ -12,7 +12,7 @@ lb config noauto \
   --security false \
   --binary-images iso-hybrid \
   --bootloader grub \
-  --debian-installer live \
+  --debian-installer false \
   --initramfs live-boot \
   --initsystem systemd \
   --linux-packages none \
