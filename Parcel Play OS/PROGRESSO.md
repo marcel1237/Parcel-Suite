@@ -1463,3 +1463,10 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - `next-gate`: testar a ISO em ambiente com VGA/console gráfico; registrar
   separadamente boot, SDDM, Plasma X11, Plasma Wayland, Xwayland, Mesa/Vulkan,
   input, áudio, rede, logout e shutdown.
+
+## [2026-09-20] - Limpeza Massiva e Otimização de Armazenamento
+- **Manutenção**: Realizada a limpeza de todos os diretórios temporários `chroot/` e `binary/` dentro da pasta `build/`.
+- **LXD**: Deletadas todas as instâncias de VMs e Containers do LXD (`livefs-builder-noble`, `kde-builder`, etc) e removido o Storage Pool `default` de 60 GB.
+- **Resultado**: Recuperação de aproximadamente 60 GB de espaço em disco no sistema host Lenovo V14. O espaço livre no host subiu de 41 GB para 64 GB.
+- **Patrimônio**: Preservados todos os artefatos finais (.iso, .packages, .log) nas pastas `output/` de cada perfil.
+- **Documentação**: Criados `INFRAESTRUTURA_VMS.md`, `MANUAL_CRIACAO_ISO_VMS.md` e `RELATORIO_LIMPEZA_OTIMIZACAO_BUILD.md` para registrar o estado e os procedimentos do projeto.
