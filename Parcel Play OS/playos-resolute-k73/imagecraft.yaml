@@ -34,26 +34,24 @@ filesystems:
       mount: /boot/efi
 
 parts:
-  # 1. Bootstrap e Instalação (Tudo em um passo para evitar erros de overlay)
   playos-system:
     plugin: nil
     override-build: |
-      # Criar o rootfs básico usando mmdebstrap direto no diretório de instalação
-      mmdebstrap resolute $CRAFT_PART_INSTALL http://archive.ubuntu.com/ubuntu/
+      # Criar o rootfs básico usando mmdebstrap (Protegendo caminhos com aspas)
+      mmdebstrap resolute "$CRAFT_PART_INSTALL" http://archive.ubuntu.com/ubuntu/
       
       # Entrar no chroot para instalar o kernel e o desktop
-      mount -t proc proc $CRAFT_PART_INSTALL/proc
-      mount -t sysfs sys $CRAFT_PART_INSTALL/sys
-      mount --bind /dev $CRAFT_PART_INSTALL/dev
-      mount --bind /run $CRAFT_PART_INSTALL/run
+      mount -t proc proc "$CRAFT_PART_INSTALL/proc"
+      mount -t sysfs sys "$CRAFT_PART_INSTALL/sys"
+      mount --bind /dev "$CRAFT_PART_INSTALL/dev"
+      mount --bind /run "$CRAFT_PART_INSTALL/run"
 
-      # Copiar o kernel para dentro do chroot temporariamente
-      mkdir -p $CRAFT_PART_INSTALL/tmp/kernel
-      cp $CRAFT_PROJECT_DIR/kernel/*.deb $CRAFT_PART_INSTALL/tmp/kernel/
+      # Copiar o kernel para dentro do chroot
+      mkdir -p "$CRAFT_PART_INSTALL/tmp/kernel"
+      cp "$CRAFT_PROJECT_DIR/kernel/"*.deb "$CRAFT_PART_INSTALL/tmp/kernel/"
 
       # Executar comandos dentro do chroot
-      chroot $CRAFT_PART_INSTALL bash -c "
-        # Habilitar repositórios
+      chroot "$CRAFT_PART_INSTALL" bash -c "
         apt-get update
         apt-get install -y software-properties-common
         add-apt-repository -y universe
@@ -61,23 +59,20 @@ parts:
         add-apt-repository -y multiverse
         apt-get update
         
-        # Instalar o Kernel Customizado
         dpkg -i /tmp/kernel/*.deb
         apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic linux-modules-7.3.0-070300rc3-generic
         
-        # Instalar Desktop
+        # Instala o desktop standard
         apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64 sudo
         
-        # Criar usuário
         useradd -m -s /bin/bash -G sudo playos
         echo 'playos:playos' | chpasswd
         
-        # Limpeza
         rm -rf /tmp/kernel
       "
 
       # Desmontar tudo
-      umount $CRAFT_PART_INSTALL/run
-      umount $CRAFT_PART_INSTALL/dev
-      umount $CRAFT_PART_INSTALL/sys
-      umount $CRAFT_PART_INSTALL/proc
+      umount "$CRAFT_PART_INSTALL/run"
+      umount "$CRAFT_PART_INSTALL/dev"
+      umount "$CRAFT_PART_INSTALL/sys"
+      umount "$CRAFT_PART_INSTALL/proc"
