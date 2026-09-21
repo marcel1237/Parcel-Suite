@@ -40,6 +40,9 @@ parts:
       # Criar o rootfs básico usando mmdebstrap (Protegendo caminhos com aspas)
       mmdebstrap resolute "$CRAFT_PART_INSTALL" http://archive.ubuntu.com/ubuntu/
       
+      # Garantir diretórios de montagem
+      mkdir -p "$CRAFT_PART_INSTALL/boot/efi"
+      
       # Entrar no chroot para instalar o kernel e o desktop
       mount -t proc proc "$CRAFT_PART_INSTALL/proc"
       mount -t sysfs sys "$CRAFT_PART_INSTALL/sys"

@@ -1,6 +1,20 @@
-*.deb
-*.deb
-*.img.tmp
+# Ignorar arquivos de sistema e IDE
+.idea/
+.directory
+*.pdf
 
-# Play OS - arquivos temporarios de build
-Parcel Play OS/playos-resolute-k73/overlay/work/
+# Ignorar binários de kernel e pacotes pesados
+*.deb
+*.iso
+*.img
+*.squashfs
+*.packages
+*.log
+
+# Ignorar pastas temporárias do Imagecraft e builds
+parts/
+prime/
+stage/
+build/
+overlay/
+.disk.img.tmp

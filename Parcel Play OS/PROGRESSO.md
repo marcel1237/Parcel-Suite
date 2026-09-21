@@ -1470,3 +1470,20 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Resultado**: Recuperação de aproximadamente 60 GB de espaço em disco no sistema host Lenovo V14. O espaço livre no host subiu de 41 GB para 64 GB.
 - **Patrimônio**: Preservados todos os artefatos finais (.iso, .packages, .log) nas pastas `output/` de cada perfil.
 - **Documentação**: Criados `INFRAESTRUTURA_VMS.md`, `MANUAL_CRIACAO_ISO_VMS.md` e `RELATORIO_LIMPEZA_OTIMIZACAO_BUILD.md` para registrar o estado e os procedimentos do projeto.
+
+## [2026-09-21] - Build de Imagem Ubuntu 26 com Kernel Vanilla 7.3-rc3 via Imagecraft
+- **Implementação**: Criada receita `imagecraft.yaml` para orquestrar o build do Ubuntu 26.04 (Resolute) com kernel mainline.
+- **Kernel**: Injetados binários do Kernel Vanilla 7.3.0-070300rc3-generic (Mainline) via hook `override-build`.
+- **Estratégia**: Uso do `--destructive-mode` para contornar limitações de loop devices em ambientes LXD/LXC.
+- **Resultado**: Gerada imagem de disco virtual `disk.img` de 13 GiB em `playos-resolute-k73/`.
+- **Diferencial**: Bloqueio de kernel oficial (`apt-mark hold`) implementado para preservar a versão customizada.
+- **Estado**: `built-intermediate`; a imagem está pronta para testes de boot em VM ou hardware real.
+
+## [2026-09-21] - Documentação de Ecossistemas Linux para 2024-2025
+- **Pesquisa**: Realizada análise profunda sobre métodos de criação de distribuições baseadas em Ubuntu, Debian, openSUSE e Arch Linux.
+- **Ubuntu**: Criado guia `IMAGECRAFT_UBUNTU_STANDARD.md` focando na nova ferramenta oficial `imagecraft` e no userspace Resolute (26.04).
+- **Debian**: Criados manuais para `simple-cdd` (instaladores) e `debian-live-build.md` (sistemas live), focando na base Trixie (13).
+- **openSUSE**: Criado guia `COMO_CRIAR_DISTRO_SUSE.md` detalhando o motor declarativo `KIWI NG` e a plataforma `OBS`.
+- **Arch Linux**: Criado guia `COMO_CRIAR_DISTRO_ARCH.md` descrevendo o uso do `archiso` para distros de alta performance.
+- **Comparativo**: Criado `comparativo-kiwi-versus-imagecraft.md` para orientar a escolha tecnológica do PlayOS entre flexibilidade multi-distro e integração Ubuntu nativa.
+- **Estado**: `fact`; base de conhecimento expandida para suportar decisões arquiteturais futuras do projeto.
