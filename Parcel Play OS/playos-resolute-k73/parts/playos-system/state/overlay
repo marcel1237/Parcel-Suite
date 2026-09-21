@@ -1,0 +1,78 @@
+directories: !!set {}
+files: !!set {}
+part_properties:
+  after: []
+  build-attributes: []
+  build-environment: []
+  build-packages: []
+  build-snaps: []
+  disable-parallel: false
+  organize: {}
+  overlay:
+  - '*'
+  overlay-packages: []
+  overlay-script: null
+  override-build: "# Criar o rootfs b\xE1sico usando mmdebstrap direto no diret\xF3\
+    rio de instala\xE7\xE3o\nmmdebstrap --suite=resolute $CRAFT_PART_INSTALL http://archive.ubuntu.com/ubuntu/\n\
+    \n# Entrar no chroot para instalar o kernel e o desktop\nmount -t proc proc $CRAFT_PART_INSTALL/proc\n\
+    mount -t sysfs sys $CRAFT_PART_INSTALL/sys\nmount --bind /dev $CRAFT_PART_INSTALL/dev\n\
+    mount --bind /run $CRAFT_PART_INSTALL/run\n\n# Copiar o kernel para dentro do\
+    \ chroot temporariamente\nmkdir -p $CRAFT_PART_INSTALL/tmp/kernel\ncp /home/marcel/Parcel-Suite/Parcel\
+    \ Suite/Parcel Play OS/playos-resolute-k73/kernel/*.deb $CRAFT_PART_INSTALL/tmp/kernel/\n\
+    \n# Executar comandos dentro do chroot\nchroot $CRAFT_PART_INSTALL bash -c \"\n\
+    \  # Habilitar reposit\xF3rios\n  apt-get update\n  apt-get install -y software-properties-common\n\
+    \  add-apt-repository -y universe\n  add-apt-repository -y restricted\n  add-apt-repository\
+    \ -y multiverse\n  apt-get update\n  \n  # Instalar o Kernel Customizado\n  dpkg\
+    \ -i /tmp/kernel/*.deb\n  apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic\
+    \ linux-modules-7.3.0-070300rc3-generic\n  \n  # Instalar Desktop\n  apt-get install\
+    \ -y --no-install-recommends ubuntu-desktop grub-efi-amd64 sudo\n  \n  # Criar\
+    \ usu\xE1rio\n  useradd -m -s /bin/bash -G sudo playos\n  echo 'playos:playos'\
+    \ | chpasswd\n  \n  # Limpeza\n  rm -rf /tmp/kernel\n\"\n\n# Desmontar tudo\n\
+    umount $CRAFT_PART_INSTALL/run\numount $CRAFT_PART_INSTALL/dev\numount $CRAFT_PART_INSTALL/sys\n\
+    umount $CRAFT_PART_INSTALL/proc\n"
+  override-overlay: null
+  override-prime: null
+  override-pull: null
+  override-stage: null
+  permissions: []
+  plugin: nil
+  prime:
+  - '*'
+  source: null
+  source-branch: ''
+  source-channel: null
+  source-checksum: ''
+  source-commit: ''
+  source-depth: 0
+  source-subdir: ''
+  source-submodules: null
+  source-tag: ''
+  source-type: ''
+  stage:
+  - '*'
+  stage-packages: []
+  stage-snaps: []
+partition: null
+partitions_contents: {}
+project_options:
+  application_name: imagecraft
+  arch_triplet: x86_64-linux-gnu
+  project_vars:
+    description:
+      part_name: null
+      updated: false
+      value: 'Esta imagem combina o userspace standard do Ubuntu 26.04 (Resolute)
+
+        com o kernel de vanguarda Linux 7.3 customizado.
+
+        '
+    summary:
+      part_name: null
+      updated: false
+      value: PlayOS Resolute (Ubuntu 26) com Kernel Vanilla 7.3
+    version:
+      part_name: null
+      updated: false
+      value: 26.04-k73
+  project_vars_part_name: null
+  target_arch: amd64

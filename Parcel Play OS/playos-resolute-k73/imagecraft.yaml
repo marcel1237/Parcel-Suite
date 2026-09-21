@@ -39,7 +39,7 @@ parts:
     plugin: nil
     override-build: |
       # Criar o rootfs básico usando mmdebstrap direto no diretório de instalação
-      mmdebstrap --suite=resolute $CRAFT_PART_INSTALL http://archive.ubuntu.com/ubuntu/
+      mmdebstrap resolute $CRAFT_PART_INSTALL http://archive.ubuntu.com/ubuntu/
       
       # Entrar no chroot para instalar o kernel e o desktop
       mount -t proc proc $CRAFT_PART_INSTALL/proc
