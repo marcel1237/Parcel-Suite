@@ -13,13 +13,18 @@ platforms:
 volumes:
   disk:
     schema: gpt
-    bootloader: grub
-    items:
+    structure:
       - name: efi
-        size: 100M
         role: efi
+        type: C12A7328-F81F-11D2-BA4B-00A0C93EC93B # EFI System Partition UUID
+        size: 256M
+        filesystem: vfat
       - name: rootfs
+        role: system-data
+        type: 0FC63DAF-8483-4772-8E79-3D69D8477DE4 # Linux root (x86-64) UUID
         size: 12G
+        filesystem: ext4
+        filesystem-label: root
 
 filesystems:
   default:
@@ -30,12 +35,10 @@ filesystems:
 
 parts:
   # 1. Bootstrap do Ubuntu 26 (Resolute)
-  # Como 'resolute' pode não estar disponível, usaremos 'noble' como base 
-  # e depois trocaremos as sources se necessário.
   system-root:
     plugin: mmdebstrap
     mmdebstrap-suite: noble
-    # mmdebstrap-suite: resolute # Trocar quando disponível
+    # mmdebstrap-suite: resolute
 
   # 2. Injeção do Kernel 7.3 Customizado
   custom-kernel:
@@ -46,7 +49,8 @@ parts:
       # Instalar o kernel customizado via dpkg
       dpkg -i $CRAFT_PART_SRC/*.deb
       # Impedir atualização do kernel
-      apt-mark hold linux-image-generic linux-headers-generic
+      apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic
+      apt-mark hold linux-modules-7.3.0-070300rc3-generic
 
   # 3. Instalação do Desktop
   ubuntu-desktop:
@@ -58,7 +62,7 @@ parts:
       add-apt-repository -y multiverse
       apt-get update
       # Instala o desktop standard sem forçar o kernel oficial
-      apt-get install -y --no-install-recommends ubuntu-desktop
+      apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64
 
   # 4. Configuração do Usuário
   setup-user:
