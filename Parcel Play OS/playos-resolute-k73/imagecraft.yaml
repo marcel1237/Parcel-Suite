@@ -1,6 +1,6 @@
 name: playos-resolute-k73
 base: bare
-build-base: ubuntu@24.04
+build-base: ubuntu@24.04 # Mantemos 24.04 pois 26.04 ainda não existe como build-base estável no imagecraft
 version: '26.04-k73'
 summary: PlayOS Resolute (Ubuntu 26) com Kernel Vanilla 7.3
 description: |
