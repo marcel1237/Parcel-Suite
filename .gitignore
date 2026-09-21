@@ -1,3 +1,6 @@
 *.deb
 *.deb
 *.img.tmp
+
+# Play OS - arquivos temporarios de build
+Parcel Play OS/playos-resolute-k73/overlay/work/

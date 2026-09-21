@@ -34,41 +34,50 @@ filesystems:
       mount: /boot/efi
 
 parts:
-  # 1. Bootstrap do Ubuntu 26 (Resolute)
-  system-root:
-    plugin: mmdebstrap
-    mmdebstrap-suite: noble
-    # mmdebstrap-suite: resolute
-
-  # 2. Injeção do Kernel 7.3 Customizado
-  custom-kernel:
-    after: [system-root]
-    plugin: dump
-    source: ./kernel/
-    override-overlay: |
-      # Instalar o kernel customizado via dpkg
-      dpkg -i $CRAFT_PART_SRC/*.deb
-      # Impedir atualização do kernel
-      apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic
-      apt-mark hold linux-modules-7.3.0-070300rc3-generic
-
-  # 3. Instalação do Desktop
-  ubuntu-desktop:
-    after: [custom-kernel]
+  # 1. Bootstrap e Instalação (Tudo em um passo para evitar erros de overlay)
+  playos-system:
     plugin: nil
-    override-overlay: |
-      add-apt-repository -y universe
-      add-apt-repository -y restricted
-      add-apt-repository -y multiverse
-      apt-get update
-      # Instala o desktop standard sem forçar o kernel oficial
-      apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64
+    override-build: |
+      # Criar o rootfs básico usando mmdebstrap direto no diretório de instalação
+      mmdebstrap --suite=resolute $CRAFT_PART_INSTALL http://archive.ubuntu.com/ubuntu/
+      
+      # Entrar no chroot para instalar o kernel e o desktop
+      mount -t proc proc $CRAFT_PART_INSTALL/proc
+      mount -t sysfs sys $CRAFT_PART_INSTALL/sys
+      mount --bind /dev $CRAFT_PART_INSTALL/dev
+      mount --bind /run $CRAFT_PART_INSTALL/run
 
-  # 4. Configuração do Usuário
-  setup-user:
-    after: [ubuntu-desktop]
-    plugin: nil
-    override-overlay: |
-      useradd -m -s /bin/bash -G sudo playos
-      echo "playos:playos" | chpasswd
-      update-grub
+      # Copiar o kernel para dentro do chroot temporariamente
+      mkdir -p $CRAFT_PART_INSTALL/tmp/kernel
+      cp $CRAFT_PROJECT_DIR/kernel/*.deb $CRAFT_PART_INSTALL/tmp/kernel/
+
+      # Executar comandos dentro do chroot
+      chroot $CRAFT_PART_INSTALL bash -c "
+        # Habilitar repositórios
+        apt-get update
+        apt-get install -y software-properties-common
+        add-apt-repository -y universe
+        add-apt-repository -y restricted
+        add-apt-repository -y multiverse
+        apt-get update
+        
+        # Instalar o Kernel Customizado
+        dpkg -i /tmp/kernel/*.deb
+        apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic linux-modules-7.3.0-070300rc3-generic
+        
+        # Instalar Desktop
+        apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64 sudo
+        
+        # Criar usuário
+        useradd -m -s /bin/bash -G sudo playos
+        echo 'playos:playos' | chpasswd
+        
+        # Limpeza
+        rm -rf /tmp/kernel
+      "
+
+      # Desmontar tudo
+      umount $CRAFT_PART_INSTALL/run
+      umount $CRAFT_PART_INSTALL/dev
+      umount $CRAFT_PART_INSTALL/sys
+      umount $CRAFT_PART_INSTALL/proc
