@@ -1,0 +1,70 @@
+name: playos-resolute-k73
+base: bare
+build-base: ubuntu@24.04
+version: '26.04-k73'
+summary: PlayOS Resolute (Ubuntu 26) com Kernel Vanilla 7.3
+description: |
+  Esta imagem combina o userspace standard do Ubuntu 26.04 (Resolute)
+  com o kernel de vanguarda Linux 7.3 customizado.
+
+platforms:
+  amd64:
+
+volumes:
+  disk:
+    schema: gpt
+    bootloader: grub
+    items:
+      - name: efi
+        size: 100M
+        role: efi
+      - name: rootfs
+        size: 12G
+
+filesystems:
+  default:
+    - device: (volume/disk/rootfs)
+      mount: /
+    - device: (volume/disk/efi)
+      mount: /boot/efi
+
+parts:
+  # 1. Bootstrap do Ubuntu 26 (Resolute)
+  # Como 'resolute' pode não estar disponível, usaremos 'noble' como base 
+  # e depois trocaremos as sources se necessário.
+  system-root:
+    plugin: mmdebstrap
+    mmdebstrap-suite: noble
+    # mmdebstrap-suite: resolute # Trocar quando disponível
+
+  # 2. Injeção do Kernel 7.3 Customizado
+  custom-kernel:
+    after: [system-root]
+    plugin: dump
+    source: ./kernel/
+    override-overlay: |
+      # Instalar o kernel customizado via dpkg
+      dpkg -i $CRAFT_PART_SRC/*.deb
+      # Impedir atualização do kernel
+      apt-mark hold linux-image-generic linux-headers-generic
+
+  # 3. Instalação do Desktop
+  ubuntu-desktop:
+    after: [custom-kernel]
+    plugin: nil
+    override-overlay: |
+      add-apt-repository -y universe
+      add-apt-repository -y restricted
+      add-apt-repository -y multiverse
+      apt-get update
+      # Instala o desktop standard sem forçar o kernel oficial
+      apt-get install -y --no-install-recommends ubuntu-desktop
+
+  # 4. Configuração do Usuário
+  setup-user:
+    after: [ubuntu-desktop]
+    plugin: nil
+    override-overlay: |
+      useradd -m -s /bin/bash -G sudo playos
+      echo "playos:playos" | chpasswd
+      update-grub

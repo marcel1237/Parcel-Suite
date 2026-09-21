@@ -1,0 +1,70 @@
+name: playos-resolute-k73
+base: bare
+build-base: ubuntu@24.04
+version: '26.04-k73'
+summary: PlayOS Resolute (Ubuntu 26) com Kernel Vanilla 7.3-rc4
+description: |
+  Esta imagem combina o userspace standard do Ubuntu 26.04 (Resolute)
+  com o kernel de vanguarda Linux 7.3-rc4 customizado.
+
+platforms:
+  amd64:
+
+volumes:
+  disk:
+    schema: gpt
+    bootloader: grub
+    items:
+      - name: efi
+        size: 100M
+        role: efi
+      - name: rootfs
+        size: 12G # Espaço extra para o KDE/GNOME e kernel customizado
+
+filesystems:
+  default:
+    - device: (volume/disk/rootfs)
+      mount: /
+    - device: (volume/disk/efi)
+      mount: /boot/efi
+
+parts:
+  # 1. Bootstrap do Ubuntu 26 (Resolute)
+  system-root:
+    plugin: mmdebstrap
+    mmdebstrap-suite: resolute
+    # Nota: Se o codinome 'resolute' ainda não estiver nos mirrors, 
+    # use o codinome da versão de desenvolvimento atual.
+
+  # 2. Injeção do Kernel 7.3-rc4 Customizado
+  custom-kernel:
+    after: [system-root]
+    plugin: dump
+    source: ./kernel/ # Busca os .deb na sua pasta local
+    override-overlay: |
+      # Instalar o kernel customizado via dpkg antes do desktop
+      dpkg -i $CRAFT_PART_SRC/*.deb
+      # Impedir que o Ubuntu tente instalar o kernel generic por cima
+      apt-mark hold linux-image-generic linux-headers-generic
+
+  # 3. Instalação do Desktop Standard
+  ubuntu-desktop:
+    after: [custom-kernel]
+    plugin: nil
+    override-overlay: |
+      add-apt-repository -y universe
+      add-apt-repository -y restricted
+      add-apt-repository -y multiverse
+      apt-get update
+      # Instala o desktop mas IGNORA o kernel padrão (já que temos o nosso)
+      apt-get install -y --no-install-recommends ubuntu-desktop
+
+  # 4. Configuração Final do Usuário
+  setup-user:
+    after: [ubuntu-desktop]
+    plugin: nil
+    override-overlay: |
+      useradd -m -s /bin/bash -G sudo playos
+      echo "playos:playos" | chpasswd
+      # Garantir que o GRUB use o nosso novo kernel
+      update-grub
