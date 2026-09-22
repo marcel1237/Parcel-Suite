@@ -1,7 +1,6 @@
 # Ignorar arquivos de sistema e IDE
 .idea/
 .directory
-*.pdf
 
 # Ignorar binários de kernel e pacotes pesados
 *.deb

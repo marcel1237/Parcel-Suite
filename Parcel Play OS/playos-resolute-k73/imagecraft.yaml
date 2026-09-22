@@ -37,23 +37,25 @@ parts:
   playos-system:
     plugin: nil
     override-build: |
-      # Criar o rootfs básico usando mmdebstrap (Protegendo caminhos com aspas)
+      # Criar o rootfs básico usando mmdebstrap
       mmdebstrap resolute "$CRAFT_PART_INSTALL" http://archive.ubuntu.com/ubuntu/
       
-      # Garantir diretórios de montagem
+      # Garantir diretórios essenciais
       mkdir -p "$CRAFT_PART_INSTALL/boot/efi"
+      mkdir -p "$CRAFT_PART_INSTALL/run"
+      mkdir -p "$CRAFT_PART_INSTALL/dev"
+      mkdir -p "$CRAFT_PART_INSTALL/proc"
+      mkdir -p "$CRAFT_PART_INSTALL/sys"
       
-      # Entrar no chroot para instalar o kernel e o desktop
-      mount -t proc proc "$CRAFT_PART_INSTALL/proc"
-      mount -t sysfs sys "$CRAFT_PART_INSTALL/sys"
-      mount --bind /dev "$CRAFT_PART_INSTALL/dev"
-      mount --bind /run "$CRAFT_PART_INSTALL/run"
-
       # Copiar o kernel para dentro do chroot
       mkdir -p "$CRAFT_PART_INSTALL/tmp/kernel"
       cp "$CRAFT_PROJECT_DIR/kernel/"*.deb "$CRAFT_PART_INSTALL/tmp/kernel/"
 
-      # Executar comandos dentro do chroot
+      # Entrar no chroot para configurar o sistema
+      mount -t proc proc "$CRAFT_PART_INSTALL/proc"
+      mount -t sysfs sys "$CRAFT_PART_INSTALL/sys"
+      mount --bind /dev "$CRAFT_PART_INSTALL/dev"
+      
       chroot "$CRAFT_PART_INSTALL" bash -c "
         apt-get update
         apt-get install -y software-properties-common
@@ -62,20 +64,35 @@ parts:
         add-apt-repository -y multiverse
         apt-get update
         
+        # Instalar o Kernel Customizado
         dpkg -i /tmp/kernel/*.deb
+        
+        # FORÇAR GERAÇÃO DO INITRD (Muito importante!)
+        # Pega o nome da versão do kernel instalado
+        KVER=\$(ls /boot/vmlinuz-* | sed 's/.*vmlinuz-//')
+        update-initramfs -c -k \"\$KVER\"
+        
+        # Impedir atualização do kernel
         apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic linux-modules-7.3.0-070300rc3-generic
         
-        # Instala o desktop standard
+        # Instalar Desktop e ferramentas de bootloader
         apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64 sudo
         
+        # Configurar usuário
         useradd -m -s /bin/bash -G sudo playos
         echo 'playos:playos' | chpasswd
+        
+        # Gerar o fstab básico (usando labels para facilitar)
+        echo 'LABEL=root / ext4 defaults 0 1' > /etc/fstab
+        echo 'UUID=C12A-7328 /boot/efi vfat defaults 0 2' >> /etc/fstab
         
         rm -rf /tmp/kernel
       "
 
-      # Desmontar tudo
-      umount "$CRAFT_PART_INSTALL/run"
+      # Desmontar
       umount "$CRAFT_PART_INSTALL/dev"
       umount "$CRAFT_PART_INSTALL/sys"
       umount "$CRAFT_PART_INSTALL/proc"
+      
+      # CRIAR DIRETÓRIO DE MONTAGEM PARA O IMAGECRAFT NÃO FALHAR
+      mkdir -p "$CRAFT_PROJECT_DIR/mount/boot/efi"
