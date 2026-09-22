@@ -1,7 +1,7 @@
 # Como Criar uma Distribuição Baseada no Arch Linux (2024-2025)
 
 O Arch Linux é conhecido por sua simplicidade técnica e pelo modelo *Rolling Release*. Para criar uma distribuição customizada baseada no Arch, a ferramenta padrão e oficial é o **archiso**.
-
+-
 ---
 
 ## 1. O Motor de Build: archiso
