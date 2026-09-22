@@ -1,6 +1,6 @@
 name: playos-resolute-k73
 base: bare
-build-base: ubuntu@24.04
+build-base: ubuntu@26.04
 version: '26.04-k73'
 summary: PlayOS Resolute (Ubuntu 26) com Kernel Vanilla 7.3
 description: |
