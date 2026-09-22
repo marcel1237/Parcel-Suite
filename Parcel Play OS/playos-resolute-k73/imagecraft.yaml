@@ -37,7 +37,7 @@ parts:
   playos-system:
     plugin: nil
     override-build: |
-      # Criar o rootfs básico usando mmdebstrap (usando Noble para garantir pacotes existentes)
+      # Criar o rootfs básico usando mmdebstrap
       mmdebstrap noble "$CRAFT_PART_INSTALL" http://archive.ubuntu.com/ubuntu/
       
       # Garantir diretórios essenciais
@@ -60,39 +60,45 @@ parts:
       mount --bind /dev "$CRAFT_PART_INSTALL/dev"
       mount --bind /run "$CRAFT_PART_INSTALL/run"
       
-      # Executar comandos dentro do chroot com tratamento de erro
-      chroot "$CRAFT_PART_INSTALL" bash -ex <<EOF
-        apt-get update
-        
-        # Instalar dependências básicas ANTES do kernel
-        apt-get install -y linux-base wireless-regdb zstd initramfs-tools kmod
-        
-        # Instalar o Kernel Customizado
-        dpkg -i /tmp/kernel/*.deb
-        
-        # FORÇAR GERAÇÃO DO INITRD
-        KVER=\$(ls /boot/vmlinuz-* | sed 's/.*vmlinuz-//' | head -n 1)
-        update-initramfs -c -k "\$KVER"
-        
-        # Impedir atualização do kernel
-        apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic linux-modules-7.3.0-070300rc3-generic
-        
-        # Instalar Desktop e ferramentas de bootloader
-        apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64 sudo
-        
-        # Configurar usuário
-        if ! id -u playos >/dev/null 2>&1; then
-          useradd -m -s /bin/bash -G sudo playos
-        fi
-        echo 'playos:playos' | chpasswd
-        
-        # Gerar o fstab básico
-        echo 'LABEL=root / ext4 defaults 0 1' > /etc/fstab
-        echo 'UUID=C12A-7328 /boot/efi vfat defaults 0 2' >> /etc/fstab
-        
-        # Limpeza interna
-        rm -rf /tmp/kernel
-EOF
+      # Executar comandos dentro do chroot
+      chroot "$CRAFT_PART_INSTALL" bash -ex <<'CHROOT_EOF'
+      apt-get update
+      
+      # Instalar dependências básicas ANTES do kernel
+      apt-get install -y linux-base wireless-regdb zstd initramfs-tools kmod software-properties-common
+      
+      # Habilitar outros repositórios
+      add-apt-repository -y universe
+      add-apt-repository -y restricted
+      add-apt-repository -y multiverse
+      apt-get update
+
+      # Instalar o Kernel Customizado
+      dpkg -i /tmp/kernel/*.deb
+      
+      # FORÇAR GERAÇÃO DO INITRD
+      KVER=$(ls /boot/vmlinuz-* | sed 's/.*vmlinuz-//' | head -n 1)
+      update-initramfs -c -k "$KVER"
+      
+      # Impedir atualização do kernel
+      apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic linux-modules-7.3.0-070300rc3-generic
+      
+      # Instalar Desktop e ferramentas de bootloader
+      apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64 sudo
+      
+      # Configurar usuário
+      if ! id -u playos >/dev/null 2>&1; then
+        useradd -m -s /bin/bash -G sudo playos
+      fi
+      echo 'playos:playos' | chpasswd
+      
+      # Gerar o fstab básico
+      echo 'LABEL=root / ext4 defaults 0 1' > /etc/fstab
+      echo 'UUID=C12A-7328 /boot/efi vfat defaults 0 2' >> /etc/fstab
+      
+      # Limpeza interna
+      rm -rf /tmp/kernel
+      CHROOT_EOF
 
       # Desmontar tudo
       umount "$CRAFT_PART_INSTALL/run"
