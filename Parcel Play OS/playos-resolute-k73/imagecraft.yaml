@@ -1,6 +1,6 @@
 name: playos-resolute-k73
 base: bare
-build-base: ubuntu@26.04
+build-base: ubuntu@24.04
 version: '26.04-k73'
 summary: PlayOS Resolute (Ubuntu 26) com Kernel Vanilla 7.3
 description: |
@@ -37,8 +37,8 @@ parts:
   playos-system:
     plugin: nil
     override-build: |
-      # Criar o rootfs básico usando mmdebstrap
-      mmdebstrap resolute "$CRAFT_PART_INSTALL" http://archive.ubuntu.com/ubuntu/
+      # Criar o rootfs básico usando mmdebstrap (usando Noble para garantir pacotes existentes)
+      mmdebstrap noble "$CRAFT_PART_INSTALL" http://archive.ubuntu.com/ubuntu/
       
       # Garantir diretórios essenciais
       mkdir -p "$CRAFT_PART_INSTALL/boot/efi"
@@ -47,30 +47,32 @@ parts:
       mkdir -p "$CRAFT_PART_INSTALL/proc"
       mkdir -p "$CRAFT_PART_INSTALL/sys"
       
+      # FIX NETWORKING: Copiar resolv.conf do host para o chroot
+      cp /etc/resolv.conf "$CRAFT_PART_INSTALL/etc/resolv.conf"
+
       # Copiar o kernel para dentro do chroot
       mkdir -p "$CRAFT_PART_INSTALL/tmp/kernel"
       cp "$CRAFT_PROJECT_DIR/kernel/"*.deb "$CRAFT_PART_INSTALL/tmp/kernel/"
 
-      # Entrar no chroot para configurar o sistema
+      # Montar sistemas de arquivos virtuais
       mount -t proc proc "$CRAFT_PART_INSTALL/proc"
       mount -t sysfs sys "$CRAFT_PART_INSTALL/sys"
       mount --bind /dev "$CRAFT_PART_INSTALL/dev"
+      mount --bind /run "$CRAFT_PART_INSTALL/run"
       
-      chroot "$CRAFT_PART_INSTALL" bash -c "
+      # Executar comandos dentro do chroot com tratamento de erro
+      chroot "$CRAFT_PART_INSTALL" bash -ex <<EOF
         apt-get update
-        apt-get install -y software-properties-common
-        add-apt-repository -y universe
-        add-apt-repository -y restricted
-        add-apt-repository -y multiverse
-        apt-get update
+        
+        # Instalar dependências básicas ANTES do kernel
+        apt-get install -y linux-base wireless-regdb zstd initramfs-tools kmod
         
         # Instalar o Kernel Customizado
         dpkg -i /tmp/kernel/*.deb
         
-        # FORÇAR GERAÇÃO DO INITRD (Muito importante!)
-        # Pega o nome da versão do kernel instalado
-        KVER=\$(ls /boot/vmlinuz-* | sed 's/.*vmlinuz-//')
-        update-initramfs -c -k \"\$KVER\"
+        # FORÇAR GERAÇÃO DO INITRD
+        KVER=\$(ls /boot/vmlinuz-* | sed 's/.*vmlinuz-//' | head -n 1)
+        update-initramfs -c -k "\$KVER"
         
         # Impedir atualização do kernel
         apt-mark hold linux-image-unsigned-7.3.0-070300rc3-generic linux-modules-7.3.0-070300rc3-generic
@@ -79,20 +81,24 @@ parts:
         apt-get install -y --no-install-recommends ubuntu-desktop grub-efi-amd64 sudo
         
         # Configurar usuário
-        useradd -m -s /bin/bash -G sudo playos
+        if ! id -u playos >/dev/null 2>&1; then
+          useradd -m -s /bin/bash -G sudo playos
+        fi
         echo 'playos:playos' | chpasswd
         
-        # Gerar o fstab básico (usando labels para facilitar)
+        # Gerar o fstab básico
         echo 'LABEL=root / ext4 defaults 0 1' > /etc/fstab
         echo 'UUID=C12A-7328 /boot/efi vfat defaults 0 2' >> /etc/fstab
         
+        # Limpeza interna
         rm -rf /tmp/kernel
-      "
+EOF
 
-      # Desmontar
+      # Desmontar tudo
+      umount "$CRAFT_PART_INSTALL/run"
       umount "$CRAFT_PART_INSTALL/dev"
       umount "$CRAFT_PART_INSTALL/sys"
       umount "$CRAFT_PART_INSTALL/proc"
       
-      # CRIAR DIRETÓRIO DE MONTAGEM PARA O IMAGECRAFT NÃO FALHAR
+      # Criar diretório de montagem fake para o finalizador de boot do imagecraft
       mkdir -p "$CRAFT_PROJECT_DIR/mount/boot/efi"
