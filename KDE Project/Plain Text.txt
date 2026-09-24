@@ -1,0 +1,1 @@
+projeto de alteraçao do kde ou projeto de criaçao de pacote de app do kde personalizado (verificar o pacote gnome)
