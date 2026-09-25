@@ -1,0 +1,7 @@
+Package: oracle-kernel-uek-modules
+Version: 5.15.0-200.131.27.el9uek.x86-64
+Architecture: amd64
+Maintainer: PlayOS Engineering <playos-dev@local>
+Depends: oracle-kernel-uek-image
+Description: Oracle Unbreakable Enterprise Kernel (UEK) modules for PlayOS Debian Live
+ Provides kernel modules for Oracle UEK (5.15.0-200.131.27.el9uek.x86_64) packaged for Debian userspace.

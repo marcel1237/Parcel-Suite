@@ -92,7 +92,11 @@ dpkg-deb --build "${WORK_DIR}/pkg-modules" "${REPO_DIR}/oracle-kernel-uek-module
 
 echo "5. Generating local APT repository index in ${REPO_DIR}..."
 cd "${REPO_DIR}"
-apt-ftparchive packages . > Packages
+if command -v apt-ftparchive >/dev/null 2>&1; then
+    apt-ftparchive packages . > Packages
+elif command -v dpkg-scanpackages >/dev/null 2>&1; then
+    dpkg-scanpackages . /dev/null > Packages
+fi
 gzip -c9 Packages > Packages.gz
 
 echo "=== Oracle UEK DEB Packaging & Local Repository Ready ==="
