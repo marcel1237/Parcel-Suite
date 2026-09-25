@@ -23,7 +23,7 @@
     </repository>
 
     <!-- PlayOS Local APT Repository containing converted Oracle UEK DEB packages -->
-    <repository type="apt-deb" alias="playos-oracle-uek" distribution="trixie" components="main">
+    <repository type="apt-deb" alias="playos-oracle-uek" distribution="./" components="">
         <source path="dir:///var/local/playos-uek-repo"/>
     </repository>
 
