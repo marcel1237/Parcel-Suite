@@ -28,7 +28,7 @@
 
     <!-- PlayOS Local APT Repository containing converted Oracle UEK DEB packages -->
     <repository type="apt-deb" alias="playos-oracle-uek" distribution="trixie" components="main">
-        <source path="dir:///var/cache/playos-uek-repo"/>
+        <source path="dir:///home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/kiwi-build/playos-debian-oracle-uek-live/repo"/>
     </repository>
 
     <packages type="image">
