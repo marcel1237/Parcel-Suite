@@ -113,6 +113,9 @@ elif command -v dpkg-scanpackages >/dev/null 2>&1; then
 fi
 gzip -c9 Packages > Packages.gz
 
+ln -sfn "${REPO_DIR}" /tmp/playos-uek-repo
+echo "Symlink created: /tmp/playos-uek-repo -> ${REPO_DIR}"
+
 echo "=== Oracle UEK DEB Packaging & Local Repository Ready ==="
 echo "Repository path: ${REPO_DIR}"
 exit 0
