@@ -147,17 +147,11 @@ fi
 cd dists/trixie
 rm -f Release.gpg InRelease
 gpg --batch --yes --default-key "PlayOS Local" --armor --detach-sign -o Release.gpg Release
-gpg --batch --yes --default-key "PlayOS Local" --armor --clearsign -o InRelease Release
+gpg --batch --yes --default-key "PlayOS Local" --clearsign -o InRelease Release
 cd "${REPO_DIR}"
 
 gpg --armor --export "PlayOS Local" > "${REPO_DIR}/playos-repo.key"
 cp -a "${REPO_DIR}/playos-repo.key" /tmp/playos-repo.key
-chmod 644 /tmp/playos-repo.key
-
-# Generate local GPG signing key for local repository authentication
-cd dists/trixie
-rm -f Release.gpg InRelease
-cd "${REPO_DIR}"
 chmod 644 /tmp/playos-repo.key
 
 sudo rm -rf /var/local/playos-uek-repo
