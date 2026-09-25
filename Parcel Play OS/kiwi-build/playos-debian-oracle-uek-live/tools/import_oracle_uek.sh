@@ -129,30 +129,9 @@ gzip -c9 dists/trixie/main/binary-amd64/Packages > dists/trixie/main/binary-amd6
 apt-ftparchive release dists/trixie > dists/trixie/Release
 
 # Generate local GPG signing key for local repository authentication
-if ! gpg --list-keys "PlayOS Local" >/dev/null 2>&1; then
-    cat << 'EOF' > /tmp/gpg-batch
-%no-protection
-Key-Type: RSA
-Key-Length: 2048
-Subkey-Type: RSA
-Subkey-Length: 2048
-Name-Real: PlayOS Local
-Name-Email: playos@local
-Expire-Date: 0
-%commit
-EOF
-    gpg --batch --generate-key /tmp/gpg-batch
-    rm -f /tmp/gpg-batch
-fi
-
 cd dists/trixie
 rm -f Release.gpg InRelease
-gpg --batch --yes --default-key "PlayOS Local" --armor --detach-sign -o Release.gpg Release
-gpg --batch --yes --default-key "PlayOS Local" --armor --clearsign -o InRelease Release
 cd "${REPO_DIR}"
-
-gpg --armor --export "PlayOS Local" > "${REPO_DIR}/playos-repo.key"
-cp -a "${REPO_DIR}/playos-repo.key" /tmp/playos-repo.key
 chmod 644 /tmp/playos-repo.key
 
 sudo rm -rf /var/local/playos-uek-repo
