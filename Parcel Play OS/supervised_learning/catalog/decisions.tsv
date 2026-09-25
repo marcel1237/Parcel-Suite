@@ -37,3 +37,4 @@ DEC-035	Variante GNOME upstream usará GNOME 50 estável fixado e não sobrepor�
 DEC-036	Variante KDE Full preservará userspace Debian Trixie usando pacotes KDE integrados pelo Debian e kernel Noble local sem KDE neon como base	superseded	high	SRC-PLAYOS-LIVE-DEBIAN-KDE-FULL-NOBLE,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
 DEC-037	PlayOS Userspace 1 terá identidade e composição próprias com bootstrap binário Ubuntu Noble sem rootfs ou mirrors Debian	current	high	SRC-PLAYOS-USERSPACE-KDE-KNOPPIX
 DEC-038	PlayOS Native Userspace reproduzirá comportamentos Slackware por implementação própria e Live KNOPPIX por SquashFS OverlayFS usando somente kernel e módulos Noble	current	high	SRC-PLAYOS-NATIVE-SLACK-KNOPPIX-KDE
+DEC-039	PlayOS adoptará KIWI NG como motor declarativo para Live CD combinando userspace Debian Trixie e Oracle Unbreakable Enterprise Kernel em pacotes DEB locais isolados	current	high	SRC-PLAYOS-KIWI-ORACLE-UEK,SRC-PLAYOS-NOBLE-KERNEL-DEBIAN
