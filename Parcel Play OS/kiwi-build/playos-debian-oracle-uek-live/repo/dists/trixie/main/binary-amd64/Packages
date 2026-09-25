@@ -1,0 +1,41 @@
+Package: dracut-kiwi-live
+Architecture: all
+Version: 1.0.0
+Maintainer: PlayOS Engineering <playos-dev@local>
+Depends: live-boot, dracut, dracut-live
+Filename: pool/main/dracut-kiwi-live_1.0.0_all.deb
+Size: 572
+MD5sum: 364e997f4961914b63f07ee45cd559e1
+SHA1: dc566c5358b6b96ca5afa11b573e5b3893278018
+SHA256: 4b35ad885c4615b2f433346e273528f9ae283328eda92413afc0c028d2e9e8cf
+SHA512: af0d670477ecab0915e7a625f68a7890dde41ff3c3f4fdf48e64f1cf31e6398ce7460cb06fc382e2367558a92203b9823d7b8fef18d20c831bb7b40436c1e39b
+Description: KIWI NG live ISO metapackage for PlayOS Debian userspace
+ Provides dracut-kiwi-live dependency for KIWI NG live ISO generation.
+
+Package: oracle-kernel-uek-image
+Architecture: amd64
+Version: 5.15.0-200.131.27.el9uek.x86-64
+Maintainer: PlayOS Engineering <playos-dev@local>
+Filename: pool/main/oracle-kernel-uek-image_5.15.0-200.131.27.el9uek.x86-64_amd64.deb
+Size: 13209386
+MD5sum: 43479119649e8f07e9bca5f51f7366ea
+SHA1: 573583a1f0108eed9c4e00c4f263e1b4eb3cb135
+SHA256: df181918ec8d2da82dac0f408b2b380d7d8b22c9844c25465ee096b8e1d68c58
+SHA512: a6f18a9ace30dc8e8bd02ba3d581887d353397ea5cf28c6183d2547b65cec7dbf3d980dae8fe54d13433c8a55a2c3e24bd8159e7c44f4d4671c2b90706238e45
+Description: Oracle Unbreakable Enterprise Kernel (UEK) binary image for PlayOS Debian Live
+ Provides Oracle UEK kernel (vmlinuz-5.15.0-200.131.27.el9uek.x86_64) packaged for Debian userspace.
+
+Package: oracle-kernel-uek-modules
+Architecture: amd64
+Version: 5.15.0-200.131.27.el9uek.x86-64
+Maintainer: PlayOS Engineering <playos-dev@local>
+Depends: oracle-kernel-uek-image
+Filename: pool/main/oracle-kernel-uek-modules_5.15.0-200.131.27.el9uek.x86-64_amd64.deb
+Size: 94449204
+MD5sum: 66665c16e2188d42235ec16f117ab6e3
+SHA1: 950863d103836ce475d3c7019827ca85e384a469
+SHA256: b5aaa9839472968dc091f80a99be4738f10ef9270d389c965fb58dc201bae70f
+SHA512: 4ccd1f17134743c61b06e584fb1dc7dca8e992b24bff09ce223301568e081f41db4de4ddd0e58852affcbb96060471a30a7e93440115aaaf91a678bbd086f5b9
+Description: Oracle Unbreakable Enterprise Kernel (UEK) modules for PlayOS Debian Live
+ Provides kernel modules for Oracle UEK (5.15.0-200.131.27.el9uek.x86_64) packaged for Debian userspace.
+
