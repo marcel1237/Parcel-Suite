@@ -1,12 +1,25 @@
+Package: dracut-kiwi-live
+Version: 1.0.0
+Architecture: all
+Maintainer: PlayOS Engineering <playos-dev@local>
+Depends: live-boot, dracut, dracut-live
+Filename: ./dracut-kiwi-live_1.0.0_all.deb
+Size: 566
+MD5sum: 84eb3d18c3dd88e609416d7d384980d3
+SHA1: b09c47e0f04b0d13980e79eeb993a92b316ee843
+SHA256: 1f253ab98d5e80df9e7dc5766b9a370fbe1dbe84e0e931edcdad80d92218936c
+Description: KIWI NG live ISO metapackage for PlayOS Debian userspace
+ Provides dracut-kiwi-live dependency for KIWI NG live ISO generation.
+
 Package: oracle-kernel-uek-image
 Version: 5.15.0-200.131.27.el9uek.x86-64
 Architecture: amd64
 Maintainer: PlayOS Engineering <playos-dev@local>
 Filename: ./oracle-kernel-uek-image_5.15.0-200.131.27.el9uek.x86-64_amd64.deb
 Size: 13209384
-MD5sum: ed7511352fa8a22143642db69c98f305
-SHA1: 09ec0b27aa8c83921b2ab07da953b5c0b96b6819
-SHA256: 7c450b85fb8065bd496fbd1f1ef463b841ff831536c78444023a65c2415b35dd
+MD5sum: 1183dc10c6e81133d7c2f68cd7a1665d
+SHA1: f31bbfb9b54cd044fc396b6aa9623c5587a7776d
+SHA256: e63fc54ad34bd7a7fa872c39cafb41d453f204a99edbe3098a493cbaaf18778b
 Description: Oracle Unbreakable Enterprise Kernel (UEK) binary image for PlayOS Debian Live
  Provides Oracle UEK kernel (vmlinuz-5.15.0-200.131.27.el9uek.x86_64) packaged for Debian userspace.
 
@@ -17,9 +30,9 @@ Maintainer: PlayOS Engineering <playos-dev@local>
 Depends: oracle-kernel-uek-image
 Filename: ./oracle-kernel-uek-modules_5.15.0-200.131.27.el9uek.x86-64_amd64.deb
 Size: 94449204
-MD5sum: 89beb2d358f8841c1ad6122d8e778c9b
-SHA1: 9037e953dbc3664f28c6e1fc5690c096e60d1582
-SHA256: 05c3e124d3da8f752b748c9071d2b9a7d2129a1004085351d639c29606c30826
+MD5sum: bee058ddd1ccd9ed545f44de94792090
+SHA1: 99549df61639cadb1533e0c00738897360fd221a
+SHA256: c089ec21dc6d7ebdc6260d3ce340308a6043f585a21dd4bc0414f3a41d768d7c
 Description: Oracle Unbreakable Enterprise Kernel (UEK) modules for PlayOS Debian Live
  Provides kernel modules for Oracle UEK (5.15.0-200.131.27.el9uek.x86_64) packaged for Debian userspace.
 

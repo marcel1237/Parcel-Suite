@@ -27,6 +27,15 @@
         <source path="dir:///home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/kiwi-build/playos-debian-oracle-uek-live/repo"/>
     </repository>
 
+    <packages type="bootstrap">
+        <package name="apt"/>
+        <package name="dpkg"/>
+        <package name="base-files"/>
+        <package name="base-passwd"/>
+        <package name="debian-archive-keyring"/>
+        <package name="gpg"/>
+    </packages>
+
     <packages type="image">
         <!-- Base System Userspace -->
         <package name="base-files"/>

@@ -1,0 +1,7 @@
+Package: dracut-kiwi-live
+Version: 1.0.0
+Architecture: all
+Maintainer: PlayOS Engineering <playos-dev@local>
+Depends: live-boot, dracut, dracut-live
+Description: KIWI NG live ISO metapackage for PlayOS Debian userspace
+ Provides dracut-kiwi-live dependency for KIWI NG live ISO generation.
