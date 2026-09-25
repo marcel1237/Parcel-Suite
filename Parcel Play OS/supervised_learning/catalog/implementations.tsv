@@ -33,3 +33,4 @@ IMP-PLAYOS-LIVE-KDE-KNOPPIX	PlayOS Userspace KDE Full Noble kernel	live-build-pr
 IMP-PLAYOS-NATIVE-USERSPACE	PlayOS Native Userspace Slackware-like	userspace-architecture	userspace/playos-native/	partial	pxz-stage0-and-stage1-uefi-runtime-pass-stage2-graphics-config-valid-build-running-kde-pending	SRC-PLAYOS-NATIVE-SLACK-KNOPPIX-KDE,SRC-NOBLE-BUILD
 IMP-PLAYOS-MDBOOK	PlayOS Engineering Documentation	mdbook-documentation	mdbook/	implemented	mdbook-0.5.4-test-and-build-passed	SRC-MDBOOK-DOCS
 IMP-PLAYOS-GITBOOK	PlayOS GitBook Documentation	gitbook-documentation	GitBook/	implemented	local-structure-summary-links-and-diff-check-passed	SRC-GITBOOK-DOCS
+IMP-PLAYOS-KIWI-ORACLE-UEK	PlayOS KIWI NG Debian Oracle UEK Live CD	kiwi-build-profile	kiwi-build/playos-debian-oracle-uek-live/	implemented	kiwi-xml-and-scripts-validated-statically-build-and-runtime-pending	SRC-PLAYOS-KIWI-ORACLE-UEK
