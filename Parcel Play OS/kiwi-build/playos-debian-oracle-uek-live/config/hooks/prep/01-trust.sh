@@ -1,10 +1,10 @@
 #!/bin/bash
-# Prep hook to propagate trusted keyring into chroot image-root
+# Prep hook to configure apt to allow unauthenticated repositories in chroot
 set -e
-if [ -f /var/cache/kiwi/apt-get/trusted.gpg ]; then
-    # Ensure trusted.gpg.d exists in image-root if root is set
-    mkdir -p etc/apt/trusted.gpg.d
-    cp -f /var/cache/kiwi/apt-get/trusted.gpg etc/apt/trusted.gpg.d/playos-local.gpg
-    echo "Propagated trusted keyring to chroot etc/apt/trusted.gpg.d/playos-local.gpg"
+if [ -d etc/apt/apt.conf.d ]; then
+    echo 'Acquire::AllowInsecureRepositories "true";' > etc/apt/apt.conf.d/99unauthenticated
+    echo 'Acquire::AllowWeakRepositories "true";' >> etc/apt/apt.conf.d/99unauthenticated
+    echo 'APT::Get::AllowUnauthenticated "true";' >> etc/apt/apt.conf.d/99unauthenticated
+    echo "Configured chroot etc/apt/apt.conf.d/99unauthenticated"
 fi
 exit 0
