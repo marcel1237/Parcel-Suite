@@ -3,8 +3,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WORK_DIR="${SCRIPT_DIR}/../work"
-REPO_DIR="/var/cache/playos-uek-repo"
+PROFILE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+WORK_DIR="${PROFILE_DIR}/work"
+REPO_DIR="${PROFILE_DIR}/repo"
 
 echo "=== PlayOS Oracle UEK Kernel Importer for KIWI NG ==="
 
