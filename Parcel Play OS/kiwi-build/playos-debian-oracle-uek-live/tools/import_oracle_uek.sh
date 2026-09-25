@@ -25,7 +25,20 @@ echo "2. Extracting Oracle UEK RPM contents..."
 cd "${WORK_DIR}"
 for rpm in rpms/*.rpm; do
     echo "  Extracting ${rpm}..."
-    rpm2cpio "${rpm}" | cpio -idmv >/dev/null 2>&1 || true
+    if command -v rpm2cpio >/dev/null 2>&1; then
+        rpm2cpio "${rpm}" | cpio -idmv >/dev/null 2>&1 || true
+    elif command -v 7z >/dev/null 2>&1; then
+        7z x -y "${rpm}" >/dev/null 2>&1 || true
+        for cpiofile in *.cpio *.cpio.zst *.cpio.xz *.cpio.gz; do
+            if [ -f "$cpiofile" ]; then
+                if [[ "$cpiofile" == *.zst ]]; then
+                    7z x -y "$cpiofile" >/dev/null 2>&1 || true
+                fi
+                cpio -idmv < "${cpiofile%.zst}" >/dev/null 2>&1 || true
+                rm -f "$cpiofile" "${cpiofile%.zst}"
+            fi
+        done
+    fi
 done
 
 UEK_KVER=$(ls lib/modules 2>/dev/null | grep uek | head -n 1 || true)
@@ -38,9 +51,16 @@ echo "Identified Oracle UEK Kernel Version: ${UEK_KVER}"
 
 echo "3. Packaging oracle-kernel-uek-image DEB..."
 mkdir -p "${WORK_DIR}/pkg-image/boot"
-cp -a boot/vmlinuz-${UEK_KVER} "${WORK_DIR}/pkg-image/boot/vmlinuz-${UEK_KVER}"
-cp -a boot/config-${UEK_KVER} "${WORK_DIR}/pkg-image/boot/config-${UEK_KVER}" 2>/dev/null || true
-cp -a boot/System.map-${UEK_KVER} "${WORK_DIR}/pkg-image/boot/System.map-${UEK_KVER}" 2>/dev/null || true
+if [ -f "boot/vmlinuz-${UEK_KVER}" ]; then
+    cp -a "boot/vmlinuz-${UEK_KVER}" "${WORK_DIR}/pkg-image/boot/vmlinuz-${UEK_KVER}"
+elif [ -f "lib/modules/${UEK_KVER}/vmlinuz" ]; then
+    cp -a "lib/modules/${UEK_KVER}/vmlinuz" "${WORK_DIR}/pkg-image/boot/vmlinuz-${UEK_KVER}"
+elif ls boot/vmlinuz-* >/dev/null 2>&1; then
+    cp -a boot/vmlinuz-* "${WORK_DIR}/pkg-image/boot/vmlinuz-${UEK_KVER}"
+fi
+
+cp -a "boot/config-${UEK_KVER}" "${WORK_DIR}/pkg-image/boot/config-${UEK_KVER}" 2>/dev/null || true
+cp -a "boot/System.map-${UEK_KVER}" "${WORK_DIR}/pkg-image/boot/System.map-${UEK_KVER}" 2>/dev/null || true
 
 cat << EOF > "${WORK_DIR}/pkg-image/DEBIAN/control"
 Package: oracle-kernel-uek-image
