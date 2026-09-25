@@ -22,6 +22,11 @@
         <source path="http://deb.debian.org/debian"/>
     </repository>
 
+    <!-- PlayOS Local APT Repository containing converted Oracle UEK DEB packages -->
+    <repository type="apt-deb" alias="playos-oracle-uek" distribution="trixie" components="main">
+        <source path="dir:///var/local/playos-uek-repo"/>
+    </repository>
+
     <packages type="bootstrap">
         <package name="apt"/>
         <package name="dpkg"/>
@@ -52,6 +57,11 @@
         <package name="overlayroot"/>
         <package name="dracut"/>
         <package name="dracut-live"/>
+        <package name="dracut-kiwi-live"/>
+
+        <!-- Oracle Unbreakable Enterprise Kernel (UEK) DEB Package from Local Repo -->
+        <package name="oracle-kernel-uek-image"/>
+        <package name="oracle-kernel-uek-modules"/>
 
         <!-- Firmware & Hardware Support -->
         <package name="firmware-linux-free"/>
