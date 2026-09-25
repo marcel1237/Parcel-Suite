@@ -1,18 +1,13 @@
 #!/bin/bash
-# Debug and trust prep hook
+# Prep hook to copy trusted keyring into chroot image-root etc/apt/trusted.gpg.d/
 set -e
-echo "=== Debugging Prep Hook 01-trust.sh ==="
-for rootdir in output/build/image-root /output/build/image-root /tmp/kiwi-live/output/build/image-root .; do
+for rootdir in output/build/image-root /output/build/image-root /tmp/kiwi-live/output/build/image-root; do
     if [ -d "$rootdir" ]; then
-        for srcfile in $(find "$rootdir" -name "*.sources" -o -name "*.list" 2>/dev/null || true); do
-            echo "Found source file: $srcfile"
-            if grep -q "playos-oracle-uek" "$srcfile"; then
-                if ! grep -q "Trusted: yes" "$srcfile"; then
-                    echo "Trusted: yes" >> "$srcfile"
-                    echo "Appended Trusted: yes to $srcfile"
-                fi
-            fi
-        done
+        mkdir -p "$rootdir/etc/apt/trusted.gpg.d"
+        if [ -f /var/cache/kiwi/apt-get/trusted.gpg ]; then
+            cp -f /var/cache/kiwi/apt-get/trusted.gpg "$rootdir/etc/apt/trusted.gpg.d/playos-local.gpg"
+            echo "Copied trusted.gpg to $rootdir/etc/apt/trusted.gpg.d/playos-local.gpg"
+        fi
     fi
 done
 exit 0
