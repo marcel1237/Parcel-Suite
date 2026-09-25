@@ -14,14 +14,10 @@ mkdir -p "${WORK_DIR}/rpms" "${WORK_DIR}/pkg-image/DEBIAN" "${WORK_DIR}/pkg-modu
 UEK_REPO_URL="https://yum.oracle.com/repo/OracleLinux/OL9/UEKR7/x86_64/getPackage"
 
 echo "1. Checking local Oracle UEK RPMs in ${WORK_DIR}/rpms..."
-# If RPMs are not present, provide instructions or curl download template
 if ! ls "${WORK_DIR}/rpms"/kernel-uek-*.rpm >/dev/null 2>&1; then
-    echo "Notice: No local kernel-uek RPMs found in ${WORK_DIR}/rpms."
-    echo "To download Oracle UEK R7 RPMs automatically, run:"
-    echo "  curl -sL '${UEK_REPO_URL}/kernel-uek-5.15.0-200.131.27.el9uek.x86_64.rpm' -o '${WORK_DIR}/rpms/kernel-uek.rpm'"
-    echo "  curl -sL '${UEK_REPO_URL}/kernel-uek-core-5.15.0-200.131.27.el9uek.x86_64.rpm' -o '${WORK_DIR}/rpms/kernel-uek-core.rpm'"
-    echo "  curl -sL '${UEK_REPO_URL}/kernel-uek-modules-5.15.0-200.131.27.el9uek.x86_64.rpm' -o '${WORK_DIR}/rpms/kernel-uek-modules.rpm'"
-    exit 1
+    echo "Notice: No local kernel-uek RPMs found in ${WORK_DIR}/rpms. Downloading automatically..."
+    curl -sSL "https://yum.oracle.com/repo/OracleLinux/OL9/UEKR7/x86_64/getPackage/kernel-uek-core-5.15.0-200.131.27.el9uek.x86_64.rpm" -o "${WORK_DIR}/rpms/kernel-uek-core-5.15.0-200.131.27.el9uek.x86_64.rpm"
+    curl -sSL "https://yum.oracle.com/repo/OracleLinux/OL9/UEKR7/x86_64/getPackage/kernel-uek-modules-5.15.0-200.131.27.el9uek.x86_64.rpm" -o "${WORK_DIR}/rpms/kernel-uek-modules-5.15.0-200.131.27.el9uek.x86_64.rpm"
 fi
 
 echo "2. Extracting Oracle UEK RPM contents..."
