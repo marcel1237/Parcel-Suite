@@ -126,11 +126,12 @@ EOF
 
 apt-ftparchive generate apt-ftparchive.conf
 gzip -c9 dists/trixie/main/binary-amd64/Packages > dists/trixie/main/binary-amd64/Packages.gz
+apt-ftparchive release dists/trixie > dists/trixie/Release
 
 sudo rm -rf /var/local/playos-uek-repo
 sudo mkdir -p /var/local/playos-uek-repo
 sudo cp -a "${REPO_DIR}/"* /var/local/playos-uek-repo/
-echo "Standard Debian repository mirrored to: /var/local/playos-uek-repo"
+echo "Standard Debian repository with Release file mirrored to: /var/local/playos-uek-repo"
 
 echo "=== Oracle UEK DEB Packaging & Local Repository Ready ==="
 echo "Repository path: ${REPO_DIR}"
