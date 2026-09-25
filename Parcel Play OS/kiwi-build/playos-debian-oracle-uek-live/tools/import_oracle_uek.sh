@@ -113,8 +113,9 @@ elif command -v dpkg-scanpackages >/dev/null 2>&1; then
 fi
 gzip -c9 Packages > Packages.gz
 
-ln -sfn "${REPO_DIR}" /tmp/playos-uek-repo
-echo "Symlink created: /tmp/playos-uek-repo -> ${REPO_DIR}"
+sudo mkdir -p /var/local/playos-uek-repo
+sudo cp -a "${REPO_DIR}/"* /var/local/playos-uek-repo/
+echo "Repository mirrored to space-free path: /var/local/playos-uek-repo"
 
 echo "=== Oracle UEK DEB Packaging & Local Repository Ready ==="
 echo "Repository path: ${REPO_DIR}"
