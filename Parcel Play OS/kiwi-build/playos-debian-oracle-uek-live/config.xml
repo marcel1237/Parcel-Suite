@@ -18,13 +18,13 @@
     </profiles>
 
     <!-- Debian Official APT Repository -->
-    <repository type="apt-deb" alias="debian-trixie" distribution="trixie" components="main contrib non-free-firmware">
+    <repository type="apt-deb" alias="debian-trixie" distribution="trixie" components="main contrib non-free-firmware" check-sig="false">
         <source path="http://deb.debian.org/debian"/>
     </repository>
 
     <!-- PlayOS Local APT Repository containing converted Oracle UEK DEB packages -->
-    <repository type="apt-deb" alias="playos-oracle-uek" distribution="trixie" components="main">
-        <source path="dir:///tmp/playos-uek-repo"/>
+    <repository type="apt-deb" alias="playos-oracle-uek" distribution="trixie" components="main" check-sig="false">
+        <source path="dir:///var/local/playos-uek-repo"/>
     </repository>
 
     <packages type="bootstrap">
