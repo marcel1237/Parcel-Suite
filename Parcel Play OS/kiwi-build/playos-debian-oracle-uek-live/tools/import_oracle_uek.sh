@@ -128,10 +128,35 @@ apt-ftparchive generate apt-ftparchive.conf
 gzip -c9 dists/trixie/main/binary-amd64/Packages > dists/trixie/main/binary-amd64/Packages.gz
 apt-ftparchive release dists/trixie > dists/trixie/Release
 
+# Generate local GPG signing key for local repository authentication
+if ! gpg --list-keys "PlayOS Local" >/dev/null 2>&1; then
+    cat << 'EOF' > /tmp/gpg-batch
+%no-protection
+Key-Type: RSA
+Key-Length: 2048
+Subkey-Type: RSA
+Subkey-Length: 2048
+Name-Real: PlayOS Local
+Name-Email: playos@local
+Expire-Date: 0
+%commit
+EOF
+    gpg --batch --generate-key /tmp/gpg-batch
+    rm -f /tmp/gpg-batch
+fi
+
+cd dists/trixie
+rm -f Release.gpg InRelease
+gpg --batch --yes --default-key "PlayOS Local" --armor --detach-sign -o Release.gpg Release
+gpg --batch --yes --default-key "PlayOS Local" --armor --clearsign -o InRelease Release
+cd "${REPO_DIR}"
+
+gpg --armor --export "PlayOS Local" > /tmp/playos-repo.key
+
 sudo rm -rf /var/local/playos-uek-repo
 sudo mkdir -p /var/local/playos-uek-repo
 sudo cp -a "${REPO_DIR}/"* /var/local/playos-uek-repo/
-echo "Standard Debian repository with Release file mirrored to: /var/local/playos-uek-repo"
+echo "Signed Debian repository mirrored to: /var/local/playos-uek-repo"
 
 echo "=== Oracle UEK DEB Packaging & Local Repository Ready ==="
 echo "Repository path: ${REPO_DIR}"
