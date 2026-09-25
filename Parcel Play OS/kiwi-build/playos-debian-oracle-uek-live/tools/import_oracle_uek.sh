@@ -90,6 +90,20 @@ EOF
 
 dpkg-deb --build "${WORK_DIR}/pkg-modules" "${REPO_DIR}/oracle-kernel-uek-modules_${UEK_DEB_VER}_amd64.deb"
 
+echo "4b. Packaging dracut-kiwi-live metapackage for KIWI NG compatibility..."
+mkdir -p "${WORK_DIR}/pkg-kiwi-live/DEBIAN"
+cat << EOF > "${WORK_DIR}/pkg-kiwi-live/DEBIAN/control"
+Package: dracut-kiwi-live
+Version: 1.0.0
+Architecture: all
+Maintainer: PlayOS Engineering <playos-dev@local>
+Depends: live-boot, dracut, dracut-live
+Description: KIWI NG live ISO metapackage for PlayOS Debian userspace
+ Provides dracut-kiwi-live dependency for KIWI NG live ISO generation.
+EOF
+
+dpkg-deb --build "${WORK_DIR}/pkg-kiwi-live" "${REPO_DIR}/dracut-kiwi-live_1.0.0_all.deb"
+
 echo "5. Generating local APT repository index in ${REPO_DIR}..."
 cd "${REPO_DIR}"
 if command -v apt-ftparchive >/dev/null 2>&1; then
