@@ -1487,3 +1487,11 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Arch Linux**: Criado guia `COMO_CRIAR_DISTRO_ARCH.md` descrevendo o uso do `archiso` para distros de alta performance.
 - **Comparativo**: Criado `comparativo-kiwi-versus-imagecraft.md` para orientar a escolha tecnológica do PlayOS entre flexibilidade multi-distro e integração Ubuntu nativa.
 - **Estado**: `fact`; base de conhecimento expandida para suportar decisões arquiteturais futuras do projeto.
+
+## [2026-09-21] - Arquitetura e Perfil KIWI NG com Userspace Debian Trixie e Oracle UEK
+- **Implementação**: Criada a arquitetura declarativa `ARQUITETURA_PLAYOS_KIWI_DEBIAN_ORACLE_UEK.md` e o perfil de build `kiwi-build/playos-debian-oracle-uek-live/`.
+- **Motor**: Adotado o KIWI NG (`kiwi-ng` schema v7.4) para orquestrar o bootstrap Debian via APT e a geração de ISOs híbridas BIOS/UEFI com GRUB2.
+- **Kernel**: Integrado o Oracle Unbreakable Enterprise Kernel (UEK R7/R8 - Linux 5.15 / 6.6) via extração de RPMs oficiais e reempacotamento em pacotes `.deb` isolados em repositório APT local (`/var/cache/playos-uek-repo`).
+- **Userspace**: Base e pilha gráfica (X11, XFCE 4.20, LightDM, Mesa/Vulkan) 100% derivadas do Debian 13 (Trixie).
+- **Iniciador**: Criados scripts `import_oracle_uek.sh` (extrator e empacotador de RPM para DEB) e `build.sh` (executor nativo/Podman do KIWI NG).
+- **Estado**: `decision` e `implementation` (perfil e ferramentas estaticamente validados; compilação e boot da ISO pendentes).
