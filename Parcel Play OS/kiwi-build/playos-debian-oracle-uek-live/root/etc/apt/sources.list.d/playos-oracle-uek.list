@@ -1,0 +1,1 @@
+deb [trusted=yes] file:///var/local/playos-uek-repo trixie main
