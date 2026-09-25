@@ -1,10 +1,12 @@
 #!/bin/bash
-# Prep hook to append Trusted: yes to all apt deb822 sources in chroot image-root
+# Debug and trust prep hook
 set -e
-for rootdir in output/build/image-root /output/build/image-root /tmp/kiwi-live/output/build/image-root; do
+echo "=== Debugging Prep Hook 01-trust.sh ==="
+for rootdir in output/build/image-root /output/build/image-root /tmp/kiwi-live/output/build/image-root .; do
     if [ -d "$rootdir" ]; then
-        for srcfile in "$rootdir/var/cache/kiwi/apt-get/sources.list.d/"*.sources "$rootdir/etc/apt/sources.list.d/"*.sources; do
-            if [ -f "$srcfile" ]; then
+        for srcfile in $(find "$rootdir" -name "*.sources" -o -name "*.list" 2>/dev/null || true); do
+            echo "Found source file: $srcfile"
+            if grep -q "playos-oracle-uek" "$srcfile"; then
                 if ! grep -q "Trusted: yes" "$srcfile"; then
                     echo "Trusted: yes" >> "$srcfile"
                     echo "Appended Trusted: yes to $srcfile"
