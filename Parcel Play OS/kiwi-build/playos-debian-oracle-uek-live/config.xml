@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- KIWI NG Image Description for PlayOS: Debian Userspace + Oracle Unbreakable Enterprise Kernel (UEK) -->
+<image schemaversion="7.4" name="playos-debian-oracle-uek-live">
+    <description type="system">
+        <author>PlayOS Engineering Team</author>
+        <contact>playos-dev@local</contact>
+        <specification>PlayOS Live CD combining Debian 13 (Trixie) Userspace with Oracle UEK (Unbreakable Enterprise Kernel)</specification>
+    </description>
+    <preferences>
+        <type image="iso" flags="hybrid" bootloader="grub2"/>
+        <version>1.0.0</version>
+        <packagemanager>apt</packagemanager>
+        <bootloader-theme>playos</bootloader-theme>
+        <rpm-check-signatures>false</rpm-check-signatures>
+        <locale>pt_BR.UTF-8</locale>
+        <keytable>br</keytable>
+        <timezone>America/Sao_Paulo</timezone>
+    </preferences>
+    <profiles>
+        <profile name="XFCE-Minimal" description="PlayOS Debian XFCE Minimal Desktop with Oracle UEK"/>
+        <profile name="Console-Core" description="PlayOS Debian Headless/Console Core with Oracle UEK"/>
+    </profiles>
+
+    <!-- Debian Official APT Repository -->
+    <repository type="apt-deb" alias="debian-trixie" distribution="trixie" components="main contrib non-free-firmware">
+        <source path="http://deb.debian.org/debian"/>
+    </repository>
+
+    <!-- PlayOS Local APT Repository containing converted Oracle UEK DEB packages -->
+    <repository type="apt-deb" alias="playos-oracle-uek" distribution="trixie" components="main">
+        <source path="dir:///var/cache/playos-uek-repo"/>
+    </repository>
+
+    <packages type="image">
+        <!-- Base System Userspace -->
+        <package name="base-files"/>
+        <package name="base-passwd"/>
+        <package name="coreutils"/>
+        <package name="util-linux"/>
+        <package name="systemd"/>
+        <package name="systemd-sysv"/>
+        <package name="udev"/>
+        <package name="apt"/>
+        <package name="sudo"/>
+        <package name="locales"/>
+
+        <!-- Live Boot & Storage Layer -->
+        <package name="live-boot"/>
+        <package name="live-config"/>
+        <package name="live-config-systemd"/>
+        <package name="squashfs-tools"/>
+        <package name="overlayroot"/>
+        <package name="dracut"/>
+        <package name="dracut-live"/>
+
+        <!-- Oracle Unbreakable Enterprise Kernel (UEK) DEB Package from Local Repo -->
+        <package name="oracle-kernel-uek-image"/>
+        <package name="oracle-kernel-uek-modules"/>
+
+        <!-- Firmware & Hardware Support -->
+        <package name="firmware-linux-free"/>
+        <package name="firmware-misc-nonfree"/>
+        <package name="pciutils"/>
+        <package name="usbutils"/>
+        <package name="lshw"/>
+
+        <!-- Network Stack -->
+        <package name="network-manager"/>
+        <package name="iproute2"/>
+        <package name="iputils-ping"/>
+        <package name="curl"/>
+        <package name="ca-certificates"/>
+    </packages>
+
+    <packages type="image" profiles="XFCE-Minimal">
+        <!-- Graphical Stack & Desktop (Debian Userspace) -->
+        <package name="xorg"/>
+        <package name="xserver-xorg-video-all"/>
+        <package name="xserver-xorg-input-all"/>
+        <package name="lightdm"/>
+        <package name="xfce4"/>
+        <package name="xfce4-goodies"/>
+        <package name="mesa-vulkan-drivers"/>
+        <package name="pulseaudio"/>
+        <package name="pavucontrol"/>
+    </packages>
+</image>
