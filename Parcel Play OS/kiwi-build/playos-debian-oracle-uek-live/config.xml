@@ -48,6 +48,7 @@
         <package name="overlayroot"/>
         <package name="dracut"/>
         <package name="dracut-live"/>
+        <package name="dracut-kiwi-live"/>
 
         <!-- Oracle Unbreakable Enterprise Kernel (UEK) DEB Package from Local Repo -->
         <package name="oracle-kernel-uek-image"/>
