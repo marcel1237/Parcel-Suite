@@ -104,18 +104,33 @@ EOF
 
 dpkg-deb --build "${WORK_DIR}/pkg-kiwi-live" "${REPO_DIR}/dracut-kiwi-live_1.0.0_all.deb"
 
-echo "5. Generating local APT repository index in ${REPO_DIR}..."
+echo "5. Generating standard Debian repository structure in ${REPO_DIR}..."
 cd "${REPO_DIR}"
-if command -v apt-ftparchive >/dev/null 2>&1; then
-    apt-ftparchive packages . > Packages
-elif command -v dpkg-scanpackages >/dev/null 2>&1; then
-    dpkg-scanpackages . /dev/null > Packages
-fi
-gzip -c9 Packages > Packages.gz
+rm -rf dists pool
+mkdir -p dists/trixie/main/binary-amd64 pool/main
+mv *.deb pool/main/ 2>/dev/null || true
 
+cat << 'EOF' > apt-ftparchive.conf
+Dir::ArchiveDir ".";
+TreeDefault::Directory ".";
+TreeDefault::SrcDirectory ".";
+Default::Packages::Extensions ".deb";
+Default::Packages::Compress ". gzip";
+
+BinDirectory "pool/main" {
+    Packages "dists/trixie/main/binary-amd64/Packages";
+    BinOverride "";
+    ExtraOverride "";
+};
+EOF
+
+apt-ftparchive generate apt-ftparchive.conf
+gzip -c9 dists/trixie/main/binary-amd64/Packages > dists/trixie/main/binary-amd64/Packages.gz
+
+sudo rm -rf /var/local/playos-uek-repo
 sudo mkdir -p /var/local/playos-uek-repo
 sudo cp -a "${REPO_DIR}/"* /var/local/playos-uek-repo/
-echo "Repository mirrored to space-free path: /var/local/playos-uek-repo"
+echo "Standard Debian repository mirrored to: /var/local/playos-uek-repo"
 
 echo "=== Oracle UEK DEB Packaging & Local Repository Ready ==="
 echo "Repository path: ${REPO_DIR}"
