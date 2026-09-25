@@ -112,9 +112,13 @@ O script verifica/baixa os RPMs do UEK (`kernel-uek`, `kernel-uek-core`, `kernel
 
 ### Passo 2: Executar o Build KIWI NG
 ```sh
-./build.sh
+sudo kiwi-ng system build \
+  --description '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/kiwi-build/playos-debian-oracle-uek-live' \
+  --target-dir '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/kiwi-build/playos-debian-oracle-uek-live/output'
 ```
-O executor utiliza `kiwi-ng` local ou invoca o contêiner oficial `registry.opensuse.org/opensuse/kiwi:latest` via Podman/Docker, produzindo a ISO Live final em `output/`.
+
+### Nota sobre Ambientes Offline / Sandboxed
+Em ambientes com isolamento estrito de rede (onde `deb.debian.org` não é alcançável por `debootstrap`), o build pode ser executado utilizando um tarball de rootfs pré-construído do Debian Trixie ou em um host/VM com acesso externo à internet.
 
 ---
 
