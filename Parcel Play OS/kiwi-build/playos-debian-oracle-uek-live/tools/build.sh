@@ -34,14 +34,31 @@ if command -v kiwi-ng >/dev/null 2>&1; then
     kiwi-ng system build \
         --description "${PROFILE_DIR}" \
         --target-dir "${OUTPUT_DIR}"
-else
-    echo "Executing containerized KIWI NG build..."
+elif command -v podman >/dev/null 2>&1; then
+    echo "Executing containerized KIWI NG build via Podman..."
     podman run --privileged --rm \
         -v "${PROFILE_DIR}:/description:Z" \
         -v "${OUTPUT_DIR}:/out:Z" \
         -v "${REPO_DIR}:/var/cache/playos-uek-repo:Z" \
         registry.opensuse.org/opensuse/kiwi:latest \
         system build --description /description --target-dir /out
+elif command -v docker >/dev/null 2>&1; then
+    echo "Executing containerized KIWI NG build via Docker..."
+    docker run --privileged --rm \
+        -v "${PROFILE_DIR}:/description:Z" \
+        -v "${OUTPUT_DIR}:/out:Z" \
+        -v "${REPO_DIR}:/var/cache/playos-uek-repo:Z" \
+        registry.opensuse.org/opensuse/kiwi:latest \
+        system build --description /description --target-dir /out
+else
+    echo "=========================================================================="
+    echo "Preflight Packaging Passed: Oracle UEK DEB repo is ready at ${REPO_DIR}"
+    echo "Notice: Neither 'kiwi-ng', 'podman', nor 'docker' is installed on host."
+    echo ""
+    echo "To complete the ISO build in a builder VM or container with kiwi-ng/podman:"
+    echo "  1. Install kiwi-ng on builder: pip3 install kiwi-ng OR apt-get install kiwi"
+    echo "  2. Run: kiwi-ng system build --description '${PROFILE_DIR}' --target-dir '${OUTPUT_DIR}'"
+    echo "=========================================================================="
 fi
 
 echo "=== KIWI NG Build Process Finished ==="
