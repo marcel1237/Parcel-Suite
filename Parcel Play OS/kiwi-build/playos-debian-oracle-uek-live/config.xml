@@ -7,14 +7,10 @@
         <specification>PlayOS Live CD combining Debian 13 (Trixie) Userspace with Oracle UEK (Unbreakable Enterprise Kernel)</specification>
     </description>
     <preferences>
-        <type image="iso" flags="hybrid" bootloader="grub2"/>
+        <type image="iso"/>
         <version>1.0.0</version>
         <packagemanager>apt</packagemanager>
-        <bootloader-theme>playos</bootloader-theme>
         <rpm-check-signatures>false</rpm-check-signatures>
-        <locale>pt_BR.UTF-8</locale>
-        <keytable>br</keytable>
-        <timezone>America/Sao_Paulo</timezone>
     </preferences>
     <profiles>
         <profile name="XFCE-Minimal" description="PlayOS Debian XFCE Minimal Desktop with Oracle UEK"/>
