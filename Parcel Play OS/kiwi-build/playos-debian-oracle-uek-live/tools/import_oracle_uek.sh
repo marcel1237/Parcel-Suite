@@ -47,7 +47,8 @@ if [ -z "${UEK_KVER}" ]; then
     exit 1
 fi
 
-echo "Identified Oracle UEK Kernel Version: ${UEK_KVER}"
+UEK_DEB_VER=$(echo "${UEK_KVER}" | tr '_' '-')
+echo "Identified Oracle UEK Kernel Version: ${UEK_KVER} (DEB Version: ${UEK_DEB_VER})"
 
 echo "3. Packaging oracle-kernel-uek-image DEB..."
 mkdir -p "${WORK_DIR}/pkg-image/boot"
@@ -64,14 +65,14 @@ cp -a "boot/System.map-${UEK_KVER}" "${WORK_DIR}/pkg-image/boot/System.map-${UEK
 
 cat << EOF > "${WORK_DIR}/pkg-image/DEBIAN/control"
 Package: oracle-kernel-uek-image
-Version: ${UEK_KVER}
+Version: ${UEK_DEB_VER}
 Architecture: amd64
 Maintainer: PlayOS Engineering <playos-dev@local>
 Description: Oracle Unbreakable Enterprise Kernel (UEK) binary image for PlayOS Debian Live
  Provides Oracle UEK kernel (vmlinuz-${UEK_KVER}) packaged for Debian userspace.
 EOF
 
-dpkg-deb --build "${WORK_DIR}/pkg-image" "${REPO_DIR}/oracle-kernel-uek-image_${UEK_KVER}_amd64.deb"
+dpkg-deb --build "${WORK_DIR}/pkg-image" "${REPO_DIR}/oracle-kernel-uek-image_${UEK_DEB_VER}_amd64.deb"
 
 echo "4. Packaging oracle-kernel-uek-modules DEB..."
 mkdir -p "${WORK_DIR}/pkg-modules/lib/modules"
@@ -79,7 +80,7 @@ cp -a "lib/modules/${UEK_KVER}" "${WORK_DIR}/pkg-modules/lib/modules/"
 
 cat << EOF > "${WORK_DIR}/pkg-modules/DEBIAN/control"
 Package: oracle-kernel-uek-modules
-Version: ${UEK_KVER}
+Version: ${UEK_DEB_VER}
 Architecture: amd64
 Maintainer: PlayOS Engineering <playos-dev@local>
 Depends: oracle-kernel-uek-image
@@ -87,7 +88,7 @@ Description: Oracle Unbreakable Enterprise Kernel (UEK) modules for PlayOS Debia
  Provides kernel modules for Oracle UEK (${UEK_KVER}) packaged for Debian userspace.
 EOF
 
-dpkg-deb --build "${WORK_DIR}/pkg-modules" "${REPO_DIR}/oracle-kernel-uek-modules_${UEK_KVER}_amd64.deb"
+dpkg-deb --build "${WORK_DIR}/pkg-modules" "${REPO_DIR}/oracle-kernel-uek-modules_${UEK_DEB_VER}_amd64.deb"
 
 echo "5. Generating local APT repository index in ${REPO_DIR}..."
 cd "${REPO_DIR}"
