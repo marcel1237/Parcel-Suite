@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROFILE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 OUTPUT_DIR="${PROFILE_DIR}/output"
-REPO_DIR="/var/cache/playos-uek-repo"
+REPO_DIR="${PROFILE_DIR}/repo"
 
 echo "=== PlayOS KIWI NG Live CD Build Executor ==="
 echo "Profile directory: ${PROFILE_DIR}"
