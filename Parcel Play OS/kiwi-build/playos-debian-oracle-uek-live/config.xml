@@ -22,6 +22,11 @@
         <source path="http://deb.debian.org/debian"/>
     </repository>
 
+    <!-- PlayOS Local APT Repository containing converted Oracle UEK DEB packages -->
+    <repository type="apt-deb" alias="playos-oracle-uek" distribution="trixie" components="main">
+        <source path="dir:///var/local/playos-uek-repo"/>
+    </repository>
+
     <packages type="bootstrap">
         <package name="apt"/>
         <package name="dpkg"/>
