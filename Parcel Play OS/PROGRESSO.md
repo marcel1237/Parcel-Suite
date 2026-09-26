@@ -1495,3 +1495,10 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Userspace**: Base e pilha gráfica (X11, XFCE 4.20, LightDM, Mesa/Vulkan) 100% derivadas do Debian 13 (Trixie).
 - **Iniciador**: Executado `import_oracle_uek.sh` com sucesso: baixados os RPMs do Oracle UEK R7 (Linux 5.15), extraídos via 7z/cpio, empacotados nos DEBs `oracle-kernel-uek-image_5.15.0-200.131.27.el9uek.x86-64_amd64.deb` (13.2 MB) e `oracle-kernel-uek-modules_5.15.0-200.131.27.el9uek.x86-64_amd64.deb` (94.4 MB) e indexados com `Packages.gz` no repositório local do perfil.
 - **Estado**: `implementation` e `result` (preflight do kernel concluído; repositório APT local pronto; invocação do `kiwi-ng` aguardando ambiente de construção VM/LXD com `kiwi-ng` ou `podman`).
+
+## [2026-09-26] - Perfil Nativo Debian Live KDE Full com Linux Kernel Vanilla 7.3-rc4
+- **Implementação**: Criado o perfil nativo do Debian `live-build/playos-debian-trixie-kde-full-vanilla-7.3/` seguindo rigorosamente a maneira Debian upstream, sem KIWI NG ou Imagecraft.
+- **Userspace**: Debian 13 (Trixie) com pacote `kde-full`, SDDM e pilha completa de áudio, rede e multimídia.
+- **Kernel**: Integrado o Linux Kernel Vanilla 7.3-rc4 (`linux-image-unsigned-7.3.0-070300rc3-generic` e `linux-modules-7.3.0-070300rc3-generic`) importados localmente de `playos-resolute-k73/kernel/` via script dedicados `import-kernel.sh`.
+- **Iniciador**: Criados `tools/build.sh`, `tools/preflight.sh`, `tools/import-kernel.sh` e hooks chroot para ativação de serviços systemd.
+- **Estado**: `implementation` (receita completa e validada estruturalmente; build e runtime pendentes).
