@@ -20,6 +20,7 @@ O PlayOS utiliza o motor de construção declarativo **KIWI NG** (`kiwi-ng`) par
 
 ## Estado Registrado
 
-- Perfil KIWI NG e scripts de automação (`config.xml`, `config.sh`, `images.sh`, `import_oracle_uek.sh`, `build.sh`) implementados.
+- Perfil KIWI NG, descrições declarativas e scripts de automação (`config.xml`, `config.sh`, `images.sh`, `import_oracle_uek.sh`, `build.sh`) implementados.
+- Assinatura criptográfica automática do repositório local via chave GPG `PlayOS Local` (`InRelease`/`Release.gpg`) e suporte a múltiplos chaveiros via `--signing-key`.
 - Documento técnico de referência em `ARQUITETURA_PLAYOS_KIWI_DEBIAN_ORACLE_UEK.md`.
 - Geração de ISO e teste de runtime em VM/hardware permanecem no estado `pending-execution` / `unknown`.

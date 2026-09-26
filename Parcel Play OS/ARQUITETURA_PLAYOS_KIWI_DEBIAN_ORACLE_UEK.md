@@ -110,15 +110,17 @@ cd kiwi-build/playos-debian-oracle-uek-live/tools
 ```
 O script verifica/baixa os RPMs do UEK (`kernel-uek`, `kernel-uek-core`, `kernel-uek-modules`), extrai o binário `vmlinuz-*-uek` e a pasta de módulos, gera os pacotes `oracle-kernel-uek-image` e `oracle-kernel-uek-modules`, e indexa o repositório APT em `/var/cache/playos-uek-repo`.
 
-### Passo 2: Executar o Build KIWI NG
+### Passo 2: Executar o Build KIWI NG com Chaves de Assinatura
 ```sh
 sudo kiwi-ng system build \
-  --description '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/kiwi-build/playos-debian-oracle-uek-live' \
-  --target-dir '/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/kiwi-build/playos-debian-oracle-uek-live/output'
+  --description 'kiwi-build/playos-debian-oracle-uek-live' \
+  --target-dir 'kiwi-build/playos-debian-oracle-uek-live/output' \
+  --signing-key /usr/share/keyrings/debian-archive-keyring.gpg \
+  --signing-key /tmp/playos-repo.key
 ```
 
-### Nota sobre Ambientes Offline / Sandboxed
-Em ambientes com isolamento estrito de rede (onde `deb.debian.org` não é alcançável por `debootstrap`), o build pode ser executado utilizando um tarball de rootfs pré-construído do Debian Trixie ou em um host/VM com acesso externo à internet.
+### Segurança e Assinatura Criptográfica de Repositórios
+Para garantir que tanto o repositório oficial do Debian (`deb.debian.org`) quanto o repositório local do kernel Oracle UEK passem na verificação OpenPGP do APT durante o build, o script `import_oracle_uek.sh` gera uma chave GPG local (`PlayOS Local`), assina o arquivo `Release` (`Release.gpg` e `InRelease`) e exporta a chave pública para `/tmp/playos-repo.key`, que é injetada no chaveiro de build do KIWI NG junto ao chaveiro oficial Debian.
 
 ---
 
