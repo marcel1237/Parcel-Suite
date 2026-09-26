@@ -18,7 +18,6 @@ lb config noauto \
   --initsystem systemd \
   --linux-packages none \
   --apt-recommends true \
-  --memtest none \
   --iso-application "PlayOS Debian KDE Full Vanilla 7.3" \
   --iso-publisher "PlayOS Project" \
   --iso-volume "PLAYOS_D13_KDE_V73" \
