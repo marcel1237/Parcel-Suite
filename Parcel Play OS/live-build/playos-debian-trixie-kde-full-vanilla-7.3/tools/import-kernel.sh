@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROFILE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PACKAGES_DIR="${PROFILE_DIR}/config/packages.chroot"
-SOURCE_KERNEL_DIR="/home/marcel/Parcel-Suite/Parcel Suite/Parcel Play OS/playos-resolute-k73/kernel"
+SOURCE_KERNEL_DIR="/home/marcel/kernel-debs"
 
 echo "=== PlayOS Vanilla 7.3 Kernel Importer ==="
 mkdir -p "${PACKAGES_DIR}"
