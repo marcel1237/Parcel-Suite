@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+echo "PlayOS Debian Trixie KDE Full Vanilla 7.3-rc4 Live" > /etc/playos-release
+date >> /etc/playos-release
+uname -r >> /etc/playos-release
