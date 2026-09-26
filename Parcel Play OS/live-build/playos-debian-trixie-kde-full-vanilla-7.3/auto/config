@@ -9,6 +9,11 @@ lb config noauto \
   --mirror-bootstrap https://deb.debian.org/debian/ \
   --mirror-chroot https://deb.debian.org/debian/ \
   --mirror-binary https://deb.debian.org/debian/ \
+  --mirror-security https://security.debian.org/debian-security/ \
+  --parent-mirror-bootstrap https://deb.debian.org/debian/ \
+  --parent-mirror-chroot https://deb.debian.org/debian/ \
+  --parent-mirror-binary https://deb.debian.org/debian/ \
+  --parent-mirror-security https://security.debian.org/debian-security/ \
   --security true \
   --updates true \
   --binary-images iso-hybrid \
@@ -16,8 +21,7 @@ lb config noauto \
   --debian-installer none \
   --initramfs live-boot \
   --initsystem systemd \
-  --linux-packages linux-image \
-  --linux-flavours 7.3.0-070300rc3-generic \
+  --linux-packages none \
   --apt-recommends true \
   --memtest none \
   --iso-application "PlayOS Debian KDE Full Vanilla 7.3" \
