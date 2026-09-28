@@ -11,6 +11,7 @@ lb config noauto \
   --mirror-binary https://deb.debian.org/debian/ \
   --security false \
   --updates true \
+  --apt-secure false \
   --binary-images iso-hybrid \
   --bootloaders "grub-pc grub-efi" \
   --debian-installer none \
@@ -18,8 +19,8 @@ lb config noauto \
   --initsystem systemd \
   --linux-packages none \
   --apt-recommends true \
-  --iso-application "PlayOS Debian KDE Full Vanilla 7.3 - Tentativa 1" \
+  --iso-application "PlayOS Debian KDE Full Vanilla 7.3" \
   --iso-publisher "PlayOS Project" \
-  --iso-volume "PLAYOS_T1" \
+  --iso-volume "PLAYOS_D13_KDE_V73" \
   --bootappend-live "boot=live components username=playos hostname=playos locales=pt_BR.UTF-8 keyboard-layouts=br" \
   "${@}"
