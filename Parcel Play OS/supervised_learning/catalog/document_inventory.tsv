@@ -129,3 +129,4 @@ DOC-120	live-build/playos-ubuntu-noble-kde-full-knoppix-style/README.md	build	pl
 DOC-121	mdbook/README.md	documentation	playos-mdbook-project-and-usage	current
 DOC-122	GitBook/README.md	documentation	playos-gitbook-git-sync-project-and-usage	current
 DOC-123	ARQUITETURA_PLAYOS_KIWI_DEBIAN_ORACLE_UEK.md	architecture	kiwi-ng-debian-oracle-uek-live-architecture	current
+DOC-124	RELATORIO_ERROS_LIVE_BUILD_DEBIAN_TRIXIE.md	build	live-build-debian-trixie-error-report	current
