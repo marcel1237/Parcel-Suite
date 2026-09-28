@@ -78,16 +78,16 @@ LB_HDD_SIZE="10000"
 LB_ISO_APPLICATION="Ubuntu Live"
 
 # $LB_ISO_PREPARER: set iso preparer
-# (Default: live-build $VERSION; http://packages.qa.debian.org/live-build)
-LB_ISO_PREPARER="live-build $VERSION; http://packages.qa.debian.org/live-build"
+# (Default: live-build 3.0~a57-1; http://packages.qa.debian.org/live-build)
+LB_ISO_PREPARER="live-build 3.0~a57-1; http://packages.qa.debian.org/live-build"
 
 # $LB_ISO_PUBLISHER: set iso publisher
 # (Default: Debian Live project; http://live.debian.net/; debian-live@lists.debian.org)
 LB_ISO_PUBLISHER="Debian Live project; http://live.debian.net/; debian-live@lists.debian.org"
 
 # $LB_ISO_VOLUME: set iso volume (max 32 chars)
-# (Default: Ubuntu precise $(date +%Y%m%d-%H:%M))
-LB_ISO_VOLUME="Ubuntu precise $(date +%Y%m%d-%H:%M)"
+# (Default: Ubuntu precise 20260928-08:35)
+LB_ISO_VOLUME="Ubuntu precise 20260928-08:35"
 
 # $LB_EXT_BLOCKSIZE: set EXT block size
 # (Default: unset)

@@ -11,8 +11,8 @@ cd "${PROFILE_DIR}"
 "${SCRIPT_DIR}/preflight.sh"
 
 sudo lb clean --purge
-sudo LB_MODE=debian LB_DISTRIBUTION=trixie LB_SECURITY=false lb config
-sudo LB_MODE=debian LB_DISTRIBUTION=trixie LB_SECURITY=false lb build
+sudo ./auto/config
+sudo lb build
 
 echo "=== Build Finished ==="
 ls -lh *.iso
