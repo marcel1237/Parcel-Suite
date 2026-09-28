@@ -18,8 +18,8 @@ lb config noauto \
   --initsystem systemd \
   --linux-packages none \
   --apt-recommends true \
-  --iso-application "PlayOS Debian KDE Full Vanilla 7.3" \
+  --iso-application "PlayOS Debian KDE Full Vanilla 7.3 - Tentativa 1" \
   --iso-publisher "PlayOS Project" \
-  --iso-volume "PLAYOS_D13_KDE_V73" \
+  --iso-volume "PLAYOS_T1" \
   --bootappend-live "boot=live components username=playos hostname=playos locales=pt_BR.UTF-8 keyboard-layouts=br" \
   "${@}"
