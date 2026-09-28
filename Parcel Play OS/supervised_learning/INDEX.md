@@ -44,6 +44,7 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [PlayOS Userspace + KDE Full + kernel Noble em Live inspirada no KNOPPIX](../PLAYOS_USERSPACE_KDE_FULL_LIVE_KNOPPIX_STYLE.md)
 - [PlayOS Native Userspace Slackware-like + Live KNOPPIX-like + KDE completo](../PLAYOS_USERSPACE_SLACKLIKE_KNOPPIX_LIVE_KDE_FULL.md)
 - [PlayOS KIWI NG Live CD: Userspace Debian + Oracle UEK](knowledge/linux/playos-kiwi-debian-oracle-uek.md)
+- [Relatório de Erros e Soluções no Live-Build Debian Trixie](../RELATORIO_ERROS_LIVE_BUILD_DEBIAN_TRIXIE.md)
 
 ## Catálogos
 
