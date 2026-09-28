@@ -1,4 +1,4 @@
-# Relatório Técnico: Resolução de Erros no Pipeline Live-Build Debian Trixie + Vanilla Kernel
+# Relatório Técnico: Resolução de Erros e Opções Arquiteturais no Live-Build Debian Trixie + Vanilla Kernel
 
 ## 1. Visão Geral
 Durante a construção da Live ISO do PlayOS baseada no **Debian 13 (Trixie)** com o **KDE Full** e o **Linux Kernel Vanilla 7.3-rc4**, o orquestrador nativo `live-build` encontrou três barreiras técnicas críticas que foram totalmente diagnosticadas e superadas.
@@ -51,9 +51,41 @@ E: The repository 'http://security.debian.org trixie/updates Release' does not h
 ### Causa Raiz
 Na distribuição **Debian 13 (Trixie)**, a estrutura e a URL do repositório de segurança mudaram. O caminho legado `security.debian.org trixie/updates` foi descontinuado e substituído por `security.debian.org/debian-security trixie-security`.
 
-### Solução Aplicada
-Implementação de um gancho de chroot (*chroot hook*) dedicado em `config/hooks/chroot/00-fix-security-repo.chroot` que intercepta a configuração de APT gerada pelo `live-build`, expurga entradas antigas e reconfigura o repositório de segurança atualizado:
+### Opções Arquiteturais Disponíveis para Resolução do 404
+
+#### Opção 1: Desativação do Repositório de Segurança (`--security false`)
+- **Como funciona**: Desativa completamente a adição do repositório de segurança durante a construção da imagem.
+- **Vantagens**: Elimina a consulta a `security.debian.org`, evitando erros 404 independentemente da versão do `live-build`.
+- **Desvantagens**: Os pacotes instalados na Live vêm exclusivamente do repositório principal e de atualizações (`trixie-updates`), sem as correções pontuais de segurança em tempo de build.
+
+#### Opção 2: Configuração de Mirrors de Segurança Atualizados
+- **Como funciona**: Definir explicitamente os parâmetros de mirror de segurança nas opções de configuração (`--mirror-chroot-security` e `--mirror-binary-security`) apontando para o esquema moderno do Debian Trixie.
+- **Vantagens**: Mantém o subsistema de segurança ativo.
+- **Desvantagens**: Algumas versões legadas do `live-build` empacotadas no Ubuntu ainda forçam o sufixo `/updates` em vez de `-security`.
+
+#### Opção 3: Uso de Gancho em Chroot (*Chroot Hook* — Abordagem Escolhida)
+- **Como funciona**: Utilizar um script de gancho executado dentro do chroot em `config/hooks/chroot/00-fix-security-repo.chroot` que intercepta a fase de arquivos de arquivo, remove URLs antigas e injeta a URL correta do Trixie Security (`debian-security trixie-security`).
+- **Vantagens**: Controle programático absoluto e independente de limitações da ferramenta upstream.
+- **Desvantagens**: Requer manutenção de script gancho.
+
+#### Opção 4: Sobrescrita via Arquivos de Arquivo (`config/archives/`)
+- **Como funciona**: Criar arquivos `.list` ou `.sources` personalizados em `config/archives/` para definir explicitamente os repositórios oficiais.
+- **Vantagens**: Integração nativa com o mecanismo de arquivos de arquivo do `live-build`.
+- **Desvantagens**: Pode coexistir e conflitar com os arquivos gerados automaticamente pelo script interno `lb_chroot_archives`.
+
+### Solução Aplicada no PlayOS (Opção 3)
+Implementação do gancho em chroot em `config/hooks/chroot/00-fix-security-repo.chroot`:
 ```sh
+#!/bin/sh
+set -e
+# Remove entradas legadas de segurança
+for f in /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+    if [ -f "$f" ] && grep -q "security.debian.org" "$f"; then
+        rm -f "$f"
+    fi
+done
+
+# Adiciona o repositório de segurança correto do Debian Trixie
 echo "deb https://security.debian.org/debian-security trixie-security main contrib non-free-firmware" > /etc/apt/sources.list.d/debian-security.list
 apt-get update
 ```
@@ -61,4 +93,4 @@ apt-get update
 ---
 
 ## 5. Conclusão
-Com essas correções, o pipeline nativo Debian `live-build` opera de forma 100% autônoma e reprodutível, permitindo a injeção limpa de kernels customizados (como o Vanilla 7.3) sobre um userspace Debian Trixie com KDE Plasma completo.
+Com essas abordagens documentadas e aplicadas, o pipeline nativo Debian `live-build` opera com robustez, permitindo a entrega bem-sucedida de ISOs Live personalizadas do PlayOS.
