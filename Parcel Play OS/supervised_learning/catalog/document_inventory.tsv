@@ -130,3 +130,5 @@ DOC-121	mdbook/README.md	documentation	playos-mdbook-project-and-usage	current
 DOC-122	GitBook/README.md	documentation	playos-gitbook-git-sync-project-and-usage	current
 DOC-123	ARQUITETURA_PLAYOS_KIWI_DEBIAN_ORACLE_UEK.md	architecture	kiwi-ng-debian-oracle-uek-live-architecture	current
 DOC-124	RELATORIO_ERROS_LIVE_BUILD_DEBIAN_TRIXIE.md	build	live-build-debian-trixie-error-report	current
+DOC-125	DOCUMENTACAO_JORNADA_LIVE_BUILD_DEBIAN.md	build	live-build-debian-trixie-journey-documentation	current
+DOC-126	CHAT_TRANSCRIPT_LIVE_BUILD_DEBIAN_2026-09.md	documentation	live-build-debian-trixie-chat-transcript	current

@@ -1,0 +1,3 @@
+Package: grub-legacy
+Pin: version *
+Pin-Priority: -1

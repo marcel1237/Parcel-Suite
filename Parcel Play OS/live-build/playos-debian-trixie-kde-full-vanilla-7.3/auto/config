@@ -11,7 +11,7 @@ lb config noauto \
   --mirror-binary https://deb.debian.org/debian/ \
   --security false \
   --binary-images iso-hybrid \
-  --bootloader grub \
+  --debian-installer false \
   --initramfs live-boot \
   --initsystem systemd \
   --linux-packages none \
