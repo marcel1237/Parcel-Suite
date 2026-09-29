@@ -10,11 +10,8 @@ lb config noauto \
   --mirror-chroot https://deb.debian.org/debian/ \
   --mirror-binary https://deb.debian.org/debian/ \
   --security false \
-  --updates true \
-  --apt-secure false \
   --binary-images iso-hybrid \
-  --bootloaders "grub-pc grub-efi" \
-  --debian-installer none \
+  --bootloader grub \
   --initramfs live-boot \
   --initsystem systemd \
   --linux-packages none \
