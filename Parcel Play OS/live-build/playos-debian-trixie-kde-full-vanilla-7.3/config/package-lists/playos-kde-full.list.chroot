@@ -1,9 +1,12 @@
-# Debian Live infrastructure
+# Debian Live infrastructure & Bootloaders
 live-boot
 live-config
 live-config-systemd
 live-tools
 systemd-sysv
+isolinux
+syslinux
+syslinux-common
 sudo
 locales
 keyboard-configuration

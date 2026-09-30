@@ -167,4 +167,4 @@ LB_SWAP_FILE_SIZE="512"
 
 # $LB_SYSLINUX_THEME: set syslinux theme package
 # (Default: ubuntu-oneiric)
-LB_SYSLINUX_THEME="ubuntu-oneiric"
+LB_SYSLINUX_THEME=""
