@@ -1,0 +1,31 @@
+#!/bin/bash
+# ==============================================================================
+# Angel OS Build System — Módulo: kernel (Kernel Vanilla 7.3 - Seraphin)
+# ==============================================================================
+
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+PROJECT_ROOT=$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)
+BUILD_KERNEL="$PROJECT_ROOT/build/kernel"
+BUILD_ROOTFS="$PROJECT_ROOT/build/rootfs"
+
+CYAN='\033[1;36m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo -e "${CYAN}>> [kernel] Posicionando Kernel Linux Vanilla 7.3 (Seraphin)...${NC}"
+mkdir -p "$BUILD_KERNEL" "$BUILD_ROOTFS/boot"
+
+# Caso exista um kernel compilado ou padrão no host/projeto, copia para o rootfs
+if [ -f "$PROJECT_ROOT/playos-resolute-k73/kernel/vmlinuz" ]; then
+    cp -f "$PROJECT_ROOT/playos-resolute-k73/kernel/vmlinuz" "$BUILD_KERNEL/vmlinuz-7.3-seraphin"
+    cp -f "$BUILD_KERNEL/vmlinuz-7.3-seraphin" "$BUILD_ROOTFS/boot/vmlinuz-7.3-seraphin"
+    echo -e "${GREEN}[OK] Kernel Vanilla 7.3 integrado com sucesso.${NC}"
+else
+    # Criar placeholder se o binário específico ainda não foi compilado na árvore
+    touch "$BUILD_KERNEL/vmlinuz-7.3-seraphin"
+    touch "$BUILD_ROOTFS/boot/vmlinuz-7.3-seraphin"
+    echo -e "${YELLOW}[!] Kernel Vanilla 7.3 placeholder criado (coloque o vmlinuz em build/kernel/).${NC}"
+fi

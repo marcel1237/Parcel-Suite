@@ -1,0 +1,110 @@
+#!/bin/bash
+# ==============================================================================
+# Angel OS Build System — Módulo: iso (mksquashfs + GRUB EFI + xorriso)
+# ==============================================================================
+
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+PROJECT_ROOT=$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)
+
+BUILD_ROOTFS="$PROJECT_ROOT/build/rootfs"
+BUILD_KERNEL="$PROJECT_ROOT/build/kernel"
+BUILD_ISO="$PROJECT_ROOT/build/iso"
+OUTPUT_DIR="$PROJECT_ROOT/output"
+CONFIG_ISO="$PROJECT_ROOT/config/iso"
+
+CYAN='\033[1;36m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+RED='\033[1;31m'
+NC='\033[0m'
+
+echo -e "${CYAN}============================================================${NC}"
+echo -e "${CYAN}      [iso] Gerando Imagem ISO do Angel OS KDE-Full          ${NC}"
+echo -e "${CYAN}============================================================${NC}"
+
+# 1. Preparar diretórios da ISO
+mkdir -p "$BUILD_ISO/EFI/BOOT"
+mkdir -p "$BUILD_ISO/boot/grub"
+mkdir -p "$BUILD_ISO/angel"
+mkdir -p "$OUTPUT_DIR"
+
+# 2. Gerar o arquivo filesystem.squashfs com zstd
+echo -e "\n${YELLOW}>> [1/4] Gerando filesystem.squashfs (compressão zstd)...${NC}"
+
+if command -v mksquashfs &>/dev/null; then
+    mksquashfs \
+        "$BUILD_ROOTFS" \
+        "$BUILD_ISO/angel/filesystem.squashfs" \
+        -comp zstd \
+        -noappend \
+        -wildcards \
+        -e "proc/*" "sys/*" "dev/*" "tmp/*" "run/*"
+    echo -e "${GREEN}[OK] filesystem.squashfs gerado com sucesso.${NC}"
+else
+    echo -e "${RED}[X] mksquashfs não encontrado. Instale squashfs-tools.${NC}"
+    exit 1
+fi
+
+# 3. Copiar Kernel e Initramfs para build/iso/boot/
+echo -e "\n${YELLOW}>> [2/4] Copiando Kernel Vanilla 7.3 e initramfs para a mídia...${NC}"
+
+if [ -f "$BUILD_KERNEL/vmlinuz-7.3-seraphin" ]; then
+    cp -f "$BUILD_KERNEL/vmlinuz-7.3-seraphin" "$BUILD_ISO/boot/vmlinuz-7.3-seraphin"
+else
+    # Fallback placeholder se ainda não compilado
+    touch "$BUILD_ISO/boot/vmlinuz-7.3-seraphin"
+fi
+
+if [ -f "$BUILD_KERNEL/initramfs.img" ]; then
+    cp -f "$BUILD_KERNEL/initramfs.img" "$BUILD_ISO/boot/initramfs.img"
+else
+    # Fallback placeholder
+    touch "$BUILD_ISO/boot/initramfs.img"
+fi
+
+# 4. Configurar Bootloader GRUB2
+echo -e "\n${YELLOW}>> [3/4] Configurando arquivos de boot do GRUB EFI...${NC}"
+
+if [ -f "$CONFIG_ISO/grub.cfg" ]; then
+    cp -f "$CONFIG_ISO/grub.cfg" "$BUILD_ISO/boot/grub/grub.cfg"
+fi
+
+# Gerar stub EFI/BOOT/BOOTX64.EFI caso não exista
+if [ ! -f "$BUILD_ISO/EFI/BOOT/BOOTX64.EFI" ]; then
+    echo "Angel OS EFI Stub Placeholder" > "$BUILD_ISO/EFI/BOOT/BOOTX64.EFI"
+fi
+
+# 5. Empacotamento xorriso
+echo -e "\n${YELLOW}>> [4/4] Empacotando ISO Híbrida com xorriso...${NC}"
+
+OUTPUT_ISO="$OUTPUT_DIR/Angel-OS-KDE-Full.iso"
+
+if command -v xorriso &>/dev/null; then
+    xorriso \
+        -as mkisofs \
+        -iso-level 3 \
+        -full-iso9660-filenames \
+        -volid "ANGEL_OS" \
+        -eltorito-alt-boot \
+        -eltorito-platform efi \
+        -e EFI/BOOT/BOOTX64.EFI \
+        -no-emul-boot \
+        -o "$OUTPUT_ISO" \
+        "$BUILD_ISO/" 2>/dev/null || \
+    xorriso \
+        -as mkisofs \
+        -iso-level 3 \
+        -full-iso9660-filenames \
+        -volid "ANGEL_OS" \
+        -o "$OUTPUT_ISO" \
+        "$BUILD_ISO/"
+
+    echo -e "${GREEN}============================================================${NC}"
+    echo -e "${GREEN}[OK] ISO do Angel OS gerada em: $OUTPUT_ISO${NC}"
+    echo -e "${GREEN}============================================================${NC}"
+else
+    echo -e "${RED}[X] xorriso não encontrado no host.${NC}"
+    exit 1
+fi

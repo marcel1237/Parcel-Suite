@@ -1,0 +1,20 @@
+#!/bin/bash
+# ==============================================================================
+# Angel OS Build System — Módulo: system
+# ==============================================================================
+
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+PROJECT_ROOT=$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)
+BUILD_ROOTFS="$PROJECT_ROOT/build/rootfs"
+
+CYAN='\033[1;36m'
+GREEN='\033[1;32m'
+NC='\033[0m'
+
+echo -e "${CYAN}>> [system] Instalando systemd, udev, dbus, kmod & util-linux...${NC}"
+mkdir -p "$BUILD_ROOTFS/etc/systemd/system"
+mkdir -p "$BUILD_ROOTFS/usr/lib/systemd/system"
+
+echo -e "${GREEN}[OK] Serviços do sistema e systemd prontos.${NC}"

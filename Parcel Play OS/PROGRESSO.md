@@ -1502,3 +1502,9 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Kernel**: Integrado o Linux Kernel Vanilla 7.3-rc4 (`linux-image-unsigned-7.3.0-070300rc3-generic` e `linux-modules-7.3.0-070300rc3-generic`) importados localmente de `playos-resolute-k73/kernel/` via script dedicados `import-kernel.sh`.
 - **Iniciador**: Criados `tools/build.sh`, `tools/preflight.sh`, `tools/import-kernel.sh` e hooks chroot para ativação de serviços systemd.
 - **Estado**: `implementation` (receita completa e validada estruturalmente; build e runtime pendentes).
+
+## [2026-09-26] - Análise Geral do Sistema e Consolidação em Docs
+- **Análise**: Realizada auditoria e análise técnica completa do repositório Parcel Play OS, cobrindo objetivos, arquitetura BSD/Linux, NitroCore (`nitrocore/`), os 11 perfis do menu GRUB, mídias Live ISO em `build/`, Dark Volt, Orbis OS e a base de conhecimento supervisionada.
+- **Documentação**: Criado o documento [docs/ANALISE_SISTEMA_PLAYOS.md](file:///home/marcel/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/docs/ANALISE_SISTEMA_PLAYOS.md) na pasta `docs/` do projeto (`DOC-127`), consolidando o inventário do sistema, matriz de estados reais e roadmap técnico de validação.
+- **Estado**: `fact` e `implementation` (documentação detalhada consolidada e registrada no catálogo de inventário).
+

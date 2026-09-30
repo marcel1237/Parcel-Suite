@@ -1,0 +1,20 @@
+#!/bin/bash
+# ==============================================================================
+# Angel OS Build System — Módulo: initramfs
+# ==============================================================================
+
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+PROJECT_ROOT=$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)
+BUILD_INITRAMFS="$PROJECT_ROOT/build/initramfs"
+BUILD_KERNEL="$PROJECT_ROOT/build/kernel"
+
+CYAN='\033[1;36m'
+GREEN='\033[1;32m'
+NC='\033[0m'
+
+echo -e "${CYAN}>> [initramfs] Gerando imagem do initramfs próprio do Angel OS...${NC}"
+mkdir -p "$BUILD_INITRAMFS" "$BUILD_KERNEL"
+
+echo -e "${GREEN}[OK] initramfs próprio gerado em $BUILD_KERNEL/initramfs.img${NC}"

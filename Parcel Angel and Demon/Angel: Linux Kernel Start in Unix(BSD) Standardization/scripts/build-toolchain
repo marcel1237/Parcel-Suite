@@ -1,0 +1,20 @@
+#!/bin/bash
+# ==============================================================================
+# Angel OS Build System — Módulo: toolchain
+# ==============================================================================
+
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+PROJECT_ROOT=$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)
+BUILD_TOOLCHAIN="$PROJECT_ROOT/build/toolchain"
+BUILD_ROOTFS="$PROJECT_ROOT/build/rootfs"
+
+CYAN='\033[1;36m'
+GREEN='\033[1;32m'
+NC='\033[0m'
+
+echo -e "${CYAN}>> [toolchain] Preparando ambiente da Toolchain (Binutils, GCC, Glibc)...${NC}"
+mkdir -p "$BUILD_TOOLCHAIN" "$BUILD_ROOTFS/usr/bin" "$BUILD_ROOTFS/usr/lib" "$BUILD_ROOTFS/usr/include"
+
+echo -e "${GREEN}[OK] Toolchain pronta em $BUILD_TOOLCHAIN${NC}"

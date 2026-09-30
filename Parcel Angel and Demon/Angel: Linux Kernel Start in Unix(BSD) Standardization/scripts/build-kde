@@ -1,0 +1,50 @@
+#!/bin/bash
+# ==============================================================================
+# Angel OS Build System — Módulo: kde (Instalação via chroot apt-get KDE-Full)
+# ==============================================================================
+
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+PROJECT_ROOT=$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)
+BUILD_ROOTFS="$PROJECT_ROOT/build/rootfs"
+
+CYAN='\033[1;36m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+RED='\033[1;31m'
+NC='\033[0m'
+
+echo -e "${CYAN}============================================================${NC}"
+echo -e "${CYAN}      [kde] Instalando KDE Plasma Full via Chroot APT       ${NC}"
+echo -e "${CYAN}============================================================${NC}"
+
+if [ ! -d "$BUILD_ROOTFS/etc" ]; then
+    echo -e "${RED}[X] RootFS não encontrado. Execute './angel-build rootfs' primeiro.${NC}"
+    exit 1
+fi
+
+echo -e "${YELLOW}Montando sistemas de arquivos virtuais para chroot (exige sudo)...${NC}"
+sudo mount -t proc proc "$BUILD_ROOTFS/proc" 2>/dev/null || true
+sudo mount --bind /sys "$BUILD_ROOTFS/sys" 2>/dev/null || true
+sudo mount --bind /dev "$BUILD_ROOTFS/dev" 2>/dev/null || true
+sudo mount --bind /dev/pts "$BUILD_ROOTFS/dev/pts" 2>/dev/null || true
+
+cleanup() {
+    sudo umount "$BUILD_ROOTFS/dev/pts" 2>/dev/null || true
+    sudo umount "$BUILD_ROOTFS/dev" 2>/dev/null || true
+    sudo umount "$BUILD_ROOTFS/sys" 2>/dev/null || true
+    sudo umount "$BUILD_ROOTFS/proc" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+echo -e "${YELLOW}Executando apt-get install para KDE Plasma Full + SDDM + PipeWire...${NC}"
+sudo chroot "$BUILD_ROOTFS" /bin/bash -c "
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y --no-install-recommends \
+    systemd-sysv dbus network-manager pipewire wireplumber \
+    sddm plasma-workspace kde-plasma-desktop kde-full firefox-esr
+"
+
+echo -e "${GREEN}[OK] KDE Plasma Full instalado com sucesso no RootFS.${NC}"
