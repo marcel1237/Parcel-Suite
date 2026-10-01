@@ -19,3 +19,4 @@ O **Angel OS** é um sistema operacional em desenvolvimento projetado para combi
 - **Preservação de Fontes e Cuidado de Edição**: Não edite arquivos via comandos shell destrutivos (`sed -i`, `echo >`). Use as ferramentas do ambiente.
 - **Rigor em Mudanças**: Todas as modificações de arquitetura e scripts de build devem ser documentadas em `docs/` e registradas no progresso do sistema.
 - **Identidade Visual**: Manter a temática angelical ("Angel OS / Seraphin / Querubin") na identidade de boot, GRUB, temas Plymouth e terminal.
+- **Regra de Auto-Documentação (`AI_AUTO_DOCUMENTATION_RULE.md`)**: Sempre que uma resposta relevante for fornecida ao usuário, persistir o conteúdo correspondente em um arquivo `.md` na pasta `docs/` e indexá-lo em `docs/README.md`.
