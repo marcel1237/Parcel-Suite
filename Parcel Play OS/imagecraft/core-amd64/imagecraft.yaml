@@ -1,0 +1,64 @@
+name: core-amd64
+base: bare
+build-base: ubuntu@24.04
+version: '0.1'
+summary: A minimal Ubuntu Core 24 image for x86_64/amd64 machines.
+description: |
+  A minimal, pre-installed Ubuntu Core 24 image for x86_64 (amd64) machines. Its seed partition is
+  created with the UC-prepare plugin via Imagecraft.
+
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: amd64
+
+volumes:
+  pc:
+    schema: gpt
+    structure:
+      - name: ubuntu-seed
+        role: system-seed
+        filesystem: vfat
+        type: C12A7328-F81F-11D2-BA4B-00A0C93EC93B
+        size: 1200M
+      - name: ubuntu-boot
+        role: system-boot
+        filesystem: ext4
+        type: 0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        size: 750M
+      - name: ubuntu-save
+        role: system-save
+        filesystem: ext4
+        type: 0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        size: 32M
+      - name: ubuntu-data
+        role: system-data
+        filesystem: ext4
+        type: 0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        size: 1G
+
+filesystems:
+  default:
+    - device: (volume/pc/ubuntu-seed)
+      mount: /
+
+parts:
+  import-key:
+    plugin: nil
+    source: .
+    override-build: |
+      mkdir -p /home/ubuntu/.snap/gnupg
+      chmod 700 /home/ubuntu/.snap/gnupg
+      if [ -f "$CRAFT_PART_SRC/sign.key" ]; then
+        gpg --homedir /home/ubuntu/.snap/gnupg --import "$CRAFT_PART_SRC/sign.key"
+      fi
+
+  seed:
+    after: [import-key]
+    plugin: uc-prepare
+    source: .
+    uc-prepare-model-assert: model.assert
+    uc-prepare-preseed-sign-key: model-key
+    uc-prepare-preseed: True
+    organize:
+      system-seed: (volume/pc/ubuntu-seed)
