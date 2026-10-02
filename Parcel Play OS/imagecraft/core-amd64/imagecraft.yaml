@@ -1,10 +1,10 @@
 name: core-amd64
 base: bare
-build-base: ubuntu@24.04
+build-base: ubuntu@26.04
 version: '0.1'
-summary: A minimal Ubuntu Core 24 image for x86_64/amd64 machines.
+summary: A minimal Ubuntu Core image for x86_64/amd64 machines.
 description: |
-  A minimal, pre-installed Ubuntu Core 24 image for x86_64 (amd64) machines. Its seed partition is
+  A minimal, pre-installed Ubuntu Core image for x86_64 (amd64) machines. Its seed partition is
   created with the UC-prepare plugin via Imagecraft.
 
 platforms:
