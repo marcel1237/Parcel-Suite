@@ -47,6 +47,7 @@ Portal visual inicial: [documentation-portal/index.html](../documentation-portal
 - [Relatório de Erros e Soluções no Live-Build Debian Trixie](../RELATORIO_ERROS_LIVE_BUILD_DEBIAN_TRIXIE.md)
 - [Documentação Oficial da Jornada Live-Build Debian Trixie](../DOCUMENTACAO_JORNADA_LIVE_BUILD_DEBIAN.md)
 - [Transcrição do Chat da Sessão Live-Build Debian Trixie](../CHAT_TRANSCRIPT_LIVE_BUILD_DEBIAN_2026-09.md)
+- [Ubuntu Core 24 Imagecraft x86_64/amd64 Project](../imagecraft/core-amd64/README.md)
 
 ## Catálogos
 
