@@ -1508,3 +1508,13 @@ Este arquivo documenta as ações realizadas durante o desenvolvimento do projet
 - **Documentação**: Criado o documento [docs/ANALISE_SISTEMA_PLAYOS.md](file:///home/marcel/Parcel-Suite/Parcel%20Suite/Parcel%20Play%20OS/docs/ANALISE_SISTEMA_PLAYOS.md) na pasta `docs/` do projeto (`DOC-127`), consolidando o inventário do sistema, matriz de estados reais e roadmap técnico de validação.
 - **Estado**: `fact` e `implementation` (documentação detalhada consolidada e registrada no catálogo de inventário).
 
+## [2026-10-02] - Imagem Ubuntu Core 24 x86_64 (amd64) via Imagecraft Concluída
+- **Implementação**: Construída a especificação completa de imagem **Ubuntu Core 24** para x86_64 (`amd64`) em `imagecraft/core-amd64/` baseada no `imagecraft.yaml` e no modelo assinado oficial da Canonical (`snap known --remote model series=16 brand-id=canonical model=ubuntu-core-24-amd64`).
+- **Resolução de Erros**:
+  1. *Diretório com Espaços*: Resolvido executando em caminho sem espaços `/home/marcel/imagecraft-core-amd64/`.
+  2. *Versão do Host*: Resolvido com `build-base: ubuntu@26.04` e opção `--ignore`.
+  3. *Verificação de Assinatura do Modelo*: Resolvido injetando a asserção de modelo assinada oficial da Canonical.
+  4. *Falha de Codepage do mcopy*: Resolvido através do bind mount transparente do `mcopy` do host sobre o binário do snap `/snap/imagecraft/current/libexec/imagecraft/mcopy`.
+- **Resultado**: Gerada a imagem de disco GPT de **2.94 GiB / 3.0 GB** (`pc.img`) contendo as partições `ubuntu-seed` (1.2G EFI), `ubuntu-boot` (750M), `ubuntu-save` (32M) e `ubuntu-data` (1G).
+- **Estado**: `built` e `result` (imagem `pc.img` criada com sucesso e pronta para gravação em disco ou execução em QEMU/VM).
+

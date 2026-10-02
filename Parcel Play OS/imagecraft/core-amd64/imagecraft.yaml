@@ -43,22 +43,10 @@ filesystems:
       mount: /
 
 parts:
-  import-key:
-    plugin: nil
-    source: .
-    override-build: |
-      mkdir -p /home/ubuntu/.snap/gnupg
-      chmod 700 /home/ubuntu/.snap/gnupg
-      if [ -f "$CRAFT_PART_SRC/sign.key" ]; then
-        gpg --homedir /home/ubuntu/.snap/gnupg --import "$CRAFT_PART_SRC/sign.key"
-      fi
-
   seed:
-    after: [import-key]
     plugin: uc-prepare
     source: .
     uc-prepare-model-assert: model.assert
-    uc-prepare-preseed-sign-key: model-key
-    uc-prepare-preseed: True
+    uc-prepare-preseed: False
     organize:
       system-seed: (volume/pc/ubuntu-seed)
