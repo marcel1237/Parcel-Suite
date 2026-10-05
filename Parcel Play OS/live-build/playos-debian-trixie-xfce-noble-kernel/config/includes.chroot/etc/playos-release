@@ -1,5 +1,0 @@
-NAME="PlayOS"
-BASE_USERSPACE="Debian 13 trixie"
-KERNEL_SOURCE="Ubuntu Noble local packages"
-PROFILE="xfce-live-only"
-INSTALLER="none"

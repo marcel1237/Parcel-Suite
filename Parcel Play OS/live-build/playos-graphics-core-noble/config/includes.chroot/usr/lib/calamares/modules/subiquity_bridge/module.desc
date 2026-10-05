@@ -1,5 +1,0 @@
----
-type:       "job"
-name:       "subiquity_bridge"
-interface:  "python"
-script:     "main.py"

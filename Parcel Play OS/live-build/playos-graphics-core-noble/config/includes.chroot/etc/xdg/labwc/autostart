@@ -1,3 +1,0 @@
-lxpolkit >/tmp/playos-lxpolkit-wayland.log 2>&1 &
-mako >/tmp/playos-mako.log 2>&1 &
-foot --title="PlayOS Graphics Core — Wayland" &

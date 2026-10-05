@@ -1,3 +1,0 @@
-Acquire::AllowInsecureRepositories "true";
-Acquire::AllowDowngradeToInsecureRepositories "true";
-APT::Get::AllowUnauthenticated "true";
